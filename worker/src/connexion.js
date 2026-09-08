@@ -48,11 +48,7 @@ export async function handleConnexion(request, env, cors) {
 
   const compte = await findAuthUserByEmail(email, env);
   if (!compte) {
-    /* TEMPORAIRE — mise au point de la premiere connexion. L'adresse recue
-       est journalisee pour la comparer a celle du compte : une difference
-       d'une lettre suffit, et le refus generique ne le dit pas. A retirer
-       une fois le premier acces ouvert. */
-    console.log(`[connexion] adresse inconnue : ${email}`);
+    console.log('[connexion] adresse inconnue');
     throw httpError(REFUS, 401);
   }
 

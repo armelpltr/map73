@@ -136,6 +136,7 @@ Le script d'optimisation lit les originaux de l'ancien site (`../www.map73.fr/im
 - [ ] **Worker et secrets** : déployer `worker/`, injecter les trois secrets, renseigner `WORKER_URL` et `TURNSTILE_SITE_KEY` dans `assets/js/config.js`. Tant que ce n'est pas fait, le panel refuse la connexion et le site public fonctionne normalement sans lui.
 - [ ] **Premier superadmin** : créer le compte et son entrée `admins` dans la console (voir plus haut).
 - [ ] **Verrous Google** : restreindre la clé web par domaine, puis App Check en surveillance avant application.
+- [ ] **Expéditeur des codes** : les codes de connexion partent aujourd'hui d'une adresse Gmail personnelle, validée à la main dans Brevo. Le jour du domaine définitif, authentifier `map73.fr` chez Brevo et basculer `EMAIL_EXPEDITEUR` sur `contacts@map73.fr` — un expéditeur du domaine du site passe bien mieux les filtres, et le message ne semble plus venir d'un tiers.
 
 ## Phases suivantes (hors périmètre de cette première version)
 
