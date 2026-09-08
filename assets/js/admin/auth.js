@@ -30,6 +30,8 @@ const MESSAGES_FIREBASE = {
 
 let firebase = null;      // { auth, signInWithCustomToken, ... }
 let widgetTurnstile = null;
+let jetonAnti = "";        // jeton anti-robot obtenu par le rappel
+let resoudreJeton = null;  // resolution en attente, si le widget est invisible
 let surPret = null;
 
 function afficherErreur(id, message) {
@@ -89,7 +91,22 @@ function poserTurnstile() {
     widgetTurnstile = window.turnstile.render("#turnstile", {
       sitekey: TURNSTILE_SITE_KEY,
       language: "fr",
-      theme: "light"
+      theme: "light",
+
+      /* Le jeton est récupéré par ce rappel plutôt que par `getResponse`
+         seul : un widget configuré en mode invisible ne se coche pas et ne
+         rend rien tant qu'on ne l'a pas déclenché. Passer par le rappel fait
+         fonctionner les deux modes sans dépendre du réglage du tableau de
+         bord Cloudflare. */
+      callback: (jeton) => {
+        jetonAnti = jeton;
+        if (resoudreJeton) {
+          resoudreJeton(jeton);
+          resoudreJeton = null;
+        }
+      },
+      "expired-callback": () => { jetonAnti = ""; },
+      "error-callback": () => { jetonAnti = ""; }
     });
   } catch (erreur) {
     console.error("Turnstile :", erreur);
@@ -100,11 +117,10 @@ function poserTurnstile() {
 
 /*
  * Le script de Turnstile est chargé en `async defer` : rien ne garantit
- * qu'il soit prêt quand ce module s'exécute. S'accrocher à l'événement
- * `load` ne suffisait pas — l'écouteur était posé après un `await` sur le
- * SDK Firebase, donc parfois après que `load` soit déjà passé, et le widget
- * n'apparaissait jamais. On attend activement, et on le dit si ça n'arrive
- * pas : un formulaire sans case anti-robot est un formulaire mort.
+ * qu'il soit prêt quand ce module s'exécute, et `render` n'existe qu'à la
+ * fin de son initialisation. On attend activement, et on le dit si ça
+ * n'arrive pas : un formulaire sans contrôle anti-robot est un formulaire
+ * mort, le Worker refusera.
  */
 function attendreTurnstile(essaisRestants = 100) {
   if (poserTurnstile() === true) return;
@@ -119,12 +135,41 @@ function attendreTurnstile(essaisRestants = 100) {
 }
 
 function reinitialiserTurnstile() {
+  jetonAnti = "";
+  resoudreJeton = null;
   if (turnstilePret() && widgetTurnstile !== null) window.turnstile.reset(widgetTurnstile);
 }
 
-function jetonTurnstile() {
-  if (!turnstilePret() || widgetTurnstile === null) return "";
-  return window.turnstile.getResponse(widgetTurnstile) || "";
+/**
+ * Rend un jeton anti-robot, quel que soit le mode du widget : déjà obtenu
+ * par le rappel, sinon lu directement, sinon déclenché puis attendu.
+ */
+function obtenirJetonTurnstile() {
+  if (jetonAnti) return Promise.resolve(jetonAnti);
+
+  if (!turnstilePret() || widgetTurnstile === null) {
+    return Promise.reject(new Error("Le contrôle anti-robot n’est pas chargé. Rechargez la page."));
+  }
+
+  const direct = window.turnstile.getResponse(widgetTurnstile);
+  if (direct) return Promise.resolve(direct);
+
+  return new Promise((resoudre, rejeter) => {
+    resoudreJeton = resoudre;
+    try {
+      window.turnstile.execute(widgetTurnstile);
+    } catch (erreur) {
+      console.error("Turnstile :", erreur);
+    }
+
+    // Sans délai de garde, un widget qui n'aboutit jamais laisserait le
+    // bouton désactivé sans rien dire.
+    setTimeout(() => {
+      if (!resoudreJeton) return;
+      resoudreJeton = null;
+      rejeter(new Error("Le contrôle anti-robot n’a pas abouti. Rechargez la page et réessayez."));
+    }, 20000);
+  });
 }
 
 /* ---------- Étape 1 : identifiants ---------- */
@@ -139,8 +184,7 @@ async function connecter(e) {
   try {
     if (!firebase) throw new Error("Chargement en cours, réessayez dans un instant.");
 
-    const jeton = jetonTurnstile();
-    if (!jeton) throw new Error("Patientez le temps du contrôle anti-robot, puis réessayez.");
+    const jeton = await obtenirJetonTurnstile();
 
     const { jeton: jetonPersonnalise } = await appelerWorker("/connexion", {
       email: $("connexion-email").value.trim(),
