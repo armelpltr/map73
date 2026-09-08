@@ -114,7 +114,15 @@ Sans l'un de ces trois secrets, la connexion est refusée plutôt que dégradée
 
 ## Développement
 
-Aucune étape de build. Ouvrir `index.html`, ou servir le dossier :
+Aucune étape de build, à une exception près : **après toute modification du JavaScript**, lancer
+
+```sh
+python tools/versionner.py
+```
+
+qui estampille `?v=<horodatage>` sur les URL des modules. GitHub Pages sert les fichiers avec `Cache-Control: max-age=600`, et un rechargement forcé ne rafraîchit pas toujours les modules importés par un autre module : sans cette estampille, le navigateur peut exécuter un mélange d'ancien et de nouveau code pendant dix minutes.
+
+Ouvrir `index.html`, ou servir le dossier :
 
 ```sh
 python -m http.server 8000
