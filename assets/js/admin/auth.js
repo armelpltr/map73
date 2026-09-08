@@ -58,6 +58,22 @@ function montrer(ecran) {
   }
 }
 
+/*
+ * Une promesse qui ne se resout jamais n'est pas une erreur : aucun `catch`
+ * ne se declenche, et l'interface reste figee sans rien dire. C'est ce qui
+ * arrivait a l'ouverture du panel, la lecture Firestore restant en suspens
+ * derriere le partitionnement du stockage tiers de Firefox. Chaque etape est
+ * donc bornee dans le temps.
+ */
+function avecDelai(promesse, millisecondes, etiquette) {
+  return Promise.race([
+    promesse,
+    new Promise((_, rejeter) =>
+      setTimeout(() => rejeter(new Error(`${etiquette} : delai depasse`)), millisecondes)
+    )
+  ]);
+}
+
 /* ---------- Appels au Worker ---------- */
 
 async function appelerWorker(chemin, donnees) {
@@ -300,7 +316,17 @@ async function verifierCode(e) {
        session en cours ne le porte pas et Firestore refuserait la première
        écriture. */
     $("code-etat").textContent = "Code validé. Ouverture du panel…";
-    await jetonCourant(true);
+
+    /* Sans jeton rafraichi la session ne porte pas l'attribut qui vient
+       d'etre pose, et Firestore refusera la premiere ecriture. Mais un
+       rafraichissement qui traine ne doit pas retenir le panel : on entre,
+       quitte a ce qu'une publication demande de se reconnecter. */
+    try {
+      await avecDelai(jetonCourant(true), 8000, "Rafraichissement de la session");
+    } catch (erreur) {
+      console.error(erreur);
+    }
+
     await ouvrirPanel();
   } catch (erreur) {
     console.error("Validation du code :", erreur);
@@ -326,8 +352,8 @@ async function ouvrirPanel() {
      l'écran du code, code déjà consommé — l'utilisateur n'aurait alors plus
      aucun moyen d'avancer. */
   try {
-    const { db, doc, getDoc } = await obtenirFirestore();
-    const entree = await getDoc(doc(db, "admins", utilisateur.uid));
+    const { db, doc, getDoc } = await avecDelai(obtenirFirestore(), 8000, "Chargement de Firestore");
+    const entree = await avecDelai(getDoc(doc(db, "admins", utilisateur.uid)), 8000, "Lecture du rôle");
     if (entree.exists()) membre = { ...membre, ...entree.data() };
   } catch (erreur) {
     console.error("Lecture du rôle impossible :", erreur);
