@@ -22,7 +22,7 @@ FIREBASE_API_KEY = "AIzaSyDkGrpEOrkIubBekppOi4ROaN8GF6wuqug"
 # Expéditeur des codes de connexion. Doit être une adresse validée comme
 # expéditeur chez Brevo (Senders → Add a sender → clic sur le lien reçu),
 # sinon l'API accepte l'appel et le message n'arrive jamais.
-EMAIL_EXPEDITEUR = ""
+EMAIL_EXPEDITEUR = "armel.plantier@gmail.com"
 EMAIL_EXPEDITEUR_NOM = "MAP73"
 
 # Secrets à injecter :
