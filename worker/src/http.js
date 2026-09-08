@@ -27,3 +27,16 @@ export function httpError(message, status) {
   e.status = status;
   return e;
 }
+
+/*
+ * Les secrets injectes par `wrangler secret put` peuvent arriver precedes
+ * d'un BOM : PowerShell en ajoute un quand il redirige de l'UTF-8 vers un
+ * executable natif. Le caractere est invisible, mais il casse tout ce qui
+ * suit — JSON.parse echouait sur le compte de service, et Brevo repondait
+ * « Key not found » sur une cle pourtant valide. On nettoie a la lecture,
+ * une fois pour toutes, plutot que de dependre de la facon dont le secret
+ * a ete saisi.
+ */
+export function sansBOM(valeur) {
+  return String(valeur ?? '').replace(/^﻿/, '').trim();
+}

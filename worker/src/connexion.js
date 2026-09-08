@@ -48,7 +48,11 @@ export async function handleConnexion(request, env, cors) {
 
   const compte = await findAuthUserByEmail(email, env);
   if (!compte) {
-    console.log('[connexion] adresse inconnue');
+    /* TEMPORAIRE — mise au point de la premiere connexion. L'adresse recue
+       est journalisee pour la comparer a celle du compte : une difference
+       d'une lettre suffit, et le refus generique ne le dit pas. A retirer
+       une fois le premier acces ouvert. */
+    console.log(`[connexion] adresse inconnue : ${email}`);
     throw httpError(REFUS, 401);
   }
 
@@ -59,7 +63,12 @@ export async function handleConnexion(request, env, cors) {
   } catch { /* absent de `admins` */ }
 
   if (!membre) {
-    console.log('[connexion] compte hors de admins');
+    /* L'UID est journalisé pour pouvoir le comparer à l'identifiant du
+       document `admins` : la confusion la plus courante est un document créé
+       avec un identifiant automatique au lieu de l'UID du compte. Un UID
+       n'est pas un secret, et ces journaux ne sont lisibles que par le
+       titulaire du compte Cloudflare. */
+    console.log(`[connexion] compte hors de admins — uid attendu : ${compte.localId}`);
     throw httpError(REFUS, 401);
   }
   if (membre.actif === false) {

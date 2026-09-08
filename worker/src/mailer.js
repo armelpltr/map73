@@ -10,6 +10,8 @@
 // l'API accepte l'appel et le message n'arrive jamais.
 // ============================================================
 
+import { sansBOM } from './http.js';
+
 const ENVOI = 'https://api.brevo.com/v3/smtp/email';
 
 /* Les valeurs viennent du compte et du Worker, jamais de l'appelant, mais
@@ -38,7 +40,8 @@ function corpsHtml(nom, code, minutes) {
 }
 
 export async function envoyerCodeA2F({ email, nom, code, minutes = 10 }, env) {
-  if (!env.BREVO_API_KEY || !env.EMAIL_EXPEDITEUR) {
+  const cle = sansBOM(env.BREVO_API_KEY);
+  if (!cle || !env.EMAIL_EXPEDITEUR) {
     console.error('[mailer] Brevo non configure : aucun code ne peut partir');
     return false;
   }
@@ -47,7 +50,7 @@ export async function envoyerCodeA2F({ email, nom, code, minutes = 10 }, env) {
     const res = await fetch(ENVOI, {
       method: 'POST',
       headers: {
-        'api-key': env.BREVO_API_KEY,
+        'api-key': cle,
         'Content-Type': 'application/json',
         Accept: 'application/json'
       },

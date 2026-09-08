@@ -10,12 +10,13 @@
 // injoignable qu'une porte sans serrure.
 // ============================================================
 
-import { httpError } from './http.js';
+import { httpError, sansBOM } from './http.js';
 
 const VERIFICATION = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 export async function verifierTurnstile(jeton, request, env) {
-  if (!env.TURNSTILE_SECRET) {
+  const secret = sansBOM(env.TURNSTILE_SECRET);
+  if (!secret) {
     throw httpError('Contrôle anti-robot non configuré. Prévenez l’administrateur du site.', 503);
   }
   if (!jeton || typeof jeton !== 'string') {
@@ -23,7 +24,7 @@ export async function verifierTurnstile(jeton, request, env) {
   }
 
   const corps = new FormData();
-  corps.append('secret', env.TURNSTILE_SECRET);
+  corps.append('secret', secret);
   corps.append('response', jeton);
 
   // L'IP du visiteur renforce la vérification côté Cloudflare.

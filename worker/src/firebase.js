@@ -7,6 +7,8 @@
 // pure, et doit rester hors du JavaScript servi aux visiteurs.
 // ============================================================
 
+import { sansBOM } from './http.js';
+
 /* ---------- Compte de service → jeton d'accès ---------- */
 
 function b64url(str) {
@@ -50,7 +52,7 @@ async function makeServiceJWT(sa) {
  * toutes, plutôt que de dépendre de la façon dont le secret a été saisi.
  */
 function compteDeService(env) {
-  const brut = String(env.FIREBASE_SERVICE_ACCOUNT || '').replace(/^﻿/, '').trim();
+  const brut = sansBOM(env.FIREBASE_SERVICE_ACCOUNT);
   if (!brut) throw new Error('FIREBASE_SERVICE_ACCOUNT absent.');
   return JSON.parse(brut);
 }
