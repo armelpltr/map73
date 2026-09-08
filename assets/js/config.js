@@ -15,4 +15,4 @@ export const WORKER_URL = "https://map73-worker.armelpltr14-ad6.workers.dev";
    La clé secrète, elle, ne vit que dans le Worker.
    Tant qu'elle n'est pas renseignée, la connexion est refusée côté
    serveur : le panel le dit plutôt que de laisser essayer. */
-export const TURNSTILE_SITE_KEY = "0x4AAAAAAEtCOjBRUTPe-YPp_ycYYtkVsok";
+export const TURNSTILE_SITE_KEY = "0x4AAAAAAEtCOjExY9F7eLXS";
