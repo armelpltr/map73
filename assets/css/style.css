@@ -44,7 +44,7 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 6.5rem; }
 
 body {
   margin: 0;
@@ -151,11 +151,11 @@ p:last-child { margin-bottom: 0; }
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  min-height: 4.5rem;
+  min-height: 5.75rem;
   position: relative;
 }
 .entete__logo { flex: none; line-height: 0; }
-.entete__logo img { width: 132px; height: 36px; object-fit: contain; }
+.entete__logo img { width: 104px; height: 63px; object-fit: contain; }
 
 .nav { margin-left: auto; }
 .nav__liste {
@@ -599,7 +599,7 @@ p:last-child { margin-bottom: 0; }
 .pied li { padding: 0.2rem 0; }
 .pied a { color: var(--ink); text-decoration: none; }
 .pied a:hover { text-decoration: underline; }
-.pied__logo img { width: 132px; height: 36px; object-fit: contain; margin-bottom: 0.85rem; }
+.pied__logo img { width: 150px; height: 91px; object-fit: contain; margin-bottom: 0.85rem; }
 .pied__bas {
   border-top: 1px solid var(--trait);
   padding-top: 1.25rem;
@@ -682,6 +682,8 @@ p:last-child { margin-bottom: 0; }
 
 @media (max-width: 780px) {
   .entete__bascule { display: block; }
+  .entete__barre { min-height: 4.75rem; }
+  .entete__logo img { width: 88px; height: 53px; }
   .nav {
     display: none;
     position: absolute;
