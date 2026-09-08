@@ -75,17 +75,17 @@ async function jetonCourant(forcer = false) {
 
 /* ---------- Turnstile ---------- */
 
-/* `window.turnstile` apparaît avant d'être utilisable : l'objet est posé dès
-   les premières lignes du script, `render` n'arrive qu'à la fin de son
-   initialisation. Tester l'objet ne disait donc rien, et `render(...)`
-   levait « is not a function ». C'est la méthode qu'on attend. */
+/* L'initialisation de Turnstile se fait en plusieurs temps : `window.turnstile`
+   apparait bien avant `render`, et guetter cette methode ne marchait pas — le
+   script signalait « already been loaded » sans jamais l'attacher. Le rappel
+   `onload`, declare dans la page, est le seul signal fiable ; `ready()` sert
+   de second filet quand le rappel a deja eu lieu avant ce module. */
 function turnstilePret() {
-  return typeof window.turnstile?.render === "function";
+  return window.__turnstilePrete === true || typeof window.turnstile?.render === "function";
 }
 
-function poserTurnstile() {
-  if (widgetTurnstile !== null) return true;
-  if (!turnstilePret()) return false;
+function rendreWidget() {
+  if (widgetTurnstile !== null) return;
 
   try {
     widgetTurnstile = window.turnstile.render("#turnstile", {
@@ -93,11 +93,10 @@ function poserTurnstile() {
       language: "fr",
       theme: "light",
 
-      /* Le jeton est récupéré par ce rappel plutôt que par `getResponse`
-         seul : un widget configuré en mode invisible ne se coche pas et ne
-         rend rien tant qu'on ne l'a pas déclenché. Passer par le rappel fait
-         fonctionner les deux modes sans dépendre du réglage du tableau de
-         bord Cloudflare. */
+      /* Le jeton passe par ce rappel plutot que par `getResponse` seul : un
+         widget configure en mode invisible ne se coche pas et ne rend rien
+         tant qu'on ne l'a pas declenche. Les deux modes marchent ainsi, sans
+         dependre du reglage du tableau de bord Cloudflare. */
       callback: (jeton) => {
         jetonAnti = jeton;
         if (resoudreJeton) {
@@ -110,24 +109,32 @@ function poserTurnstile() {
     });
   } catch (erreur) {
     console.error("Turnstile :", erreur);
-    return false;
+    afficherErreur("connexion-erreur", "Le controle anti-robot a refuse de s'afficher : " + erreur.message);
   }
-  return widgetTurnstile !== null && widgetTurnstile !== undefined;
 }
 
-/*
- * Le script de Turnstile est chargé en `async defer` : rien ne garantit
- * qu'il soit prêt quand ce module s'exécute, et `render` n'existe qu'à la
- * fin de son initialisation. On attend activement, et on le dit si ça
- * n'arrive pas : un formulaire sans contrôle anti-robot est un formulaire
- * mort, le Worker refusera.
- */
+function poserTurnstile() {
+  if (widgetTurnstile !== null) return true;
+  if (!turnstilePret()) return false;
+
+  // `ready` differe l'appel jusqu'a la fin de l'initialisation interne.
+  if (typeof window.turnstile?.ready === "function") {
+    window.turnstile.ready(rendreWidget);
+  } else {
+    rendreWidget();
+  }
+  return true;
+}
+
+/* Trois voies vers le meme rendu, parce qu'aucune n'est garantie seule :
+   l'evenement du rappel `onload`, le drapeau s'il est deja passe, et une
+   attente active en dernier recours. */
 function attendreTurnstile(essaisRestants = 100) {
   if (poserTurnstile() === true) return;
   if (essaisRestants <= 0) {
     afficherErreur(
       "connexion-erreur",
-      "Le contrôle anti-robot n’a pas pu se charger. Vérifiez qu’aucun bloqueur ne filtre challenges.cloudflare.com, puis rechargez la page."
+      "Le controle anti-robot n'a pas pu se charger. Verifiez qu'aucun bloqueur ne filtre challenges.cloudflare.com, puis rechargez la page."
     );
     return;
   }
@@ -137,7 +144,9 @@ function attendreTurnstile(essaisRestants = 100) {
 function reinitialiserTurnstile() {
   jetonAnti = "";
   resoudreJeton = null;
-  if (turnstilePret() && widgetTurnstile !== null) window.turnstile.reset(widgetTurnstile);
+  if (widgetTurnstile !== null && typeof window.turnstile?.reset === "function") {
+    window.turnstile.reset(widgetTurnstile);
+  }
 }
 
 /**
@@ -307,6 +316,7 @@ export async function initAuth(onPret) {
   $("formulaire-code").addEventListener("submit", verifierCode);
   $("bouton-renvoyer").addEventListener("click", () => demanderCode(true));
 
+  document.addEventListener("turnstile-prete", () => poserTurnstile(), { once: true });
   attendreTurnstile();
 
   try {

@@ -14,7 +14,18 @@
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/admin.css">
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+<script>
+  /* Rappel officiel de Turnstile. Guetter l'apparition de `turnstile.render`
+     ne suffisait pas : l'objet est pose en plusieurs temps, et le script
+     signalait « already been loaded » sans jamais attacher `render`.
+     Ce drapeau et cet evenement disent, eux, que l'initialisation est finie. */
+  window.__turnstilePrete = false;
+  window.turnstileChargee = function () {
+    window.__turnstilePrete = true;
+    document.dispatchEvent(new Event("turnstile-prete"));
+  };
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=turnstileChargee" async defer></script>
 </head>
 
 <body class="admin">
