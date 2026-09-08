@@ -78,12 +78,34 @@ function turnstilePret() {
 }
 
 function poserTurnstile() {
-  if (!turnstilePret() || widgetTurnstile !== null) return;
+  if (widgetTurnstile !== null) return true;
+  if (!turnstilePret()) return false;
   widgetTurnstile = window.turnstile.render("#turnstile", {
     sitekey: TURNSTILE_SITE_KEY,
     language: "fr",
     theme: "light"
   });
+  return true;
+}
+
+/*
+ * Le script de Turnstile est chargé en `async defer` : rien ne garantit
+ * qu'il soit prêt quand ce module s'exécute. S'accrocher à l'événement
+ * `load` ne suffisait pas — l'écouteur était posé après un `await` sur le
+ * SDK Firebase, donc parfois après que `load` soit déjà passé, et le widget
+ * n'apparaissait jamais. On attend activement, et on le dit si ça n'arrive
+ * pas : un formulaire sans case anti-robot est un formulaire mort.
+ */
+function attendreTurnstile(essaisRestants = 100) {
+  if (poserTurnstile() === true) return;
+  if (essaisRestants <= 0) {
+    afficherErreur(
+      "connexion-erreur",
+      "Le contrôle anti-robot n’a pas pu se charger. Vérifiez qu’aucun bloqueur ne filtre challenges.cloudflare.com, puis rechargez la page."
+    );
+    return;
+  }
+  setTimeout(() => attendreTurnstile(essaisRestants - 1), 100);
 }
 
 function reinitialiserTurnstile() {
@@ -105,6 +127,8 @@ async function connecter(e) {
   bouton.disabled = true;
 
   try {
+    if (!firebase) throw new Error("Chargement en cours, réessayez dans un instant.");
+
     const jeton = jetonTurnstile();
     if (!jeton) throw new Error("Patientez le temps du contrôle anti-robot, puis réessayez.");
 
@@ -219,30 +243,36 @@ export async function initAuth(onPret) {
     return;
   }
 
-  const { auth, signInWithCustomToken, signOut, setPersistence, browserSessionPersistence } =
-    await obtenirAuth();
-  firebase = { auth, signInWithCustomToken };
-
-  // La session s'arrête à la fermeture de l'onglet : le panel peut être
-  // ouvert depuis un poste partagé.
-  await setPersistence(auth, browserSessionPersistence).catch(() => {});
-
-  window.addEventListener("load", poserTurnstile);
-  poserTurnstile();
+  /* Avant tout `await` : ce qui suit dépend du réseau, et une lenteur ou une
+     panne du CDN ne doit pas laisser un formulaire sans case anti-robot ni
+     bouton actif. */
+  attendreTurnstile();
+  montrer("ecran-connexion");
 
   $("formulaire-connexion").addEventListener("submit", connecter);
   $("formulaire-code").addEventListener("submit", verifierCode);
   $("bouton-renvoyer").addEventListener("click", () => demanderCode(true));
 
-  const deconnecter = async () => {
-    await signOut(auth);
-    reinitialiserTurnstile();
-    montrer("ecran-connexion");
-  };
-  $("bouton-deconnexion").addEventListener("click", deconnecter);
-  $("bouton-annuler-code").addEventListener("click", deconnecter);
+  try {
+    const { auth, signInWithCustomToken, signOut, setPersistence, browserSessionPersistence } =
+      await obtenirAuth();
+    firebase = { auth, signInWithCustomToken };
 
-  montrer("ecran-connexion");
+    // La session s'arrête à la fermeture de l'onglet : le panel peut être
+    // ouvert depuis un poste partagé.
+    await setPersistence(auth, browserSessionPersistence).catch(() => {});
+
+    const deconnecter = async () => {
+      await signOut(auth);
+      reinitialiserTurnstile();
+      montrer("ecran-connexion");
+    };
+    $("bouton-deconnexion").addEventListener("click", deconnecter);
+    $("bouton-annuler-code").addEventListener("click", deconnecter);
+  } catch (erreur) {
+    console.error(erreur);
+    afficherErreur("connexion-erreur", "Chargement de Firebase impossible : " + erreur.message);
+  }
 }
 
 /** Utilisé par l'onglet Accès, qui parle au Worker et non à Firestore. */
