@@ -1,0 +1,46 @@
+rules_version = '2';
+
+// Règles Firestore du site MAP73.
+//
+// À déployer avec la CLI, jamais par copier-coller dans la console :
+//   npx firebase-tools deploy --only firestore:rules --project <projet>
+//
+// Le modèle est volontairement minuscule. Le site ne stocke aucune donnée
+// personnelle : un seul document, `contenu/site`, porte les textes affichés
+// sur la page d'accueil. Il est donc public en lecture — le navigateur de
+// n'importe quel visiteur le lit à chaque visite — et fermé en écriture à
+// tout le monde sauf aux comptes inscrits dans `admins`.
+//
+// Être connecté ne suffit pas : n'importe qui peut créer un compte Firebase
+// avec la clé publique du site. C'est l'existence d'une entrée dans `admins`,
+// créée à la main dans la console, qui ouvre l'écriture.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function estAdmin() {
+      return request.auth != null
+          && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Le contenu du site : lu par tous les visiteurs, écrit par le panel.
+    match /contenu/{document} {
+      allow read: if true;
+      allow write: if estAdmin();
+    }
+
+    // Chacun lit sa propre entrée, et rien d'autre : c'est elle qui apprend
+    // au panel qui il a en face. La liste complète n'est pas lisible, sinon
+    // le premier venu récupérerait les adresses e-mail de l'équipe.
+    // Les entrées se créent et se suppriment dans la console Firebase.
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Tout le reste est fermé, y compris aux comptes du panel.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

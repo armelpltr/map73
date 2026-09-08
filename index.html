@@ -68,8 +68,8 @@
     </svg>
 
     <div class="enveloppe hero__contenu">
-      <h1>Inquiet sur l’orientation de votre ado&nbsp;?</h1>
-      <p class="hero__chapo">MAP73 l’accompagne <strong>de la troisième à la terminale</strong> pour mieux se connaître, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance.</p>
+      <h1 id="hero-titre">Inquiet sur l’orientation de votre ado&nbsp;?</h1>
+      <p class="hero__chapo" id="hero-chapo">MAP73 l’accompagne <strong>de la troisième à la terminale</strong> pour mieux se connaître, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance.</p>
 
       <div class="hero__actions">
         <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">
@@ -77,12 +77,12 @@
           Prendre rendez-vous
         </a>
         <a class="bouton bouton--contour" href="#formules">Voir les formules</a>
-        <p class="hero__note">Crédit d’impôt de 50&nbsp;% — services à la personne</p>
+        <p class="hero__note" id="hero-note">Crédit d’impôt de 50&nbsp;% — services à la personne</p>
       </div>
 
       <div class="itineraire">
-        <p class="itineraire__intro">Où en est votre ado&nbsp;? Choisissez son étape.</p>
-        <ul class="itineraire__etapes">
+        <p class="itineraire__intro" id="itineraire-intro">Où en est votre ado&nbsp;? Choisissez son étape.</p>
+        <ul class="itineraire__etapes" id="itineraire-liste">
           <li class="etape">
             <a class="etape__lien" href="#formule-premiere-orientation">
               <span class="etape__point" aria-hidden="true"></span>
@@ -117,7 +117,7 @@
   </section>
 
   <!-- ============ Repères ============ -->
-  <div class="reperes">
+  <div class="reperes" id="reperes-liste">
     <div class="repere">
       <span class="repere__valeur">3<sup>e</sup> – T<sup>le</sup></span>
       <p class="repere__libelle">Un accompagnement continu sur toute la scolarité du secondaire</p>
@@ -200,7 +200,7 @@
         <p>En présentiel à Chambéry ou en visio, selon ce qui vous arrange.</p>
       </div>
 
-      <div class="formules">
+      <div class="formules" id="formules-liste">
 
         <article class="formule" id="formule-a-la-map">
           <p class="formule__cible">Tous niveaux, à la carte</p>
@@ -324,7 +324,7 @@
         <p>Parents et élèves accompagnés par MAP73 en Savoie.</p>
       </div>
 
-      <div class="temoignages">
+      <div class="temoignages" id="temoignages-liste">
         <figure class="temoignage">
           <blockquote>
             <p>Merci à Camille et Julie pour leur gentillesse et leur savoir-faire. Camille a accompagné ma fille pour ses vœux sur Parcoursup, la rédaction de ses lettres, les attentes des personnes en charge de la sélection, le choix de ses vœux. Aujourd’hui nous avons le plaisir de découvrir que ma fille est acceptée à tous ses vœux d’office. Encore merci de votre aide pour comprendre les méandres de Parcoursup.</p>
@@ -378,7 +378,7 @@
         <p>Presse locale, radio et réseau d’entrepreneurs.</p>
       </div>
 
-      <div class="presse">
+      <div class="presse" id="presse-liste">
         <figure class="presse__article">
           <a class="presse__lien" href="https://www.hebdo-des-savoie.com/actualite/a-la-une/l’éducation-aux-médias-une-mission-essentielle-pour-radio-grand-lac" target="_blank" rel="noopener">
             <img src="assets/img/presse-hebdo-savoie-480.webp"
@@ -459,7 +459,7 @@
         <h2>Questions fréquentes</h2>
       </div>
 
-      <div class="questions">
+      <div class="questions" id="questions-liste">
         <details class="question">
           <summary>Comment fonctionne le crédit d’impôt de 50 % ?</summary>
           <p>Nos prestations relèvent des services à la personne. Vous réglez la séance, nous vous remettons une attestation fiscale, et 50 % du montant vous sont restitués par l’administration fiscale. Une séance facturée 60 € vous revient à 30 €.</p>
@@ -495,20 +495,22 @@
         <div class="coordonnees">
           <div class="coordonnees__bloc">
             <h3>Nous trouver</h3>
-            <p>MAP73<br>56 rue de Saint-Ombre<br>73000 Chambéry</p>
-            <p><a href="https://goo.gl/maps/HuJMSF4q4vzvLanLA" target="_blank" rel="noopener">Voir sur la carte</a></p>
+            <p id="contact-adresse">MAP73<br>56 rue de Saint-Ombre<br>73000 Chambéry</p>
+            <p><a id="contact-carte" href="https://goo.gl/maps/HuJMSF4q4vzvLanLA" target="_blank" rel="noopener">Voir sur la carte</a></p>
           </div>
 
           <div class="coordonnees__bloc">
             <h3>Nous joindre</h3>
-            <p><a href="tel:+33678369006">06 78 36 90 06</a></p>
-            <p><a href="mailto:contacts@map73.fr">contacts@map73.fr</a></p>
+            <p><a id="contact-tel" href="tel:+33678369006">06 78 36 90 06</a></p>
+            <p><a id="contact-email" href="mailto:contacts@map73.fr">contacts@map73.fr</a></p>
           </div>
 
           <div class="coordonnees__bloc">
             <h3>Horaires, sur rendez-vous</h3>
-            <p>Du lundi au vendredi, 9h – 18h30</p>
-            <p>Le samedi, 9h – 12h</p>
+            <div id="contact-horaires">
+              <p>Du lundi au vendredi, 9h – 18h30</p>
+              <p>Le samedi, 9h – 12h</p>
+            </div>
           </div>
 
           <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">
@@ -619,6 +621,7 @@
 </footer>
 
 <script src="assets/js/main.js" defer></script>
+<script type="module" src="assets/js/site-data.js"></script>
 
 <script type="application/ld+json">
 {

@@ -1,0 +1,174 @@
+/* =========================================================
+   Panel d'administration MAP73
+   Reprend les jetons du site (style.css) et n'ajoute que
+   ce qu'une interface de saisie réclame.
+   ========================================================= */
+
+body.admin { background: var(--paper-2); }
+
+/* ---------- Connexion ---------- */
+.connexion {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: var(--gouttiere);
+}
+.connexion__carte {
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  padding: clamp(1.75rem, 4vw, 2.75rem);
+  width: min(100%, 26rem);
+}
+.connexion__carte img { width: 132px; height: 36px; object-fit: contain; margin-bottom: 1.75rem; }
+.connexion__carte h1 { font-size: 1.4rem; margin-bottom: 0.35rem; }
+.connexion__intro { font-size: var(--fs-small); color: var(--ink-soft); margin-bottom: 1.75rem; }
+
+/* ---------- Ossature ---------- */
+.admin-entete {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1rem 0;
+}
+.admin-entete__barre {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.admin-entete h1 { font-size: 1.15rem; margin: 0; color: var(--blanc); }
+.admin-entete__qui { font-size: var(--fs-micro); color: #b9c3d4; margin: 0; }
+.admin-entete__actions { margin-left: auto; display: flex; gap: 0.75rem; align-items: center; }
+
+.admin-onglets {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--trait);
+  background: var(--paper);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.admin-onglet {
+  font-family: var(--display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.9rem 1.1rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.admin-onglet:hover { color: var(--ink); }
+.admin-onglet.est-actif { color: var(--ink); border-bottom-color: var(--vert); }
+
+.admin-panneau { display: none; padding-block: 2rem 4rem; }
+.admin-panneau.est-actif { display: block; }
+.admin-panneau > h2 { font-size: 1.5rem; margin-bottom: 0.35rem; }
+.admin-panneau__intro { font-size: var(--fs-small); color: var(--ink-soft); margin-bottom: 2rem; max-width: 70ch; }
+
+/* ---------- Fiches ---------- */
+.fiche {
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.fiche__entete {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--trait);
+}
+.fiche__titre {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0;
+}
+.fiche__outils { margin-left: auto; display: flex; gap: 0.35rem; }
+
+.icone-bouton {
+  background: none;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-family: var(--display);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.icone-bouton:hover { background: var(--paper); color: var(--ink); }
+.icone-bouton:disabled { opacity: 0.35; cursor: not-allowed; }
+.icone-bouton--danger:hover { background: #b23b2e; border-color: #b23b2e; color: var(--blanc); }
+
+/* ---------- Champs ---------- */
+.grille-champs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.grille-champs .champ--large { grid-column: 1 / -1; }
+
+.champ__indice { font-size: var(--fs-micro); color: var(--ink-soft); }
+
+.sous-liste { display: flex; flex-direction: column; gap: 0.5rem; }
+.sous-liste__ligne { display: flex; gap: 0.5rem; align-items: center; }
+.sous-liste__ligne input { flex: 1; }
+
+.case-a-cocher {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+}
+.case-a-cocher input { width: auto; }
+
+/* ---------- Barre d'enregistrement ---------- */
+.barre-actions {
+  position: sticky;
+  bottom: 0;
+  background: color-mix(in srgb, var(--paper-2) 94%, transparent);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--trait);
+  padding: 0.9rem 0;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  z-index: 30;
+}
+.barre-actions__etat { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
+.barre-actions__etat[data-ton="erreur"] { color: #b23b2e; }
+.barre-actions__etat[data-ton="succes"] { color: var(--vert-dark); }
+
+.bouton--discret {
+  background: none;
+  border-color: var(--trait);
+  color: var(--ink-soft);
+}
+.bouton--discret:hover { background: var(--blanc); color: var(--ink); border-color: var(--ink-soft); }
+
+.avertissement {
+  border: 1px dashed var(--ambre);
+  background: color-mix(in srgb, var(--ambre) 10%, var(--paper));
+  border-radius: var(--rayon);
+  padding: 1rem 1.25rem;
+  font-size: var(--fs-small);
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+  .admin-entete__actions { margin-left: 0; width: 100%; }
+  .fiche { padding: 1.15rem; }
+  .barre-actions { flex-direction: column; align-items: stretch; }
+  .barre-actions .bouton { width: 100%; justify-content: center; }
+}

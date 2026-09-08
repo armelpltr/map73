@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel MAP73</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" href="../favicon.ico" sizes="any">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+
+<body class="admin">
+
+<!-- ============ Connexion ============ -->
+<section class="connexion" id="ecran-connexion">
+  <div class="connexion__carte">
+    <img src="../assets/img/logo-220.webp" width="220" height="60" alt="MAP73">
+    <h1>Panel du site</h1>
+    <p class="connexion__intro">Modification des textes de la page d’accueil. Réservé à Julie et Camille.</p>
+
+    <form id="formulaire-connexion" novalidate>
+      <div class="champ">
+        <label for="connexion-email">Adresse e-mail</label>
+        <input type="email" id="connexion-email" autocomplete="username" required>
+      </div>
+      <div class="champ" style="margin-top:1rem">
+        <label for="connexion-mdp">Mot de passe</label>
+        <input type="password" id="connexion-mdp" autocomplete="current-password" required>
+      </div>
+
+      <p class="formulaire__etat" id="connexion-erreur" role="alert" hidden></p>
+
+      <button class="bouton bouton--plein" type="submit" style="margin-top:1.5rem;width:100%;justify-content:center">Se connecter</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ Panel ============ -->
+<div id="ecran-panel" hidden>
+
+  <header class="admin-entete">
+    <div class="enveloppe admin-entete__barre">
+      <div>
+        <h1>Contenu du site</h1>
+        <p class="admin-entete__qui" id="admin-qui"></p>
+      </div>
+      <div class="admin-entete__actions">
+        <a class="bouton bouton--clair" href="../index.html" target="_blank" rel="noopener">Voir le site</a>
+        <button class="bouton bouton--clair" type="button" id="bouton-deconnexion">Se déconnecter</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="admin-onglets" aria-label="Sections du contenu">
+    <div class="enveloppe" style="display:flex;gap:.25rem">
+      <button class="admin-onglet est-actif" type="button" data-panneau="hero">Accueil</button>
+      <button class="admin-onglet" type="button" data-panneau="formules">Formules</button>
+      <button class="admin-onglet" type="button" data-panneau="temoignages">Témoignages</button>
+      <button class="admin-onglet" type="button" data-panneau="presse">Presse</button>
+      <button class="admin-onglet" type="button" data-panneau="faq">Questions</button>
+      <button class="admin-onglet" type="button" data-panneau="contact">Coordonnées</button>
+    </div>
+  </nav>
+
+  <main class="enveloppe">
+
+    <p class="avertissement" id="bandeau-initial" hidden>
+      Aucun contenu n’a encore été publié. Les formulaires reprennent le texte actuel du site :
+      cliquez sur <strong>Publier les modifications</strong> pour en faire la version de référence.
+    </p>
+
+    <section class="admin-panneau est-actif" id="panneau-hero">
+      <h2>Page d’accueil</h2>
+      <p class="admin-panneau__intro">
+        Le titre, le texte d’introduction, l’itinéraire par niveau et le bandeau de repères.
+        Pour écrire un exposant, entourez la lettre de <code>&lt;sup&gt;</code> : <code>3&lt;sup&gt;e&lt;/sup&gt;</code> donne 3<sup>e</sup>.
+      </p>
+
+      <div id="panneau-hero-champs"></div>
+
+      <h3 style="margin-top:2.5rem">Itinéraire</h3>
+      <p class="admin-panneau__intro">Les étapes affichées sous le titre. Chacune renvoie vers une formule.</p>
+      <div id="panneau-itineraire-liste"></div>
+
+      <h3 style="margin-top:2.5rem">Repères</h3>
+      <p class="admin-panneau__intro">Le bandeau de quatre chiffres-clés sous l’accueil.</p>
+      <div id="panneau-reperes-liste"></div>
+    </section>
+
+    <section class="admin-panneau" id="panneau-formules">
+      <h2>Formules et tarifs</h2>
+      <p class="admin-panneau__intro">
+        Les cartes de la section Formules. Une seule formule devrait être mise en avant à la fois.
+      </p>
+      <div id="panneau-formules-liste"></div>
+    </section>
+
+    <section class="admin-panneau" id="panneau-temoignages">
+      <h2>Témoignages</h2>
+      <p class="admin-panneau__intro">
+        Publiez uniquement des témoignages réellement reçus, avec l’accord de la famille.
+      </p>
+      <div id="panneau-temoignages-liste"></div>
+    </section>
+
+    <section class="admin-panneau" id="panneau-presse">
+      <h2>On parle de nous</h2>
+      <p class="admin-panneau__intro">
+        Les images doivent d’abord être déposées dans <code>assets/img/</code> du dépôt : le panel ne gère pas encore l’envoi de fichiers.
+      </p>
+      <div id="panneau-presse-liste"></div>
+    </section>
+
+    <section class="admin-panneau" id="panneau-faq">
+      <h2>Questions fréquentes</h2>
+      <p class="admin-panneau__intro">
+        Ces questions alimentent aussi les données structurées lues par Google.
+      </p>
+      <div id="panneau-faq-liste"></div>
+    </section>
+
+    <section class="admin-panneau" id="panneau-contact">
+      <h2>Coordonnées</h2>
+      <p class="admin-panneau__intro">
+        Adresse, téléphone, e-mail et horaires affichés dans la section Contact.
+      </p>
+      <div id="panneau-contact-champs"></div>
+    </section>
+
+  </main>
+
+  <div class="barre-actions">
+    <div class="enveloppe" style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;width:100%">
+      <button class="bouton bouton--plein" type="button" id="bouton-publier" disabled>Publier les modifications</button>
+      <button class="bouton bouton--discret" type="button" id="bouton-defaut">Recharger le texte d’origine</button>
+      <p class="barre-actions__etat" id="barre-etat" role="status"></p>
+    </div>
+  </div>
+
+</div>
+
+<script type="module" src="../assets/js/admin/app.js"></script>
+</body>
+</html>
