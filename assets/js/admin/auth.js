@@ -286,10 +286,13 @@ async function verifierCode(e) {
     /* L'attribut vient d'être posé sur le compte : sans jeton rafraîchi, la
        session en cours ne le porte pas et Firestore refuserait la première
        écriture. */
+    $("code-etat").textContent = "Code validé. Ouverture du panel…";
     await jetonCourant(true);
     await ouvrirPanel();
   } catch (erreur) {
+    console.error("Validation du code :", erreur);
     afficherErreur("code-erreur", erreur.message);
+    $("code-etat").textContent = "";
     $("code-saisie").select();
   } finally {
     bouton.disabled = false;
@@ -301,21 +304,35 @@ async function verifierCode(e) {
 
 async function ouvrirPanel() {
   const utilisateur = firebase.auth.currentUser;
-  const { db, doc, getDoc } = await obtenirFirestore();
+  if (!utilisateur) throw new Error("Session perdue après la validation du code.");
 
-  let membre = { email: utilisateur.email, role: "editeur" };
+  let membre = { uid: utilisateur.uid, email: utilisateur.email, role: "editeur" };
+
+  /* La lecture du rôle ne doit pas empêcher l'ouverture : en cas d'échec on
+     entre avec le rôle le moins ouvert plutôt que de rester bloqué sur
+     l'écran du code, code déjà consommé — l'utilisateur n'aurait alors plus
+     aucun moyen d'avancer. */
   try {
+    const { db, doc, getDoc } = await obtenirFirestore();
     const entree = await getDoc(doc(db, "admins", utilisateur.uid));
-    if (entree.exists()) membre = { uid: utilisateur.uid, email: utilisateur.email, ...entree.data() };
-  } catch { /* la lecture peut échouer : le rôle par défaut est le moins ouvert */ }
-
-  montrer("ecran-panel");
-  const qui = $("admin-qui");
-  if (qui) {
-    qui.textContent = membre.nom ? `${membre.nom} — ${membre.email}` : membre.email;
+    if (entree.exists()) membre = { ...membre, ...entree.data() };
+  } catch (erreur) {
+    console.error("Lecture du rôle impossible :", erreur);
   }
 
-  surPret(membre);
+  montrer("ecran-panel");
+
+  const qui = $("admin-qui");
+  if (qui) qui.textContent = membre.nom ? `${membre.nom} — ${membre.email}` : membre.email;
+
+  /* Une erreur dans la construction des panneaux ne doit pas remonter dans
+     le gestionnaire du formulaire : le panel est déjà affiché, la faire
+     remonter afficherait un message d'échec sur un écran devenu invisible. */
+  try {
+    surPret(membre);
+  } catch (erreur) {
+    console.error("Construction du panel :", erreur);
+  }
 }
 
 /* ---------- Démarrage ---------- */
