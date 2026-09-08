@@ -6,6 +6,13 @@
 
 body.admin { background: var(--paper-2); }
 
+/* L'attribut `hidden` masque via une regle du navigateur de tres faible
+   specificite, `[hidden] { display: none }`. N'importe quelle classe posant
+   un `display` la bat — et `.connexion` pose `display: grid`. L'ecran du
+   code restait donc affiche alors qu'on le croyait masque, le panel
+   s'ouvrant sous lui, hors de vue. */
+[hidden] { display: none !important; }
+
 /* ---------- Connexion ---------- */
 .connexion {
   min-height: 100svh;
