@@ -47,7 +47,11 @@
         <input type="password" id="connexion-mdp" autocomplete="current-password" required>
       </div>
 
-      <div id="turnstile" class="turnstile"></div>
+      <!-- Surtout pas id="turnstile" : un identifiant devient une variable globale
+           du meme nom, et window.turnstile aurait designe cette div au lieu de
+           l API. Le script Cloudflare y voyait un double chargement et
+           renoncait a attacher render(). -->
+      <div id="widget-antirobot" class="turnstile"></div>
 
       <p class="formulaire__etat" id="connexion-erreur" role="alert" hidden></p>
 

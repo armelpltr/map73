@@ -88,7 +88,7 @@ function rendreWidget() {
   if (widgetTurnstile !== null) return;
 
   try {
-    widgetTurnstile = window.turnstile.render("#turnstile", {
+    widgetTurnstile = window.turnstile.render("#widget-antirobot", {
       sitekey: TURNSTILE_SITE_KEY,
       language: "fr",
       theme: "light",
