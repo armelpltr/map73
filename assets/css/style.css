@@ -451,41 +451,45 @@ p:last-child { margin-bottom: 0; }
 /* ---------- Fondatrices ---------- */
 /* Traitement en fiches : formation, expérience, certifications, chacune à sa
    ligne. C'est ce qu'un parent compare quand il choisit entre plusieurs
-   accompagnements — et ce qui se met à jour sans refaire la mise en page. */
+   accompagnements — et ce qui se met à jour sans refaire la mise en page.
+   La carte reprend le vocabulaire d'un tableau de bord : surface surélevée,
+   filet discret, repères chiffrés en tête. Les années d'expérience sont le
+   seul chiffre qui compte ici, autant les traiter comme tels. */
 .fondatrices {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: clamp(1rem, 2.5vw, 1.75rem);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.5rem);
   align-items: start;
 }
 
 .fondatrice {
   background: var(--blanc);
   border: 1px solid var(--trait);
-  border-top: 3px solid var(--ink);
-  border-radius: var(--rayon);
-  overflow: hidden;
+  border-radius: 16px;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  display: grid;
+  gap: 1.25rem;
+  box-shadow: 0 1px 2px rgba(20, 36, 59, 0.04), 0 8px 24px -12px rgba(20, 36, 59, 0.12);
 }
 
 .fondatrice__entete {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
-  gap: 1.1rem;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 1rem;
   align-items: center;
-  padding: 1.35rem;
 }
 
 /* Le portrait est carré, comme les fichiers attendus : un cadrage décidé ici
    plutôt qu'au moment de la photo se verrait au premier remplacement. */
 .fondatrice__portrait {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
+  width: 76px;
+  height: 76px;
+  border-radius: 14px;
   object-fit: cover;
   border: 1px solid var(--trait);
 }
 
-.fondatrice h3 { font-size: 1.5rem; margin: 0 0 0.15rem; }
+.fondatrice h3 { font-size: 1.4rem; margin: 0 0 0.15rem; }
 .fondatrice__role {
   font-family: var(--display);
   font-size: var(--fs-small);
@@ -494,21 +498,63 @@ p:last-child { margin-bottom: 0; }
   margin: 0;
 }
 
-.fondatrice__faits { margin: 0; font-size: var(--fs-small); }
-.fondatrice__ligne {
+/* Repères chiffrés, sur une surface légèrement en creux. */
+.fondatrice__chiffres {
   display: grid;
-  grid-template-columns: 8.5rem minmax(0, 1fr);
-  gap: 0 1rem;
-  padding: 0.7rem 1.35rem;
-  border-top: 1px solid var(--trait);
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--trait);
+  border: 1px solid var(--trait);
+  border-radius: 12px;
+  overflow: hidden;
 }
+.fondatrice__chiffre { background: var(--paper); padding: 0.85rem 1rem; }
+.fondatrice__valeur {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--vert-dark);
+  font-variant-numeric: tabular-nums;
+}
+.fondatrice__mesure {
+  display: block;
+  font-size: var(--fs-micro);
+  color: var(--ink-soft);
+  margin-top: 0.15rem;
+}
+
+.fondatrice__faits { margin: 0; font-size: var(--fs-small); display: grid; gap: 0.9rem; }
+.fondatrice__ligne { display: grid; gap: 0.2rem; }
 .fondatrice__ligne dt {
   font-family: var(--display);
-  font-size: var(--fs-micro);
+  font-size: 0.68rem;
   font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
   color: var(--ink-soft);
 }
 .fondatrice__ligne dd { margin: 0; }
+
+.fondatrice__pastilles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.pastille {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--vert-dark);
+  background: color-mix(in srgb, var(--vert) 10%, var(--blanc));
+  border: 1px solid color-mix(in srgb, var(--vert) 28%, var(--blanc));
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+}
 
 /* ---------- Témoignages ---------- */
 .temoignages { columns: 3 260px; column-gap: clamp(1.25rem, 2.5vw, 2rem); }
@@ -762,14 +808,10 @@ p:last-child { margin-bottom: 0; }
   .champs { grid-template-columns: 1fr; }
   .temoignages { columns: 1; }
 
-  .fondatrice__entete { grid-template-columns: 76px minmax(0, 1fr); gap: 0.9rem; padding: 1.15rem; }
-  .fondatrice__portrait { width: 76px; height: 76px; }
-  .fondatrice h3 { font-size: 1.3rem; }
-  .fondatrice__ligne {
-    grid-template-columns: 1fr;
-    gap: 0.15rem;
-    padding: 0.65rem 1.15rem;
-  }
+  .fondatrice__entete { grid-template-columns: 64px minmax(0, 1fr); gap: 0.85rem; }
+  .fondatrice__portrait { width: 64px; height: 64px; border-radius: 12px; }
+  .fondatrice h3 { font-size: 1.25rem; }
+  .fondatrice__valeur { font-size: 1.25rem; }
   .credit-impot { flex-direction: column; gap: 0.75rem; }
   .pied__bas { flex-direction: column; }
 }

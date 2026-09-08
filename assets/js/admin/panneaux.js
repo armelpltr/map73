@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, confirmer } from "./ui.js?v=20260908-2324";
+import { $, el, champ, sousListe, confirmer } from "./ui.js?v=20260908-2328";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
