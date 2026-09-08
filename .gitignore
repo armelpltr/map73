@@ -1,0 +1,16 @@
+# Systeme
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editeurs
+.vscode/
+.idea/
+*.swp
+
+# Divers
+*.log
+node_modules/
+
+# Documents internes, hors depot public
+BRIEF-REFONTE-MAP73.md
