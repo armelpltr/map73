@@ -73,19 +73,29 @@ async function jetonCourant(forcer = false) {
 
 /* ---------- Turnstile ---------- */
 
+/* `window.turnstile` apparaît avant d'être utilisable : l'objet est posé dès
+   les premières lignes du script, `render` n'arrive qu'à la fin de son
+   initialisation. Tester l'objet ne disait donc rien, et `render(...)`
+   levait « is not a function ». C'est la méthode qu'on attend. */
 function turnstilePret() {
-  return typeof window.turnstile !== "undefined";
+  return typeof window.turnstile?.render === "function";
 }
 
 function poserTurnstile() {
   if (widgetTurnstile !== null) return true;
   if (!turnstilePret()) return false;
-  widgetTurnstile = window.turnstile.render("#turnstile", {
-    sitekey: TURNSTILE_SITE_KEY,
-    language: "fr",
-    theme: "light"
-  });
-  return true;
+
+  try {
+    widgetTurnstile = window.turnstile.render("#turnstile", {
+      sitekey: TURNSTILE_SITE_KEY,
+      language: "fr",
+      theme: "light"
+    });
+  } catch (erreur) {
+    console.error("Turnstile :", erreur);
+    return false;
+  }
+  return widgetTurnstile !== null && widgetTurnstile !== undefined;
 }
 
 /*
@@ -243,15 +253,17 @@ export async function initAuth(onPret) {
     return;
   }
 
-  /* Avant tout `await` : ce qui suit dépend du réseau, et une lenteur ou une
-     panne du CDN ne doit pas laisser un formulaire sans case anti-robot ni
-     bouton actif. */
-  attendreTurnstile();
+  /* Les écouteurs d'abord, et avant tout `await` : une panne du CDN Turnstile
+     ou de Firebase ne doit pas laisser un formulaire dont le bouton ne fait
+     rien. C'est exactement ce qui arrivait quand `render(...)` levait une
+     exception depuis cette ligne. */
   montrer("ecran-connexion");
 
   $("formulaire-connexion").addEventListener("submit", connecter);
   $("formulaire-code").addEventListener("submit", verifierCode);
   $("bouton-renvoyer").addEventListener("click", () => demanderCode(true));
+
+  attendreTurnstile();
 
   try {
     const { auth, signInWithCustomToken, signOut, setPersistence, browserSessionPersistence } =
