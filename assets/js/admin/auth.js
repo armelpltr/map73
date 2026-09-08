@@ -19,9 +19,9 @@
 // code. L'interface ne fait que refuser plus tôt, et plus clairement.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirAuth, obtenirFirestore } from "../firebase-config.js?v=20260908-2302";
-import { WORKER_URL, TURNSTILE_SITE_KEY } from "../config.js?v=20260908-2302";
-import { $ } from "./ui.js?v=20260908-2302";
+import { FIREBASE_CONFIGURE, obtenirAuth, obtenirFirestore } from "../firebase-config.js?v=20260908-2304";
+import { WORKER_URL, TURNSTILE_SITE_KEY } from "../config.js?v=20260908-2304";
+import { $ } from "./ui.js?v=20260908-2304";
 
 const MESSAGES_FIREBASE = {
   "auth/invalid-custom-token": "Session refusée. Réessayez de vous connecter.",
@@ -347,10 +347,16 @@ async function ouvrirPanel() {
 
   let membre = { uid: utilisateur.uid, email: utilisateur.email, role: "editeur" };
 
-  /* La lecture du rôle ne doit pas empêcher l'ouverture : en cas d'échec on
-     entre avec le rôle le moins ouvert plutôt que de rester bloqué sur
-     l'écran du code, code déjà consommé — l'utilisateur n'aurait alors plus
-     aucun moyen d'avancer. */
+  /* Le panel s'affiche AVANT tout appel réseau. C'est le seul ordre qui
+     tienne : le code de connexion est à usage unique, et une lecture qui
+     traine ou qui echoue laissait l'utilisateur bloque sur un ecran de
+     saisie avec un code deja depense, sans aucun moyen d'avancer.
+     Le reste — le role, donc l'onglet Acces — se charge derriere. */
+  montrer("ecran-panel");
+
+  const qui = $("admin-qui");
+  if (qui) qui.textContent = membre.email;
+
   try {
     const { db, doc, getDoc } = await avecDelai(obtenirFirestore(), 8000, "Chargement de Firestore");
     const entree = await avecDelai(getDoc(doc(db, "admins", utilisateur.uid)), 8000, "Lecture du rôle");
@@ -359,14 +365,11 @@ async function ouvrirPanel() {
     console.error("Lecture du rôle impossible :", erreur);
   }
 
-  montrer("ecran-panel");
-
-  const qui = $("admin-qui");
   if (qui) qui.textContent = membre.nom ? `${membre.nom} — ${membre.email}` : membre.email;
 
   /* Une erreur dans la construction des panneaux ne doit pas remonter dans
-     le gestionnaire du formulaire : le panel est déjà affiché, la faire
-     remonter afficherait un message d'échec sur un écran devenu invisible. */
+     le gestionnaire du formulaire : le panel est deja affiche, la faire
+     remonter afficherait un message d'echec sur un ecran devenu invisible. */
   try {
     surPret(membre);
   } catch (erreur) {

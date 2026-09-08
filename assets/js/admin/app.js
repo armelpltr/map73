@@ -6,12 +6,12 @@
 // session de travail : le quota gratuit de Firestore ne le voit pas passer.
 // ============================================================
 
-import { obtenirFirestore } from "../firebase-config.js?v=20260908-2302";
-import { CONTENU_DEFAUT } from "../contenu-defaut.js?v=20260908-2302";
-import { initAuth } from "./auth.js?v=20260908-2302";
-import { initAcces } from "./acces.js?v=20260908-2302";
-import { construirePanneaux } from "./panneaux.js?v=20260908-2302";
-import { $, etat, confirmer } from "./ui.js?v=20260908-2302";
+import { obtenirFirestore } from "../firebase-config.js?v=20260908-2304";
+import { CONTENU_DEFAUT } from "../contenu-defaut.js?v=20260908-2304";
+import { initAuth } from "./auth.js?v=20260908-2304";
+import { initAcces } from "./acces.js?v=20260908-2304";
+import { construirePanneaux } from "./panneaux.js?v=20260908-2304";
+import { $, etat, confirmer } from "./ui.js?v=20260908-2304";
 
 let firestore = null;
 const REFERENCE = () => firestore.doc(firestore.db, "contenu", "site");
