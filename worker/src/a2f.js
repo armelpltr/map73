@@ -163,7 +163,11 @@ export async function handleA2fVerify(request, env, cors) {
   try {
     const doc = await firestoreGet(chemin, env);
     defi = fromFirestoreFields(doc.fields);
-  } catch {
+  } catch (erreur) {
+    /* Le cas le plus courant n'est pas une panne : c'est une seconde
+       soumission du formulaire. Le défi est à usage unique et disparaît à la
+       première vérification réussie, la suivante ne trouve donc plus rien. */
+    console.log(`[a2f] defi introuvable pour ${uid} : ${erreur.message}`);
     throw httpError('Aucun code en cours. Demandez-en un nouveau.', 410);
   }
 

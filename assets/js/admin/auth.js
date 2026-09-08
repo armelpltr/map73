@@ -30,6 +30,7 @@ const MESSAGES_FIREBASE = {
 
 let firebase = null;      // { auth, signInWithCustomToken, ... }
 let pretFirebase = null;  // promesse resolue quand le SDK est charge
+let envoiEnCours = false; // verrou : desactiver le bouton n empeche pas la touche Entree
 let widgetTurnstile = null;
 let jetonAnti = "";        // jeton anti-robot obtenu par le rappel
 let resoudreJeton = null;  // resolution en attente, si le widget est invisible
@@ -191,6 +192,9 @@ function obtenirJetonTurnstile() {
 
 async function connecter(e) {
   e.preventDefault();
+  if (envoiEnCours) return;
+  envoiEnCours = true;
+
   afficherErreur("connexion-erreur", "");
 
   const bouton = $("formulaire-connexion").querySelector("button[type=submit]");
@@ -220,6 +224,7 @@ async function connecter(e) {
     reinitialiserTurnstile();
   } finally {
     bouton.disabled = false;
+    envoiEnCours = false;
   }
 }
 
@@ -247,6 +252,14 @@ async function demanderCode(renvoi) {
 
 async function verifierCode(e) {
   e.preventDefault();
+
+  /* Désactiver le bouton ne suffit pas : la touche Entrée soumet le
+     formulaire malgré tout. Deux vérifications simultanées faisaient
+     échouer la seconde — le code est à usage unique, la première l'a
+     consommé — et c'est l'erreur de la seconde qui s'affichait. */
+  if (envoiEnCours) return;
+  envoiEnCours = true;
+
   afficherErreur("code-erreur", "");
 
   const bouton = $("formulaire-code").querySelector("button[type=submit]");
@@ -268,6 +281,7 @@ async function verifierCode(e) {
     $("code-saisie").select();
   } finally {
     bouton.disabled = false;
+    envoiEnCours = false;
   }
 }
 

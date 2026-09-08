@@ -19,10 +19,16 @@ FIREBASE_PROJECT_ID = "map73-site"
 # n'a rien de secret : le navigateur l'envoie à chaque requête.
 FIREBASE_API_KEY = "AIzaSyDkGrpEOrkIubBekppOi4ROaN8GF6wuqug"
 
-# Expéditeur des codes de connexion. Doit être une adresse validée comme
-# expéditeur chez Brevo (Senders → Add a sender → clic sur le lien reçu),
-# sinon l'API accepte l'appel et le message n'arrive jamais.
-EMAIL_EXPEDITEUR = "armel.plantier@gmail.com"
+# Expéditeur des codes de connexion. Le domaine armel-plantier.com est
+# authentifié chez Brevo (DKIM et DMARC), ce qui autorise n'importe quelle
+# adresse de ce domaine sans validation individuelle — et fait passer les
+# messages bien mieux qu'un expéditeur en gmail.com, que Brevo signale
+# lui-même comme déconseillé.
+#
+# À reprendre le jour du domaine du site : contacts@map73.fr, une fois
+# map73.fr authentifié chez Brevo. Un code de connexion doit venir du
+# domaine du site, pas de celui de l'agence.
+EMAIL_EXPEDITEUR = "map73@armel-plantier.com"
 EMAIL_EXPEDITEUR_NOM = "MAP73"
 
 # Secrets à injecter :
