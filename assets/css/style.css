@@ -449,32 +449,66 @@ p:last-child { margin-bottom: 0; }
 .credit-impot svg { flex: none; color: var(--vert-dark); }
 
 /* ---------- Fondatrices ---------- */
+/* Traitement en fiches : formation, expérience, certifications, chacune à sa
+   ligne. C'est ce qu'un parent compare quand il choisit entre plusieurs
+   accompagnements — et ce qui se met à jour sans refaire la mise en page. */
 .fondatrices {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: clamp(1.5rem, 4vw, 3rem);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: start;
 }
-.fondatrice { border-top: 2px solid var(--ink); padding-top: 1.5rem; }
-.fondatrice h3 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+
+.fondatrice {
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  border-top: 3px solid var(--ink);
+  border-radius: var(--rayon);
+  overflow: hidden;
+}
+
+.fondatrice__entete {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 1.1rem;
+  align-items: center;
+  padding: 1.35rem;
+}
+
+/* Le portrait est carré, comme les fichiers attendus : un cadrage décidé ici
+   plutôt qu'au moment de la photo se verrait au premier remplacement. */
+.fondatrice__portrait {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--trait);
+}
+
+.fondatrice h3 { font-size: 1.5rem; margin: 0 0 0.15rem; }
 .fondatrice__role {
   font-family: var(--display);
   font-size: var(--fs-small);
-  color: var(--vert-dark);
   font-weight: 600;
-  margin-bottom: 1.25rem;
+  color: var(--vert-dark);
+  margin: 0;
 }
-.fondatrice__parcours { list-style: none; margin: 0; padding: 0; font-size: var(--fs-small); }
-.fondatrice__parcours li { position: relative; padding: 0.45rem 0 0.45rem 1.35rem; }
-.fondatrice__parcours li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 1.15em;
-  width: 7px;
-  height: 7px;
-  border: 1.5px solid var(--vert);
-  border-radius: 50%;
+
+.fondatrice__faits { margin: 0; font-size: var(--fs-small); }
+.fondatrice__ligne {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 0 1rem;
+  padding: 0.7rem 1.35rem;
+  border-top: 1px solid var(--trait);
 }
+.fondatrice__ligne dt {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.fondatrice__ligne dd { margin: 0; }
 
 /* ---------- Témoignages ---------- */
 .temoignages { columns: 3 260px; column-gap: clamp(1.25rem, 2.5vw, 2rem); }
@@ -727,6 +761,15 @@ p:last-child { margin-bottom: 0; }
 
   .champs { grid-template-columns: 1fr; }
   .temoignages { columns: 1; }
+
+  .fondatrice__entete { grid-template-columns: 76px minmax(0, 1fr); gap: 0.9rem; padding: 1.15rem; }
+  .fondatrice__portrait { width: 76px; height: 76px; }
+  .fondatrice h3 { font-size: 1.3rem; }
+  .fondatrice__ligne {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+    padding: 0.65rem 1.15rem;
+  }
   .credit-impot { flex-direction: column; gap: 0.75rem; }
   .pied__bas { flex-direction: column; }
 }
