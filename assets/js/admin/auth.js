@@ -29,6 +29,7 @@ const MESSAGES_FIREBASE = {
 };
 
 let firebase = null;      // { auth, signInWithCustomToken, ... }
+let pretFirebase = null;  // promesse resolue quand le SDK est charge
 let widgetTurnstile = null;
 let jetonAnti = "";        // jeton anti-robot obtenu par le rappel
 let resoudreJeton = null;  // resolution en attente, si le widget est invisible
@@ -191,7 +192,10 @@ async function connecter(e) {
   bouton.disabled = true;
 
   try {
-    if (!firebase) throw new Error("Chargement en cours, réessayez dans un instant.");
+    /* On attend le SDK plutôt que de renvoyer « réessayez » : il finit de
+       charger en une poignée de centaines de millisecondes, et refuser un
+       clic parce qu'il est arrivé trop tôt n'aide personne. */
+    await pretFirebase;
 
     const jeton = await obtenirJetonTurnstile();
 
@@ -319,7 +323,7 @@ export async function initAuth(onPret) {
   document.addEventListener("turnstile-prete", () => poserTurnstile(), { once: true });
   attendreTurnstile();
 
-  try {
+  pretFirebase = (async () => {
     const { auth, signInWithCustomToken, signOut, setPersistence, browserSessionPersistence } =
       await obtenirAuth();
     firebase = { auth, signInWithCustomToken };
@@ -335,10 +339,14 @@ export async function initAuth(onPret) {
     };
     $("bouton-deconnexion").addEventListener("click", deconnecter);
     $("bouton-annuler-code").addEventListener("click", deconnecter);
-  } catch (erreur) {
+  })();
+
+  /* La promesse est attendue par la connexion ; ce rattrapage-ci ne sert
+     qu'à prévenir tout de suite, sans attendre un premier clic. */
+  pretFirebase.catch((erreur) => {
     console.error(erreur);
     afficherErreur("connexion-erreur", "Chargement de Firebase impossible : " + erreur.message);
-  }
+  });
 }
 
 /** Utilisé par l'onglet Accès, qui parle au Worker et non à Firestore. */
