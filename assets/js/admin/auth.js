@@ -118,12 +118,11 @@ function poserTurnstile() {
   if (widgetTurnstile !== null) return true;
   if (!turnstilePret()) return false;
 
-  // `ready` differe l'appel jusqu'a la fin de l'initialisation interne.
-  if (typeof window.turnstile?.ready === "function") {
-    window.turnstile.ready(rendreWidget);
-  } else {
-    rendreWidget();
-  }
+  /* Surtout pas `turnstile.ready()` : Cloudflare l'interdit quand api.js est
+     charge en `async defer` et leve une exception qui cassait a nouveau
+     l'initialisation. Le rappel `onload` declare dans la page est justement
+     le mecanisme prevu pour ce cas, et il a deja eu lieu ici. */
+  rendreWidget();
   return true;
 }
 
@@ -131,7 +130,13 @@ function poserTurnstile() {
    l'evenement du rappel `onload`, le drapeau s'il est deja passe, et une
    attente active en dernier recours. */
 function attendreTurnstile(essaisRestants = 100) {
-  if (poserTurnstile() === true) return;
+  let pose = false;
+  try {
+    pose = poserTurnstile();
+  } catch (erreur) {
+    console.error("Turnstile :", erreur);
+  }
+  if (pose === true) return;
   if (essaisRestants <= 0) {
     afficherErreur(
       "connexion-erreur",
