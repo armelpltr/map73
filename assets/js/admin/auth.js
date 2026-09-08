@@ -31,6 +31,7 @@ const MESSAGES_FIREBASE = {
 let firebase = null;      // { auth, signInWithCustomToken, ... }
 let pretFirebase = null;  // promesse resolue quand le SDK est charge
 let envoiEnCours = false; // verrou : desactiver le bouton n empeche pas la touche Entree
+let codeDemande = false;  // un code a-t-il ete demande dans CE chargement de page
 let widgetTurnstile = null;
 let jetonAnti = "";        // jeton anti-robot obtenu par le rappel
 let resoudreJeton = null;  // resolution en attente, si le widget est invisible
@@ -243,6 +244,7 @@ async function connecter(e) {
 /* ---------- Étape 2 : code à six chiffres ---------- */
 
 async function demanderCode(renvoi) {
+  codeDemande = true;
   montrer("ecran-code");
   afficherErreur("code-erreur", "");
   $("code-etat").textContent = "Envoi du code…";
@@ -270,6 +272,17 @@ async function verifierCode(e) {
      échouer la seconde — le code est à usage unique, la première l'a
      consommé — et c'est l'erreur de la seconde qui s'affichait. */
   if (envoiEnCours) return;
+
+  /* Sans ce garde-fou, un onglet laissé ouvert sur l'écran du code permettait
+     de valider un code appartenant à un cycle précédent : le défi n'existait
+     plus côté serveur, et le refus « Aucun code en cours » donnait
+     l'impression que la validation ne marchait jamais. */
+  if (!codeDemande) {
+    afficherErreur("code-erreur", "Cette page a été rouverte : reconnectez-vous pour recevoir un nouveau code.");
+    montrer("ecran-connexion");
+    return;
+  }
+
   envoiEnCours = true;
 
   afficherErreur("code-erreur", "");
@@ -379,6 +392,12 @@ export async function initAuth(onPret) {
     // La session s'arrête à la fermeture de l'onglet : le panel peut être
     // ouvert depuis un poste partagé.
     await setPersistence(auth, browserSessionPersistence).catch(() => {});
+
+    /* Un rechargement de page laissait la session Firebase de l'onglet
+       intacte, donc un jeton valide envoyé par un écran périmé. On repart
+       toujours d'une porte fermée : la double authentification n'a de sens
+       que si chaque ouverture de page recommence le parcours. */
+    if (auth.currentUser) await signOut(auth).catch(() => {});
 
     const deconnecter = async () => {
       await signOut(auth);
