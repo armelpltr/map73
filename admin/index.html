@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/admin.css">
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 
 <body class="admin">
@@ -34,9 +36,36 @@
         <input type="password" id="connexion-mdp" autocomplete="current-password" required>
       </div>
 
+      <div id="turnstile" class="turnstile"></div>
+
       <p class="formulaire__etat" id="connexion-erreur" role="alert" hidden></p>
 
-      <button class="bouton bouton--plein" type="submit" style="margin-top:1.5rem;width:100%;justify-content:center">Se connecter</button>
+      <button class="bouton bouton--plein" type="submit">Se connecter</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ Code a six chiffres ============ -->
+<section class="connexion" id="ecran-code" hidden>
+  <div class="connexion__carte">
+    <img src="../assets/img/logo-240.webp" srcset="../assets/img/logo-240.webp 240w, ../assets/img/logo-480.webp 480w" sizes="150px" width="240" height="145" alt="MAP Orientation">
+    <h1>Code de connexion</h1>
+    <p class="connexion__intro" id="code-etat" role="status"></p>
+
+    <form id="formulaire-code" novalidate>
+      <div class="champ">
+        <label for="code-saisie">Les six chiffres reçus par e-mail</label>
+        <input type="text" id="code-saisie" class="saisie-code" inputmode="numeric" autocomplete="one-time-code"
+               pattern="[0-9]{6}" maxlength="6" required>
+      </div>
+
+      <p class="formulaire__etat" id="code-erreur" role="alert" hidden></p>
+
+      <button class="bouton bouton--plein" type="submit">Valider</button>
+      <div class="connexion__secondaire">
+        <button class="bouton bouton--discret" type="button" id="bouton-renvoyer">Renvoyer un code</button>
+        <button class="bouton bouton--discret" type="button" id="bouton-annuler-code">Annuler</button>
+      </div>
     </form>
   </div>
 </section>
@@ -65,6 +94,7 @@
       <button class="admin-onglet" type="button" data-panneau="presse">Presse</button>
       <button class="admin-onglet" type="button" data-panneau="faq">Questions</button>
       <button class="admin-onglet" type="button" data-panneau="contact">Coordonnées</button>
+      <button class="admin-onglet" type="button" data-panneau="acces" hidden>Accès</button>
     </div>
   </nav>
 
@@ -123,6 +153,57 @@
         Ces questions alimentent aussi les données structurées lues par Google.
       </p>
       <div id="panneau-faq-liste"></div>
+    </section>
+
+    <section class="admin-panneau" id="panneau-acces">
+      <h2>Accès au panel</h2>
+      <p class="admin-panneau__intro">
+        Il n’existe aucune inscription libre : un compte créé par un autre chemin n’ouvre rien.
+        Transmettez le mot de passe de vive voix, jamais par e-mail, et demandez à la personne de le changer.
+      </p>
+
+      <article class="fiche">
+        <div class="fiche__entete">
+          <p class="fiche__titre">Ouvrir un accès</p>
+        </div>
+
+        <form id="formulaire-acces" novalidate>
+          <div class="grille-champs">
+            <div class="champ">
+              <label for="acces-nom">Nom affiché</label>
+              <input type="text" id="acces-nom" required>
+            </div>
+            <div class="champ">
+              <label for="acces-email">Adresse e-mail</label>
+              <input type="email" id="acces-email" autocomplete="off" required>
+              <span class="champ__aide">C’est à cette adresse que partiront les codes de connexion.</span>
+            </div>
+            <div class="champ">
+              <label for="acces-mdp">Mot de passe provisoire</label>
+              <input type="text" id="acces-mdp" autocomplete="off" required>
+              <span class="champ__aide">Douze caractères minimum, mêlant majuscules, minuscules, chiffres ou ponctuation.</span>
+            </div>
+            <div class="champ">
+              <label for="acces-role">Rôle</label>
+              <select id="acces-role">
+                <option value="editeur">Éditrice ou éditeur — le contenu du site</option>
+                <option value="superadmin">Superadministrateur — le contenu et les accès</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="bouton bouton--plein" type="submit" style="margin-top:1.25rem">Créer l’accès</button>
+          <p class="barre-actions__etat" id="acces-etat" role="status" style="margin-top:1rem"></p>
+        </form>
+      </article>
+
+      <div class="fiche__entete" style="margin-top:2.5rem">
+        <p class="fiche__titre">Accès existants</p>
+        <div class="fiche__outils">
+          <button class="bouton bouton--discret" type="button" id="bouton-recharger-acces">Recharger</button>
+        </div>
+      </div>
+      <div id="acces-liste"></div>
     </section>
 
     <section class="admin-panneau" id="panneau-contact">

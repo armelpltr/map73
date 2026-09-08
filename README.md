@@ -64,19 +64,53 @@ npx firebase-tools apps:sdkconfig WEB --project map73-site
 npx firebase-tools deploy --only firestore:rules --project map73-site
 ```
 
-### Créer un accès
+### La porte du panel
 
-Un compte Firebase seul ne donne rien : la clé du site est publique, n'importe qui peut s'en créer un. C'est l'existence d'une entrée dans `admins` qui ouvre le panel, et ce sont les règles Firestore qui refusent réellement les écritures.
+Trois barrières, dans cet ordre, et aucune n'est purement décorative :
+
+1. **Turnstile** — le formulaire de connexion est la seule porte publique du panel. Sans contrôle anti-robot, c'est un endpoint d'essai de mots de passe ouvert à tout Internet. Le jeton est vérifié côté Worker, avec la clé secrète.
+2. **Appartenance à `admins`** — le Worker cherche le compte, vérifie qu'il est inscrit, et **ne regarde le mot de passe qu'ensuite**. Un compte Firebase absent de `admins` n'obtient rien, et le message de refus est le même dans tous les cas : distinguer « adresse inconnue » de « mot de passe faux » dirait à un inconnu quelles adresses ont un accès.
+3. **Code à six chiffres par e-mail** — tiré, salé, haché et comparé dans le Worker. Il vit dans `otpChallenges`, une collection que **personne** ne peut lire, pas même son titulaire : les règles la ferment explicitement. Un code que l'utilisateur peut lire ne serait pas un second facteur.
+
+Le navigateur ne s'adresse jamais directement à Firebase pour se connecter : il reçoit un jeton personnalisé signé par le Worker, et l'échange contre une session. La validation du code pose alors un attribut (`a2fUntil`, `a2fAuthTime`) que **les règles Firestore exigent** pour la moindre écriture. `a2fAuthTime` comparé à `auth_time` est ce qui empêche qu'une session ouverte sur un autre poste hérite du « validé » sans jamais recevoir de code.
+
+Ce que cela ne couvre pas, et qu'il faut savoir : l'API publique d'Identity Toolkit reste joignable avec la clé web du site. Quelqu'un peut toujours s'y créer un compte hors du panel. La session obtenue ne vaut rien — ni entrée dans `admins`, ni attribut de double authentification — mais elle existe. C'est la raison d'être des deux verrous suivants.
+
+### Verrous côté Google
+
+- **Restriction de la clé web** — console Google Cloud > API et services > Identifiants > la clé « Browser key » du projet > Restrictions d'application > **Sites web**, avec `armelpltr.github.io/*` et `www.map73.fr/*`.
+- **App Check** — console Firebase > App Check > enregistrer l'application web avec reCAPTCHA v3, puis passer Firestore en **mode surveillance** quelques jours avant d'appliquer l'obligation. Une fois appliqué, Firestore refuse toute requête qui ne vient pas du vrai site, y compris avec la bonne clé. À activer en dernier : mal enregistré, il fait tomber le site public.
+
+### Créer le premier accès
+
+Le panel ne connaît aucune inscription libre, et la création d'accès est réservée au superadministrateur. Le tout premier compte se crée donc à la main, une seule fois :
 
 1. Console Firebase > Authentication > Sign-in method > activer **E-mail/Mot de passe**.
-2. Authentication > Users > Add user : créer le compte, noter son **UID**.
-3. Firestore > collection `admins` > document dont l'**ID est cet UID**, avec le champ `nom` (texte).
+2. Authentication > Users > **Add user** : créer le compte, noter son **UID**.
+3. Firestore > collection `admins` > document dont l'**ID est cet UID**, avec les champs :
+   - `nom` (texte)
+   - `email` (texte, la même adresse)
+   - `role` (texte) = `superadmin`
+   - `actif` (booléen) = `true`
 
-La session se ferme avec l'onglet : le panel est souvent ouvert depuis un poste partagé.
+Les accès suivants se créent depuis l'onglet **Accès** du panel. Le mot de passe provisoire se transmet de vive voix, jamais par e-mail — c'est aussi la boîte où arrivent les codes.
 
-### Premier démarrage
+### Le Worker
 
-Tant que rien n'est publié, les formulaires sont pré-remplis avec le texte actuel du site (`assets/js/contenu-defaut.js`, copie exacte de `index.html`). Un clic sur **Publier les modifications** en fait la version de référence.
+`worker/` tient la porte et la gestion des accès. Il détient la clé de service, seul endroit où elle peut vivre sans être publique — et, corollaire, le seul endroit que les règles Firestore ne protègent pas, puisqu'elle les contourne. Chaque route y refait donc les vérifications elle-même (`worker/src/membre.js`).
+
+```sh
+cd worker
+npx wrangler login
+npx wrangler secret put FIREBASE_SERVICE_ACCOUNT   # JSON du compte de service
+npx wrangler secret put TURNSTILE_SECRET           # clé secrète du widget
+npx wrangler secret put BREVO_API_KEY              # clé API v3 de Brevo
+npx wrangler deploy
+```
+
+Puis renseigner dans `wrangler.toml` l'adresse `EMAIL_EXPEDITEUR` (validée comme expéditeur chez Brevo), et dans `assets/js/config.js` l'URL du Worker déployé et la clé publique Turnstile.
+
+Sans l'un de ces trois secrets, la connexion est refusée plutôt que dégradée : mieux vaut un panel injoignable qu'une porte sans serrure.
 
 ## Développement
 
@@ -99,7 +133,9 @@ Le script d'optimisation lit les originaux de l'ancien site (`../www.map73.fr/im
 - [ ] **Image Open Graph** : `assets/img/og-preview.jpg` fait 560 × 292 px, en produire une en 1200 × 630 px.
 - [ ] **Google Fonts** : envisager l'auto-hébergement des polices pour supprimer la connexion tierce mentionnée dans les mentions légales.
 
-- [ ] **Firebase** : créer le projet, remplir `assets/js/firebase-config.js` et `.firebaserc`, déployer les règles, créer les deux accès (voir plus haut). Tant que ce n'est pas fait, le panel affiche un message et le site fonctionne normalement sans lui.
+- [ ] **Worker et secrets** : déployer `worker/`, injecter les trois secrets, renseigner `WORKER_URL` et `TURNSTILE_SITE_KEY` dans `assets/js/config.js`. Tant que ce n'est pas fait, le panel refuse la connexion et le site public fonctionne normalement sans lui.
+- [ ] **Premier superadmin** : créer le compte et son entrée `admins` dans la console (voir plus haut).
+- [ ] **Verrous Google** : restreindre la clé web par domaine, puis App Check en surveillance avant application.
 
 ## Phases suivantes (hors périmètre de cette première version)
 

@@ -24,6 +24,24 @@ body.admin { background: var(--paper-2); }
 .connexion__carte h1 { font-size: 1.4rem; margin-bottom: 0.35rem; }
 .connexion__intro { font-size: var(--fs-small); color: var(--ink-soft); margin-bottom: 1.75rem; }
 
+.connexion__carte .bouton { width: 100%; justify-content: center; margin-top: 1.5rem; }
+.connexion__secondaire {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.connexion__secondaire .bouton { margin-top: 0; flex: 1; padding-inline: 0.75rem; }
+
+.turnstile { margin-top: 1.25rem; min-height: 65px; }
+
+.saisie-code {
+  font-family: var(--display);
+  font-size: 1.75rem !important;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-align: center;
+}
+
 /* ---------- Ossature ---------- */
 .admin-entete {
   background: var(--ink);

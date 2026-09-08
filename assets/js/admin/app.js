@@ -9,6 +9,7 @@
 import { obtenirFirestore } from "../firebase-config.js";
 import { CONTENU_DEFAUT } from "../contenu-defaut.js";
 import { initAuth } from "./auth.js";
+import { initAcces } from "./acces.js";
 import { construirePanneaux } from "./panneaux.js";
 import { $, etat, confirmer } from "./ui.js";
 
@@ -124,5 +125,6 @@ window.addEventListener("beforeunload", (e) => {
 
 initAuth((compte) => {
   membre = compte;
+  initAcces(compte.role);
   charger();
 });

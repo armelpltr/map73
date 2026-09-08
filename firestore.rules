@@ -3,39 +3,73 @@ rules_version = '2';
 // Règles Firestore du site MAP73.
 //
 // À déployer avec la CLI, jamais par copier-coller dans la console :
-//   npx firebase-tools deploy --only firestore:rules --project <projet>
+//   npx firebase-tools deploy --only firestore:rules --project map73-site
 //
-// Le modèle est volontairement minuscule. Le site ne stocke aucune donnée
-// personnelle : un seul document, `contenu/site`, porte les textes affichés
-// sur la page d'accueil. Il est donc public en lecture — le navigateur de
-// n'importe quel visiteur le lit à chaque visite — et fermé en écriture à
-// tout le monde sauf aux comptes inscrits dans `admins`.
+// Le modèle est minuscule : un document, `contenu/site`, porte les textes de
+// la page d'accueil. Il est public en lecture — le navigateur de chaque
+// visiteur le lit — et fermé en écriture à tout le monde sauf aux comptes
+// inscrits dans `admins` ayant franchi la double authentification.
 //
-// Être connecté ne suffit pas : n'importe qui peut créer un compte Firebase
-// avec la clé publique du site. C'est l'existence d'une entrée dans `admins`,
-// créée à la main dans la console, qui ouvre l'écriture.
+// Être connecté ne suffit pas. La clé web du site est publique : n'importe
+// qui peut obtenir une session Firebase par l'API d'Identity Toolkit. C'est
+// pour cela que rien ici ne se contente de `request.auth != null`.
+//
+// Ces règles sont la seule protection réelle : le Worker, lui, parle à
+// Firestore avec la clé de service, qui les contourne. Il refait donc les
+// mêmes vérifications de son côté (worker/src/membre.js), et les deux
+// définitions de `a2fFranchie` doivent rester identiques.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function estAdmin() {
+    // Inscrit dans `admins`, et pas seulement authentifié.
+    function estMembre() {
       return request.auth != null
           && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    /* La double authentification, exigée ici et pas seulement par
+       l'interface. Deux conditions, pas une :
+         - `a2fUntil`, la validité, en millisecondes ;
+         - `a2fAuthTime` égal à `auth_time`, qui distingue CE poste du compte
+           en général. Un attribut personnalisé vaut pour tout jeton émis
+           pour ce compte, où qu'il se connecte ; sans cette seconde
+           condition, ouvrir une session ailleurs pendant les huit heures de
+           validité hériterait du « validé » sans jamais recevoir de code.
+       Les défauts de `get()` sont indispensables : un attribut absent ferait
+       échouer la règle entière, ce qui refuserait aussi le légitime. */
+    function a2fFranchie() {
+      return request.auth.token.get('a2fUntil', 0) > request.time.toMillis()
+          && request.auth.token.get('a2fAuthTime', 0) == request.auth.token.get('auth_time', -1);
+    }
+
+    function membreVerifie() {
+      return estMembre() && a2fFranchie();
     }
 
     // Le contenu du site : lu par tous les visiteurs, écrit par le panel.
     match /contenu/{document} {
       allow read: if true;
-      allow write: if estAdmin();
+      allow write: if membreVerifie();
     }
 
-    // Chacun lit sa propre entrée, et rien d'autre : c'est elle qui apprend
-    // au panel qui il a en face. La liste complète n'est pas lisible, sinon
-    // le premier venu récupérerait les adresses e-mail de l'équipe.
-    // Les entrées se créent et se suppriment dans la console Firebase.
+    /* Chacun lit sa propre entrée, et rien d'autre : c'est elle qui apprend
+       au panel quel rôle il a en face, et elle doit rester lisible avant la
+       double authentification. La liste complète n'est pas lisible, sinon le
+       premier venu récupérerait les adresses de l'équipe.
+       Les accès se créent et se retirent par le Worker, jamais d'ici. */
     match /admins/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if false;
+    }
+
+    /* Les défis de double authentification. Fermés à tout le monde, y
+       compris à leur titulaire : seul le Worker y accède, par la clé de
+       service. Un code que l'utilisateur peut lire n'est pas un second
+       facteur. La règle est écrite noir sur blanc plutôt que laissée au
+       refus par défaut — pour qu'on ne l'ouvre pas par mégarde un jour. */
+    match /otpChallenges/{uid} {
+      allow read, write: if false;
     }
 
     // Tout le reste est fermé, y compris aux comptes du panel.
