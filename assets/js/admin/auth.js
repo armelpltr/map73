@@ -43,6 +43,14 @@ function afficherErreur(id, message) {
   zone.hidden = !message;
 }
 
+/* Le contrôle anti-robot peut demander plusieurs secondes, et l'appel au
+   Worker autant : sans cette ligne, le formulaire restait muet et l'on
+   croyait que le bouton ne faisait rien. */
+function etatConnexion(message) {
+  const zone = $("connexion-etat");
+  if (zone) zone.textContent = message || "";
+}
+
 function montrer(ecran) {
   for (const id of ["ecran-connexion", "ecran-code", "ecran-panel"]) {
     $(id).hidden = id !== ecran;
@@ -204,10 +212,13 @@ async function connecter(e) {
     /* On attend le SDK plutôt que de renvoyer « réessayez » : il finit de
        charger en une poignée de centaines de millisecondes, et refuser un
        clic parce qu'il est arrivé trop tôt n'aide personne. */
+    etatConnexion("Préparation…");
     await pretFirebase;
 
+    etatConnexion("Contrôle anti-robot en cours…");
     const jeton = await obtenirJetonTurnstile();
 
+    etatConnexion("Vérification des identifiants…");
     const { jeton: jetonPersonnalise } = await appelerWorker("/connexion", {
       email: $("connexion-email").value.trim(),
       motDePasse: $("connexion-mdp").value,
@@ -223,6 +234,7 @@ async function connecter(e) {
     // tentative suivante échouerait sur le contrôle et non sur le motif réel.
     reinitialiserTurnstile();
   } finally {
+    etatConnexion("");
     bouton.disabled = false;
     envoiEnCours = false;
   }

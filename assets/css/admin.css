@@ -34,6 +34,13 @@ body.admin { background: var(--paper-2); }
 
 .turnstile { margin-top: 1.25rem; min-height: 65px; }
 
+.connexion__etat {
+  font-size: var(--fs-micro);
+  color: var(--ink-soft);
+  margin: 0.75rem 0 0;
+  min-height: 1.2em;
+}
+
 .saisie-code {
   font-family: var(--display);
   font-size: 1.75rem !important;
