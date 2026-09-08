@@ -41,13 +41,27 @@ async function makeServiceJWT(sa) {
   return `${sigInput}.${sigB64}`;
 }
 
+/*
+ * Le JSON du compte de service peut arriver précédé d'un BOM : PowerShell en
+ * ajoute un quand il redirige de l'UTF-8 vers un exécutable natif, et
+ * `wrangler secret put` stocke alors le caractère invisible avec le reste.
+ * JSON.parse échoue dessus avec « Unexpected token '﻿' », et toute la porte
+ * du panel tombait en erreur 500. On le retire à la lecture, une fois pour
+ * toutes, plutôt que de dépendre de la façon dont le secret a été saisi.
+ */
+function compteDeService(env) {
+  const brut = String(env.FIREBASE_SERVICE_ACCOUNT || '').replace(/^﻿/, '').trim();
+  if (!brut) throw new Error('FIREBASE_SERVICE_ACCOUNT absent.');
+  return JSON.parse(brut);
+}
+
 let _accessToken = null, _accessTokenExpiry = 0;
 
 export async function getAccessToken(env) {
   const now = Date.now() / 1000;
   if (_accessToken && _accessTokenExpiry > now + 120) return _accessToken;
 
-  const sa = JSON.parse(env.FIREBASE_SERVICE_ACCOUNT);
+  const sa = compteDeService(env);
   const jwt = await makeServiceJWT(sa);
   const res = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
@@ -481,7 +495,7 @@ export async function deleteAuthUser(uid, env) {
  * et le navigateur ne reçoit une session que si tout est passé.
  */
 export async function createCustomToken(uid, env) {
-  const sa = JSON.parse(env.FIREBASE_SERVICE_ACCOUNT);
+  const sa = compteDeService(env);
   const now = Math.floor(Date.now() / 1000);
 
   const header = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
