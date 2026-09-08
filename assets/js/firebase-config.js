@@ -21,12 +21,12 @@
 const SDK = "https://www.gstatic.com/firebasejs/10.13.0";
 
 const firebaseConfig = {
-  apiKey: "A_REMPLACER",
-  authDomain: "A_REMPLACER.firebaseapp.com",
-  projectId: "A_REMPLACER",
-  storageBucket: "A_REMPLACER.firebasestorage.app",
-  messagingSenderId: "A_REMPLACER",
-  appId: "A_REMPLACER"
+  apiKey: "AIzaSyDkGrpEOrkIubBekppOi4ROaN8GF6wuqug",
+  authDomain: "map73-site.firebaseapp.com",
+  projectId: "map73-site",
+  storageBucket: "map73-site.firebasestorage.app",
+  messagingSenderId: "78283572020",
+  appId: "1:78283572020:web:d25c78e336241968a81b61"
 };
 
 /** Tant que la configuration n'est pas remplie, rien ne doit être tenté. */
