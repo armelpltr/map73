@@ -20,7 +20,7 @@ export const CONTENU_DEFAUT = {
     titre: "Inquiet sur l’orientation de votre ado ?",
     chapo:
       "MAP73 l’accompagne de la troisième à la terminale pour mieux se connaître, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance.",
-    note: "Crédit d’impôt de 50 % — services à la personne",
+    note: "Crédit d’impôt de 50 % | services à la personne",
     itineraireIntro: "Où en est votre ado ? Choisissez son étape.",
     reperesTitre: "Ce que couvre l’accompagnement"
   },
@@ -33,13 +33,13 @@ export const CONTENU_DEFAUT = {
   ],
 
   /* Les quatre reperes, en legende de carte. `glyphe` designe l'un des
-     dessins connus du site — parcours, binome, tampon, epingle — et rien
+     dessins connus du site (etendue, binome, tampon, epingle) et rien
      d'autre : le panel choisit dans cette liste, il ne saisit pas de dessin. */
   reperes: [
     {
       id: "duree",
       ordre: 10,
-      glyphe: "parcours",
+      glyphe: "etendue",
       fait: "3<sup>e</sup> → terminale",
       quoi: "Le même binôme à chaque palier, sans repartir de zéro."
     },
@@ -75,7 +75,7 @@ export const CONTENU_DEFAUT = {
     telephone: "06 78 36 90 06",
     telephoneLien: "+33678369006",
     email: "contacts@map73.fr",
-    horaires: ["Du lundi au vendredi, 9h – 18h30", "Le samedi, 9h – 12h"]
+    horaires: ["Du lundi au vendredi, de 9h à 18h30", "Le samedi, de 9h à 12h"]
   },
 
   formules: [

@@ -12,8 +12,12 @@
   --paper-2: #efece2;
   --ink: #14243b;
   --ink-soft: #4a5872;
-  --vert: #2e9e58;
-  --vert-dark: #1c6e3d;
+  /* Le vert du logo, mesure sur assets/img/logo-480.webp : #94C412, une teinte
+     olive a 76 deg. C'est un vert clair (1,91 sur le papier) : il sert de
+     surface et d'accent sur fond encre, jamais de couleur de texte sur fond
+     clair. Pour ca, --vert-dark reprend la meme teinte en plus sombre. */
+  --vert: #94c412;
+  --vert-dark: #577506;
   --lac: #2b759d; /* assombri : le bleu d'origine tombait a 4,48 sur blanc,
                      sous le seuil AA des petits textes qui l'utilisent. */
   --ambre: #e8a33d;
@@ -126,7 +130,7 @@ p:last-child { margin-bottom: 0; }
   cursor: pointer;
   transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
-.bouton--plein { background: var(--vert); color: var(--blanc); }
+.bouton--plein { background: var(--vert); color: var(--ink); }
 .bouton--plein:hover { background: var(--vert-dark); color: var(--blanc); }
 .bouton--contour { border-color: var(--ink); color: var(--ink); }
 .bouton--contour:hover { background: var(--ink); color: var(--paper); }
@@ -177,7 +181,7 @@ p:last-child { margin-bottom: 0; }
   border-bottom: 2px solid transparent;
   display: inline-block;
 }
-.nav__lien:hover { border-bottom-color: var(--vert); }
+.nav__lien:hover { border-bottom-color: var(--vert-dark); }
 
 .entete__bascule {
   display: none;
@@ -274,8 +278,8 @@ p:last-child { margin-bottom: 0; }
   background: var(--ink);
   transition: background-color 0.18s ease;
 }
-.etape__lien:hover .etape__point { background: var(--vert); border-color: var(--vert); }
-.etape__lien:hover .etape__point::after { background: var(--blanc); }
+.etape__lien:hover .etape__point { background: var(--vert); border-color: var(--vert-dark); }
+.etape__lien:hover .etape__point::after { background: var(--ink); }
 .etape__niveau {
   font-family: var(--display);
   font-weight: 700;
@@ -309,15 +313,21 @@ p:last-child { margin-bottom: 0; }
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
-  gap: 1.5rem clamp(1.5rem, 3vw, 2.75rem);
+  gap: clamp(0.75rem, 1.6vw, 1.1rem);
 }
+/* En carte, et non en simple ligne : le glyphe pose au fil du texte se lisait
+   comme une seconde frise, a 200 px de l'itineraire du hero. Le cadre separe
+   les deux lectures. */
 .legende__item {
   display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr);
-  gap: 0 0.85rem;
-  align-items: start;
+  gap: 0.65rem;
+  align-content: start;
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  padding: clamp(1rem, 2vw, 1.25rem);
 }
-.legende__glyphe { color: var(--vert-dark); margin-top: 0.2rem; }
+.legende__glyphe { color: var(--vert-dark); }
 .legende__fait {
   font-family: var(--display);
   font-size: 1.2rem;
@@ -325,7 +335,7 @@ p:last-child { margin-bottom: 0; }
   line-height: 1.15;
   display: block;
 }
-.legende__quoi { font-size: var(--fs-small); color: var(--ink-soft); margin: 0.35rem 0 0; }
+.legende__quoi { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
 
 /* ---------- À propos ---------- */
 .propos {
@@ -336,7 +346,7 @@ p:last-child { margin-bottom: 0; }
 }
 .propos__titre { font-size: var(--fs-h2); }
 .propos__acronyme {
-  border-left: 3px solid var(--vert);
+  border-left: 3px solid var(--vert-dark);
   padding: 0 0 0 1.25rem;
   margin: 0;
   list-style: none;
@@ -455,14 +465,26 @@ p:last-child { margin-bottom: 0; }
   list-style: none;
 }
 .formule__details summary::-webkit-details-marker { display: none; }
-.formule__details summary::before { content: "+ "; }
-.formule__details[open] summary::before { content: "– "; }
+/* Meme chevron que les questions frequentes, plutot que le couple « + » et
+   « - » : un tiret de moins a l'ecran, et un seul signe a apprendre. */
+.formule__details summary { display: flex; align-items: center; gap: 0.5rem; }
+.formule__details summary::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.18s ease;
+}
+.formule__details[open] summary::before { transform: translateY(1px) rotate(-135deg); }
 .formule__details ul { margin: 0.75rem 0 0; padding-left: 1.1rem; }
 .formule__details li { padding: 0.15rem 0; }
 
 .credit-impot {
   margin-top: clamp(1.75rem, 3vw, 2.5rem);
-  border: 1px dashed var(--vert);
+  border: 1px dashed var(--vert-dark);
   border-radius: var(--rayon);
   background: color-mix(in srgb, var(--vert) 7%, var(--paper));
   padding: 1.25rem 1.5rem;
@@ -494,7 +516,7 @@ p:last-child { margin-bottom: 0; }
 .fondatrice {
   background: var(--blanc);
   border: 1px solid var(--trait);
-  border-top: 4px solid var(--vert);
+  border-top: 4px solid var(--vert-dark);
   border-radius: var(--rayon);
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   display: grid;
@@ -583,7 +605,7 @@ p:last-child { margin-bottom: 0; }
   font-weight: 600;
   color: var(--vert-dark);
   background: color-mix(in srgb, var(--vert) 10%, var(--blanc));
-  border: 1px solid color-mix(in srgb, var(--vert) 28%, var(--blanc));
+  border: 1px solid color-mix(in srgb, var(--vert-dark) 30%, var(--blanc));
   /* Angles droits : arrondie a fond, l'etiquette se lisait comme un bouton,
      et rien ne se passe quand on clique dessus. */
   border-radius: var(--rayon);
@@ -625,7 +647,7 @@ p:last-child { margin-bottom: 0; }
   width: 100%;
   transition: border-color 0.18s ease;
 }
-.presse__lien:hover img { border-color: var(--vert); }
+.presse__lien:hover img { border-color: var(--vert-dark); }
 .presse__citation { font-size: var(--fs-small); margin: 0.9rem 0 0.4rem; }
 .presse__source {
   font-family: var(--display);
@@ -692,7 +714,7 @@ p:last-child { margin-bottom: 0; }
   padding: 0.75rem 1rem;
   border-radius: var(--rayon);
   background: color-mix(in srgb, var(--vert) 12%, var(--blanc));
-  border: 1px solid var(--vert);
+  border: 1px solid var(--vert-dark);
 }
 
 /* ---------- Pied de page ---------- */
@@ -811,7 +833,7 @@ p:last-child { margin-bottom: 0; }
   .nav[data-ouvert="oui"] { display: block; }
   .nav__liste { flex-direction: column; align-items: stretch; gap: 0; }
   .nav__lien { display: block; padding: 0.85rem 0; border-bottom: 1px solid var(--trait); }
-  .nav__lien:hover { border-bottom-color: var(--vert); }
+  .nav__lien:hover { border-bottom-color: var(--vert-dark); }
   .nav .bouton { margin-top: 1rem; width: 100%; justify-content: center; }
 
   .itineraire__etapes { grid-template-columns: 1fr; gap: 0; }
@@ -846,7 +868,6 @@ p:last-child { margin-bottom: 0; }
   .fondatrice__portrait { width: 64px; height: 64px; border-radius: var(--rayon); }
   .fondatrice h3 { font-size: 1.25rem; }
   .fondatrice__valeur { font-size: 1.25rem; }
-  .legende__liste { gap: 1.35rem; }
   .legende__fait { font-size: 1.1rem; }
   .credit-impot { flex-direction: column; gap: 0.75rem; }
   .pied__bas { flex-direction: column; }
@@ -856,10 +877,7 @@ p:last-child { margin-bottom: 0; }
   .hero h1 { max-width: none; }
   .hero__actions .bouton { width: 100%; justify-content: center; }
   .formule { padding: 1.35rem; }
-  /* Sous 480 px, le glyphe passe au-dessus du fait : garder une colonne de
-     2,75 rem a cette largeur mangeait un tiers de la ligne de texte. */
-  .legende__item { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
-  .legende__glyphe { margin-top: 0; }
+  .legende__item { padding: 0.9rem 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

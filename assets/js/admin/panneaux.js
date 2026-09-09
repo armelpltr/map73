@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2224";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2230";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
@@ -86,7 +86,7 @@ const SCHEMA_ITINERAIRE = [
 /* Les glyphes disponibles pour la legende. Ajouter une entree ici suppose
    d'avoir d'abord dessine le glyphe dans site-data.js. */
 const GLYPHES_LEGENDE = [
-  { valeur: "parcours", libelle: "Segment d’itinéraire (une durée, une progression)" },
+  { valeur: "etendue", libelle: "Échelle cotée (une durée, une étendue)" },
   { valeur: "binome", libelle: "Deux jalons (l’équipe)" },
   { valeur: "tampon", libelle: "Tampon barré (un tarif, une remise)" },
   { valeur: "epingle", libelle: "Épingle (un lieu)" }
@@ -265,7 +265,7 @@ export function construirePanneaux(contenu, onChange) {
     entrees: (contenu.reperes ||= []),
     schema: SCHEMA_REPERE,
     titrer: "fait",
-    nouvelle: () => ({ id: `repere-${Date.now().toString(36)}`, fait: "", quoi: "", glyphe: "parcours" }),
+    nouvelle: () => ({ id: `repere-${Date.now().toString(36)}`, fait: "", quoi: "", glyphe: "etendue" }),
     libelleAjout: "Ajouter un repère",
     onChange
   });

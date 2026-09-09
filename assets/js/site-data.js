@@ -8,8 +8,8 @@
 // Rien sur cette page ne dépend de Firestore pour fonctionner.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2224";
-import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2224";
+import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2230";
+import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2230";
 
 const $ = (id) => document.getElementById(id);
 
@@ -52,13 +52,14 @@ function rendreItineraire(etapes) {
    epingle etroite et un segment large ne s'alignent pas dans la colonne, et
    ca se voit surtout en mobile, ou le glyphe passe au-dessus du texte. */
 const GLYPHES = {
-  /* Un segment d'itineraire : depart creux, arrivee pleine. */
-  parcours: {
-    largeur: 44,
+  /* Une echelle cotee, bornes comprises. Un segment jalonne aurait redit
+     l'itineraire du hero, deux blocs plus haut : meme trait pointille, memes
+     points ronds. Ici c'est une mesure, pas un trajet. */
+  etendue: {
+    largeur: 38,
     formes: [
-      ["path", { d: "M4 14C12 14 14 6 22 6s10 8 18 8", "stroke-dasharray": "4 3" }],
-      ["circle", { cx: "4", cy: "14", r: "3", fill: "#f7f6f1" }],
-      ["circle", { cx: "40", cy: "14", r: "3", fill: "currentColor" }]
+      ["path", { d: "M4 11h30" }],
+      ["path", { d: "M4 5v12M34 5v12" }]
     ]
   },
   /* Deux jalons cote a cote : le binome. */
