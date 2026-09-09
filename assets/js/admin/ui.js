@@ -109,6 +109,67 @@ export function sousListe({ label, valeurs, indice, onChange }) {
   return el("div", { classe: "champ champ--large", enfants });
 }
 
+/**
+ * Liste de lignes à deux colonnes : chaque entrée est un objet à deux clés.
+ * Sert aux repères chiffrés et aux faits des fondatrices, où le libellé et
+ * la valeur vont toujours par paire et n'auraient aucun sens séparés.
+ */
+export function sousListePaires({ label, valeurs, indice, cles, libelleAjout = "Ajouter une ligne", onChange }) {
+  const lignes = el("div", { classe: "sous-liste" });
+  const courant = Array.isArray(valeurs) ? valeurs.map((v) => ({ ...v })) : [];
+
+  const remonter = () => onChange(courant.map((v) => ({ ...v })));
+
+  const redessiner = () => {
+    lignes.textContent = "";
+
+    courant.forEach((entree, index) => {
+      const saisies = cles.map(({ cle, placeholder }) => {
+        const champTexte = el("input", { attributs: { type: "text", placeholder: placeholder || "" } });
+        champTexte.value = entree[cle] ?? "";
+        champTexte.addEventListener("input", () => {
+          entree[cle] = champTexte.value;
+          remonter();
+        });
+        return champTexte;
+      });
+
+      const retirer = el("button", {
+        classe: "icone-bouton icone-bouton--danger",
+        texte: "×",
+        attributs: { type: "button", title: "Supprimer cette ligne" }
+      });
+      retirer.addEventListener("click", () => {
+        courant.splice(index, 1);
+        remonter();
+        redessiner();
+      });
+
+      lignes.appendChild(el("div", { classe: "sous-liste__ligne sous-liste__ligne--paire", enfants: [...saisies, retirer] }));
+    });
+
+    const ajouter = el("button", {
+      classe: "bouton bouton--discret",
+      texte: libelleAjout,
+      attributs: { type: "button" }
+    });
+    ajouter.addEventListener("click", () => {
+      courant.push(Object.fromEntries(cles.map(({ cle }) => [cle, ""])));
+      remonter();
+      redessiner();
+    });
+    lignes.appendChild(ajouter);
+  };
+
+  redessiner();
+
+  const enfants = [el("label", { texte: label })];
+  if (indice) enfants.push(el("span", { classe: "champ__indice", texte: indice }));
+  enfants.push(lignes);
+
+  return el("div", { classe: "champ champ--large", enfants });
+}
+
 /** Confirmation avant une suppression. */
 export function confirmer(message) {
   return window.confirm(message);

@@ -127,6 +127,57 @@ export const CONTENU_DEFAUT = {
     }
   ],
 
+  /* Les deux fondatrices, telles qu'elles sont écrites en dur dans index.html.
+     Le portrait est un carré de 800 × 800 px déposé dans assets/img/. */
+  fondatrices: [
+    {
+      id: "julie",
+      ordre: 10,
+      prenom: "Julie",
+      role: "Ressources humaines et kinésiologie",
+      portrait: "assets/img/portrait-julie.webp",
+      portraitAlt:
+        "Julie, cofondatrice de MAP73, responsable ressources humaines et kinésiologue",
+      chiffres: [
+        { valeur: "15 ans", mesure: "en entreprise, côté RH" },
+        { valeur: "2", mesure: "certifications" }
+      ],
+      faits: [
+        { intitule: "Formation", texte: "Master en gestion et innovations RH" },
+        { intitule: "Expérience", texte: "Gestionnaire RH : responsable de formation et de recrutements" },
+        {
+          intitule: "Dans les séances",
+          texte: "Connaissance de soi, découverte du monde professionnel, candidatures"
+        }
+      ],
+      pastilles: ["Kinésiologie FFK", "Ennéagramme cycle 1 (CEE)"]
+    },
+    {
+      id: "camille",
+      ordre: 20,
+      prenom: "Camille",
+      role: "Enseignement et droit social",
+      portrait: "assets/img/portrait-camille.webp",
+      portraitAlt: "Camille, cofondatrice de MAP73, enseignante certifiée et juriste",
+      chiffres: [
+        { valeur: "10 ans", mesure: "d’enseignement" },
+        { valeur: "7 ans", mesure: "en juridique et RH" }
+      ],
+      faits: [
+        {
+          intitule: "Formation",
+          texte: "Licence de droit, master en gestion sociale et CAPES de lettres modernes"
+        },
+        { intitule: "Expérience", texte: "Enseignante en collège et lycée, puis chargée juridique et RH" },
+        {
+          intitule: "Dans les séances",
+          texte: "Choix des filières et des spécialités, stratégie Parcoursup, écrits"
+        }
+      ],
+      pastilles: ["CAPES de lettres modernes", "Formation en orientation"]
+    }
+  ],
+
   temoignages: [
     {
       id: "angelique",

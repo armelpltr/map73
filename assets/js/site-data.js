@@ -8,8 +8,8 @@
 // Rien sur cette page ne dépend de Firestore pour fonctionner.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260908-2328";
-import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260908-2328";
+import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2155";
+import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2155";
 
 const $ = (id) => document.getElementById(id);
 
@@ -99,6 +99,69 @@ function rendreFormules(formules) {
     }
 
     carte.appendChild(pied);
+    liste.appendChild(carte);
+  }
+}
+
+/* ---------- Fondatrices ---------- */
+
+/* Les deux cartes reprennent le balisage ecrit en dur dans index.html : si
+   Firestore repond, elles sont reconstruites a l'identique avec le texte
+   publie ; sinon la version du HTML reste en place. */
+function rendreFondatrices(fondatrices) {
+  const liste = $("fondatrices-liste");
+  if (!liste || !Array.isArray(fondatrices) || !fondatrices.length) return;
+
+  liste.textContent = "";
+  for (const f of parOrdre(fondatrices)) {
+    /* Pas d'ancre ici, contrairement aux formules : rien ne pointe vers une
+       fondatrice en particulier, et l'identifiant ne sert qu'au panel. */
+    const carte = creer("article", "fondatrice");
+
+    const entete = creer("div", "fondatrice__entete");
+    const portrait = lienSur(f.portrait);
+    if (portrait) {
+      const image = document.createElement("img");
+      image.className = "fondatrice__portrait";
+      image.src = portrait;
+      image.width = 800;
+      image.height = 800;
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.alt = sansBalises(f.portraitAlt || f.prenom || "");
+      entete.appendChild(image);
+    }
+    const identite = document.createElement("div");
+    identite.append(creer("h3", null, f.prenom), creer("p", "fondatrice__role", f.role));
+    entete.appendChild(identite);
+    carte.appendChild(entete);
+
+    if (Array.isArray(f.chiffres) && f.chiffres.length) {
+      const chiffres = creer("div", "fondatrice__chiffres");
+      for (const c of f.chiffres) {
+        const bloc = creer("div", "fondatrice__chiffre");
+        bloc.append(creer("span", "fondatrice__valeur", c.valeur), creer("span", "fondatrice__mesure", c.mesure));
+        chiffres.appendChild(bloc);
+      }
+      carte.appendChild(chiffres);
+    }
+
+    if (Array.isArray(f.faits) && f.faits.length) {
+      const faits = creer("dl", "fondatrice__faits");
+      for (const fait of f.faits) {
+        const ligne = creer("div", "fondatrice__ligne");
+        ligne.append(creer("dt", null, fait.intitule), creer("dd", null, fait.texte));
+        faits.appendChild(ligne);
+      }
+      carte.appendChild(faits);
+    }
+
+    if (Array.isArray(f.pastilles) && f.pastilles.length) {
+      const pastilles = creer("ul", "fondatrice__pastilles");
+      f.pastilles.forEach((p) => pastilles.appendChild(creer("li", "pastille", p)));
+      carte.appendChild(pastilles);
+    }
+
     liste.appendChild(carte);
   }
 }
@@ -226,6 +289,7 @@ async function charger() {
     rendreItineraire(d.itineraire);
     rendreReperes(d.reperes);
     rendreFormules(d.formules);
+    rendreFondatrices(d.fondatrices);
     rendreTemoignages(d.temoignages);
     rendrePresse(d.presse);
     rendreFaq(d.faq);

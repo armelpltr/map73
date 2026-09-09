@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, confirmer } from "./ui.js?v=20260908-2328";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2155";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
@@ -23,6 +23,39 @@ const SCHEMA_FORMULE = [
   { cle: "lienBouton", label: "Lien du bouton", indice: "Une adresse complète, ou #contact pour la section contact." },
   { cle: "id", label: "Identifiant d’ancre", indice: "Sert aux liens de l’itinéraire. À ne changer qu’en connaissance de cause." },
   { cle: "phare", label: "Mettre en avant (carte foncée)", type: "case" }
+];
+
+const SCHEMA_FONDATRICE = [
+  { cle: "prenom", label: "Prénom" },
+  { cle: "role", label: "Rôle", indice: "Par exemple : Ressources humaines et kinésiologie" },
+  {
+    cle: "chiffres",
+    label: "Repères chiffrés",
+    type: "paires",
+    cles: [
+      { cle: "valeur", placeholder: "15 ans" },
+      { cle: "mesure", placeholder: "en entreprise, côté RH" }
+    ],
+    libelleAjout: "Ajouter un repère",
+    indice: "Deux repères tiennent sur une rangée ; au-delà, la rangée se replie."
+  },
+  {
+    cle: "faits",
+    label: "Parcours",
+    type: "paires",
+    cles: [
+      { cle: "intitule", placeholder: "Formation" },
+      { cle: "texte", placeholder: "Master en gestion et innovations RH" }
+    ],
+    libelleAjout: "Ajouter une ligne de parcours"
+  },
+  { cle: "pastilles", label: "Certifications", type: "liste", indice: "Une par ligne, affichées en étiquettes sous la fiche." },
+  {
+    cle: "portrait",
+    label: "Portrait",
+    indice: "Chemin dans le dépôt, par exemple assets/img/portrait-julie.webp. Carré, 800 × 800 px."
+  },
+  { cle: "portraitAlt", label: "Description du portrait", type: "zone", large: true, indice: "Lue par les lecteurs d’écran." }
 ];
 
 const SCHEMA_TEMOIGNAGE = [
@@ -65,7 +98,21 @@ function editeurListe({ conteneur, entrees, schema, titrer, nouvelle, libelleAjo
       const grille = el("div", { classe: "grille-champs" });
 
       for (const def of schema) {
-        if (def.type === "liste") {
+        if (def.type === "paires") {
+          grille.appendChild(
+            sousListePaires({
+              label: def.label,
+              indice: def.indice,
+              cles: def.cles,
+              libelleAjout: def.libelleAjout,
+              valeurs: entree[def.cle],
+              onChange: (valeurs) => {
+                entree[def.cle] = valeurs;
+                onChange();
+              }
+            })
+          );
+        } else if (def.type === "liste") {
           grille.appendChild(
             sousListe({
               label: def.label,
@@ -226,6 +273,26 @@ export function construirePanneaux(contenu, onChange) {
       lienBouton: "https://calendly.com/map73/formation"
     }),
     libelleAjout: "Ajouter une formule",
+    onChange
+  });
+
+  /* Fondatrices */
+  editeurListe({
+    conteneur: $("panneau-fondatrices-liste"),
+    entrees: (contenu.fondatrices ||= []),
+    schema: SCHEMA_FONDATRICE,
+    titrer: "prenom",
+    nouvelle: () => ({
+      id: `fondatrice-${Date.now().toString(36)}`,
+      prenom: "",
+      role: "",
+      portrait: "",
+      portraitAlt: "",
+      chiffres: [],
+      faits: [],
+      pastilles: []
+    }),
+    libelleAjout: "Ajouter une fondatrice",
     onChange
   });
 

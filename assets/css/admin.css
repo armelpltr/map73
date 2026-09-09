@@ -154,6 +154,11 @@ body.admin { background: var(--paper-2); }
 .sous-liste__ligne { display: flex; gap: 0.5rem; align-items: center; }
 .sous-liste__ligne input { flex: 1; }
 
+/* Deux colonnes pour les lignes en paires : la premiere saisie porte un
+   intitule court, la seconde le texte, qui a besoin de plus de place. */
+.sous-liste__ligne--paire input:first-child { flex: 0 1 11rem; }
+.sous-liste__ligne--paire input + input { flex: 2 1 14rem; }
+
 .case-a-cocher {
   display: flex;
   align-items: center;
@@ -200,6 +205,10 @@ body.admin { background: var(--paper-2); }
 
 @media (max-width: 640px) {
   .admin-entete__actions { margin-left: 0; width: 100%; }
+  /* Les deux saisies passent l'une sous l'autre, le bouton reste a droite. */
+  .sous-liste__ligne--paire { flex-wrap: wrap; }
+  .sous-liste__ligne--paire input { flex: 1 1 100%; }
+  .sous-liste__ligne--paire input + input { flex: 1 1 calc(100% - 2.75rem); }
   .fiche { padding: 1.15rem; }
   .barre-actions { flex-direction: column; align-items: stretch; }
   .barre-actions .bouton { width: 100%; justify-content: center; }
