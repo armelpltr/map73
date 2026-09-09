@@ -8,8 +8,8 @@
 // Rien sur cette page ne dépend de Firestore pour fonctionner.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2252";
-import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2252";
+import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2332";
+import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2332";
 
 const $ = (id) => document.getElementById(id);
 
@@ -152,12 +152,35 @@ function rendreFormules(formules) {
     if (f.id) carte.id = f.id;
 
     carte.append(creer("p", "formule__cible", f.cible), creer("h3", null, f.titre));
-    if (f.objectif) carte.appendChild(creer("p", "formule__objectif", f.objectif));
 
-    if (Array.isArray(f.lignes) && f.lignes.length) {
+    /* Objectif au singulier, ou liste d'objectifs : le client decrit ses
+       formules avec ces deux intitules, une carte n'a jamais les deux. */
+    if (f.objectif) {
+      const bloc = creer("p", "formule__objectif");
+      bloc.append(creer("span", "formule__intitule", "Objectif"), document.createTextNode(" "));
+      const texte = creer("span");
+      poserTexte(texte, f.objectif);
+      bloc.appendChild(texte);
+      carte.appendChild(bloc);
+    }
+
+    /* `lignes` sert de repli : c'est le champ des documents publies avant
+       que l'objectif et le contenu soient distingues. */
+    const objectifs = Array.isArray(f.objectifs) && f.objectifs.length ? f.objectifs : f.lignes;
+    if (Array.isArray(objectifs) && objectifs.length) {
+      if (!f.objectif) carte.appendChild(creer("p", "formule__intitule formule__intitule--seul", "Objectifs"));
       const ul = creer("ul", "formule__liste");
-      f.lignes.forEach((ligne) => ul.appendChild(creer("li", null, ligne)));
+      objectifs.forEach((ligne) => ul.appendChild(creer("li", null, ligne)));
       carte.appendChild(ul);
+    }
+
+    if (f.contenu) {
+      const bloc = creer("p", "formule__contenu");
+      bloc.append(creer("span", "formule__intitule", "Contenu"), document.createTextNode(" "));
+      const texte = creer("span");
+      poserTexte(texte, f.contenu);
+      bloc.appendChild(texte);
+      carte.appendChild(bloc);
     }
 
     if (Array.isArray(f.details) && f.details.length) {

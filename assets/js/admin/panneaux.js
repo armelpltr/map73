@@ -6,15 +6,16 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2252";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2332";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
 const SCHEMA_FORMULE = [
   { cle: "titre", label: "Nom de la formule" },
   { cle: "cible", label: "À qui elle s’adresse", indice: "Affiché en petit au-dessus du nom." },
-  { cle: "objectif", label: "Objectif", type: "zone", large: true },
-  { cle: "lignes", label: "Ce que la formule contient", type: "liste", indice: "Une ligne par point. <sup>e</sup> écrit un exposant." },
+  { cle: "objectif", label: "Objectif", type: "zone", large: true, indice: "Une phrase. Laisser vide si la formule a plusieurs objectifs." },
+  { cle: "objectifs", label: "Objectifs", type: "liste", indice: "Une ligne par objectif, quand il y en a plusieurs. <sup>e</sup> écrit un exposant." },
+  { cle: "contenu", label: "Contenu", indice: "Par exemple : 5 séances de suivi" },
   { cle: "detailsTitre", label: "Titre du bloc dépliant", indice: "Laisser vide s’il n’y a pas de bloc dépliant." },
   { cle: "details", label: "Contenu du bloc dépliant", type: "liste" },
   { cle: "prix", label: "Prix affiché", indice: "Par exemple : à partir de 60 €" },
@@ -280,7 +281,8 @@ export function construirePanneaux(contenu, onChange) {
       titre: "Nouvelle formule",
       cible: "",
       objectif: "",
-      lignes: [],
+      objectifs: [],
+      contenu: "",
       detailsTitre: "",
       details: [],
       prix: "",

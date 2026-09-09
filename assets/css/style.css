@@ -622,9 +622,24 @@ p:last-child { margin-bottom: 0; }
   margin: 0 0 0.5rem;
 }
 .formule h3 { font-size: 1.2rem; margin-bottom: 0.85rem; }
-.formule__objectif { font-size: var(--fs-small); margin-bottom: 1rem; }
-.formule__liste { list-style: none; margin: 0 0 1.25rem; padding: 0; font-size: var(--fs-small); }
+
+/* « Objectif » et « Contenu » sont les deux intitules avec lesquels le
+   client decrit ses formules : ils sont repris tels quels, en display et en
+   vert, pour qu'on retrouve la meme lecture que sur ses documents. */
+.formule__intitule {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--vert-dark);
+}
+.formule--phare .formule__intitule { color: var(--vert); }
+.formule__intitule--seul { display: block; margin: 0 0 0.4rem; }
+
+.formule__objectif { font-size: var(--fs-small); margin-bottom: 0.85rem; }
+.formule__contenu { font-size: var(--fs-small); margin-bottom: 1.25rem; }
+.formule__liste { list-style: none; margin: 0 0 1rem; padding: 0; font-size: var(--fs-small); }
 .formule__liste li { padding: 0.5rem 0; border-top: 1px solid var(--trait); }
+.formule--phare .formule__liste li { border-top-color: rgba(255, 253, 249, 0.18); }
 .formule__pied { margin-top: auto; }
 .formule__prix {
   font-family: var(--display);

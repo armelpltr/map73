@@ -77,18 +77,23 @@ export const CONTENU_DEFAUT = {
     horaires: ["Du lundi au vendredi, de 9h à 18h30", "Le samedi, de 9h à 12h"]
   },
 
+  /* Les quatre formules, reprises du site en ligne : chacune porte un
+     objectif (ou une liste d'objectifs) et un contenu, les deux intitules
+     que le client utilise pour les decrire. `lignes` reste lu par le rendu
+     pour les documents publies avant cette distinction. */
   formules: [
     {
       id: "formule-a-la-map",
       ordre: 10,
       cible: "Tous niveaux, à la carte",
       titre: "À LA MAP",
-      objectif: "Traiter une problématique précise, sans engagement sur la durée.",
-      lignes: ["Une séance individuelle de 45 minutes"],
-      detailsTitre: "Ce que la séance peut couvrir",
+      objectif: "Accompagner les jeunes sur des problématiques précises.",
+      objectifs: [],
+      contenu: "Une séance individuelle de 45 minutes",
+      detailsTitre: "Séance à la carte, parmi les services proposés",
       details: [
-        "Rédaction du CV et de la lettre de motivation",
-        "Préparation aux oraux",
+        "Création du CV et de la lettre de motivation",
+        "Accompagnement pour les oraux",
         "Accompagnement méthodologique",
         "Un point précis d’orientation"
       ],
@@ -101,15 +106,15 @@ export const CONTENU_DEFAUT = {
     {
       id: "formule-premiere-orientation",
       ordre: 20,
-      cible: "Collège, seconde et première",
+      cible: "Collégiens, élèves de seconde et de première",
       titre: "MAP’REMIERE ORIENTATION",
-      objectif: "Faire le point et décider, à chaque palier du secondaire.",
-      lignes: [
-        "Bilan d’orientation scolaire complet",
-        "Choix de la voie en fin de 3<sup>e</sup>",
-        "Choix des spécialités en 2<sup>de</sup> et 1<sup>re</sup>",
-        "5 séances de suivi"
+      objectif: "",
+      objectifs: [
+        "Effectuer un bilan d’orientation scolaire",
+        "Aider dans le choix en fin de 3<sup>e</sup>",
+        "Choisir ses spécialités en 2<sup>de</sup> et 1<sup>re</sup>"
       ],
+      contenu: "5 séances de suivi",
       detailsTitre: "",
       details: [],
       prix: "à partir de 55 €",
@@ -121,10 +126,11 @@ export const CONTENU_DEFAUT = {
     {
       id: "formule-parcoursup-light",
       ordre: 30,
-      cible: "Terminale",
+      cible: "Élèves de terminale",
       titre: "MAP’ARCOURSUP LIGHT",
       objectif: "Construire sa stratégie individuelle d’orientation post-bac.",
-      lignes: ["5 séances de suivi", "Repérage des formations et des attendus"],
+      objectifs: [],
+      contenu: "5 séances de suivi",
       detailsTitre: "",
       details: [],
       prix: "à partir de 59 €",
@@ -136,72 +142,19 @@ export const CONTENU_DEFAUT = {
     {
       id: "formule-parcoursup-complet",
       ordre: 40,
-      cible: "Terminale, accompagnement complet",
+      cible: "Élèves de terminale",
       titre: "MAP’ARCOURSUP COMPLET",
-      objectif: "La stratégie post-bac menée jusqu’à la finalisation du dossier Parcoursup.",
-      lignes: [
-        "8 séances de suivi",
-        "Formulation et hiérarchisation des vœux",
-        "Relecture des lettres et du projet de formation"
-      ],
+      objectif:
+        "Construire sa stratégie individuelle d’orientation post-bac, jusqu’à la finalisation du dossier Parcoursup.",
+      objectifs: [],
+      contenu: "8 séances de suivi",
       detailsTitre: "",
       details: [],
       prix: "Tarif sur mesure",
-      prixNote: "contactez-nous pour un devis adapté",
+      prixNote: "nous contacter pour un tarif adapté",
       phare: true,
       libelleBouton: "Demander un devis",
       lienBouton: "#contact"
-    }
-  ],
-
-  /* Les deux fondatrices, telles qu'elles sont écrites en dur dans index.html.
-     Le portrait est un carré de 800 × 800 px déposé dans assets/img/. */
-  fondatrices: [
-    {
-      id: "julie",
-      ordre: 10,
-      prenom: "Julie",
-      role: "Ressources humaines et kinésiologie",
-      portrait: "assets/img/portrait-julie.webp",
-      portraitAlt:
-        "Julie, cofondatrice de MAP73, responsable ressources humaines et kinésiologue",
-      chiffres: [
-        { valeur: "15 ans", mesure: "en entreprise, côté RH" },
-        { valeur: "2", mesure: "certifications" }
-      ],
-      faits: [
-        { intitule: "Formation", texte: "Master en gestion et innovations RH" },
-        { intitule: "Expérience", texte: "Gestionnaire RH : responsable de formation et de recrutements" },
-        {
-          intitule: "Dans les séances",
-          texte: "Connaissance de soi, découverte du monde professionnel, candidatures"
-        }
-      ],
-      pastilles: ["Kinésiologie FFK", "Ennéagramme cycle 1 (CEE)"]
-    },
-    {
-      id: "camille",
-      ordre: 20,
-      prenom: "Camille",
-      role: "Enseignement et droit social",
-      portrait: "assets/img/portrait-camille.webp",
-      portraitAlt: "Camille, cofondatrice de MAP73, enseignante certifiée et juriste",
-      chiffres: [
-        { valeur: "10 ans", mesure: "d’enseignement" },
-        { valeur: "7 ans", mesure: "en juridique et RH" }
-      ],
-      faits: [
-        {
-          intitule: "Formation",
-          texte: "Licence de droit, master en gestion sociale et CAPES de lettres modernes"
-        },
-        { intitule: "Expérience", texte: "Enseignante en collège et lycée, puis chargée juridique et RH" },
-        {
-          intitule: "Dans les séances",
-          texte: "Choix des filières et des spécialités, stratégie Parcoursup, écrits"
-        }
-      ],
-      pastilles: ["CAPES de lettres modernes", "Formation en orientation"]
     }
   ],
 
