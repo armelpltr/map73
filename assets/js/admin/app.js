@@ -6,12 +6,12 @@
 // session de travail : le quota gratuit de Firestore ne le voit pas passer.
 // ============================================================
 
-import { obtenirFirestore } from "../firebase-config.js?v=20260909-2155";
-import { CONTENU_DEFAUT } from "../contenu-defaut.js?v=20260909-2155";
-import { initAuth } from "./auth.js?v=20260909-2155";
-import { initAcces } from "./acces.js?v=20260909-2155";
-import { construirePanneaux } from "./panneaux.js?v=20260909-2155";
-import { $, etat, confirmer } from "./ui.js?v=20260909-2155";
+import { obtenirFirestore } from "../firebase-config.js?v=20260909-2159";
+import { CONTENU_DEFAUT } from "../contenu-defaut.js?v=20260909-2159";
+import { initAuth } from "./auth.js?v=20260909-2159";
+import { initAcces } from "./acces.js?v=20260909-2159";
+import { construirePanneaux } from "./panneaux.js?v=20260909-2159";
+import { $, etat, confirmer } from "./ui.js?v=20260909-2159";
 
 let firestore = null;
 const REFERENCE = () => firestore.doc(firestore.db, "contenu", "site");
@@ -52,13 +52,24 @@ function initOnglets() {
    édité au lieu de la version d'origine. */
 const copie = (valeur) => JSON.parse(JSON.stringify(valeur));
 
+/* Une section ajoutee au site apres la derniere publication n'existe pas dans
+   le document Firestore : le panel l'afficherait vide, et publier ecraserait
+   le texte que le site montre encore. On complete donc les sections absentes
+   avec le contenu par defaut, sans jamais toucher a celles deja publiees. */
+function completerSectionsAbsentes(publie) {
+  for (const [cle, valeur] of Object.entries(CONTENU_DEFAUT)) {
+    if (publie[cle] === undefined) publie[cle] = copie(valeur);
+  }
+  return publie;
+}
+
 async function charger() {
   etat("Chargement…");
   try {
     firestore = await obtenirFirestore();
     const instantane = await firestore.getDoc(REFERENCE());
     if (instantane.exists()) {
-      contenu = instantane.data();
+      contenu = completerSectionsAbsentes(instantane.data());
       etat(`Dernière publication : ${formaterDate(contenu.publieLe)}.`);
       $("bandeau-initial").hidden = true;
     } else {
