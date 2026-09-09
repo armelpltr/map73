@@ -14,7 +14,8 @@
   --ink-soft: #4a5872;
   --vert: #2e9e58;
   --vert-dark: #1c6e3d;
-  --lac: #2e7da8;
+  --lac: #2b759d; /* assombri : le bleu d'origine tombait a 4,48 sur blanc,
+                     sous le seuil AA des petits textes qui l'utilisent. */
   --ambre: #e8a33d;
   --trait: #d5d1c2;
   --blanc: #fffdf9;
@@ -341,14 +342,22 @@ p:last-child { margin-bottom: 0; }
   border: 1px solid rgba(255, 253, 249, 0.16);
 }
 .pilier { background: var(--ink); padding: clamp(1.75rem, 3vw, 2.5rem); }
+/* Le rang reprend le jalon de l'itineraire du hero, au lieu du grand chiffre
+   detoure : la page raconte deja un parcours, elle n'a pas besoin d'un second
+   vocabulaire pour le dire, et le chiffre redevient lisible. */
 .pilier__rang {
   font-family: var(--display);
-  font-size: 3rem;
-  font-weight: 800;
+  font-size: var(--fs-micro);
+  font-weight: 700;
   line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--vert);
-  display: block;
+  color: var(--vert);
+  font-variant-numeric: tabular-nums;
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--vert);
+  border-radius: 50%;
   margin-bottom: 1rem;
 }
 .pilier h3 { font-size: var(--fs-h3); color: var(--blanc); margin-bottom: 0.75rem; }
@@ -452,9 +461,11 @@ p:last-child { margin-bottom: 0; }
 /* Traitement en fiches : formation, expérience, certifications, chacune à sa
    ligne. C'est ce qu'un parent compare quand il choisit entre plusieurs
    accompagnements — et ce qui se met à jour sans refaire la mise en page.
-   La carte reprend le vocabulaire d'un tableau de bord : surface surélevée,
-   filet discret, repères chiffrés en tête. Les années d'expérience sont le
-   seul chiffre qui compte ici, autant les traiter comme tels. */
+   La carte reprend le vocabulaire du reste de la page : filet d'un pixel,
+   angles a peine casses, aucune ombre portee. Les formules portent un filet
+   bleu en tete, les fondatrices un filet vert : ce qu'on vend et ceux qui le
+   font ne se confondent pas. Les annees d'experience sont le seul chiffre qui
+   compte ici, autant les traiter comme tels. */
 .fondatrices {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -465,11 +476,11 @@ p:last-child { margin-bottom: 0; }
 .fondatrice {
   background: var(--blanc);
   border: 1px solid var(--trait);
-  border-radius: 16px;
+  border-top: 4px solid var(--vert);
+  border-radius: var(--rayon);
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   display: grid;
   gap: 1.25rem;
-  box-shadow: 0 1px 2px rgba(20, 36, 59, 0.04), 0 8px 24px -12px rgba(20, 36, 59, 0.12);
 }
 
 .fondatrice__entete {
@@ -484,7 +495,7 @@ p:last-child { margin-bottom: 0; }
 .fondatrice__portrait {
   width: 76px;
   height: 76px;
-  border-radius: 14px;
+  border-radius: var(--rayon);
   object-fit: cover;
   border: 1px solid var(--trait);
 }
@@ -507,7 +518,7 @@ p:last-child { margin-bottom: 0; }
   gap: 1px;
   background: var(--trait);
   border: 1px solid var(--trait);
-  border-radius: 12px;
+  border-radius: var(--rayon);
   overflow: hidden;
 }
 .fondatrice__chiffre { background: var(--paper); padding: 0.85rem 1rem; }
@@ -529,12 +540,13 @@ p:last-child { margin-bottom: 0; }
 
 .fondatrice__faits { margin: 0; font-size: var(--fs-small); display: grid; gap: 0.9rem; }
 .fondatrice__ligne { display: grid; gap: 0.2rem; }
+/* Intitules en casse normale : six libelles en capitales dans une meme carte
+   se lisent comme un gabarit, et le contraste de graisse suffit a les
+   distinguer du texte. */
 .fondatrice__ligne dt {
   font-family: var(--display);
-  font-size: 0.68rem;
+  font-size: var(--fs-micro);
   font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
   color: var(--ink-soft);
 }
 .fondatrice__ligne dd { margin: 0; }
@@ -554,7 +566,9 @@ p:last-child { margin-bottom: 0; }
   color: var(--vert-dark);
   background: color-mix(in srgb, var(--vert) 10%, var(--blanc));
   border: 1px solid color-mix(in srgb, var(--vert) 28%, var(--blanc));
-  border-radius: 999px;
+  /* Angles droits : arrondie a fond, l'etiquette se lisait comme un bouton,
+     et rien ne se passe quand on clique dessus. */
+  border-radius: var(--rayon);
   padding: 0.28rem 0.7rem;
 }
 
@@ -811,7 +825,7 @@ p:last-child { margin-bottom: 0; }
   .temoignages { columns: 1; }
 
   .fondatrice__entete { grid-template-columns: 64px minmax(0, 1fr); gap: 0.85rem; }
-  .fondatrice__portrait { width: 64px; height: 64px; border-radius: 12px; }
+  .fondatrice__portrait { width: 64px; height: 64px; border-radius: var(--rayon); }
   .fondatrice h3 { font-size: 1.25rem; }
   .fondatrice__valeur { font-size: 1.25rem; }
   .credit-impot { flex-direction: column; gap: 0.75rem; }
