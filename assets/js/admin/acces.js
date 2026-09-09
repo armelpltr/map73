@@ -7,8 +7,8 @@
 // de son côté — masquer l'onglet ne protège rien.
 // ============================================================
 
-import { appelerWorker, jetonCourant } from "./auth.js?v=20260909-2239";
-import { $, el, etat, confirmer } from "./ui.js?v=20260909-2239";
+import { appelerWorker, jetonCourant } from "./auth.js?v=20260909-2252";
+import { $, el, etat, confirmer } from "./ui.js?v=20260909-2252";
 
 function formaterDate(millisecondes) {
   if (!millisecondes) return "";

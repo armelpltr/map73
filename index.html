@@ -77,7 +77,6 @@
           Prendre rendez-vous
         </a>
         <a class="bouton bouton--contour" href="#formules">Voir les formules</a>
-        <p class="hero__note" id="hero-note">Crédit d’impôt de 50&nbsp;% | services à la personne</p>
       </div>
 
       <div class="itineraire">
@@ -131,7 +130,7 @@
             <path d="M4 5v12M34 5v12"/>
           </svg>
           <div>
-            <span class="legende__fait">3<sup>e</sup> → terminale</span>
+            <span class="legende__fait">De la troisième à la terminale</span>
             <p class="legende__quoi">Le même binôme à chaque palier, sans repartir de zéro.</p>
           </div>
         </li>
@@ -144,7 +143,7 @@
           </svg>
           <div>
             <span class="legende__fait">Deux expertes</span>
-            <p class="legende__quoi">Une responsable RH kinésiologue, une enseignante certifiée.</p>
+            <p class="legende__quoi">Une responsable RH kinésiologue et une enseignante certifiée.</p>
           </div>
         </li>
         <li class="legende__item">
@@ -164,7 +163,7 @@
           </svg>
           <div>
             <span class="legende__fait">Chambéry</span>
-            <p class="legende__quoi">Au cabinet, en Savoie, ou en visio partout en France.</p>
+            <p class="legende__quoi">Au cabinet à Chambéry en Savoie, ou en visio partout en France.</p>
           </div>
         </li>
       </ul>
@@ -184,11 +183,26 @@
         </ul>
       </div>
       <figure class="propos__media">
-        <img src="assets/img/bureaux-map73-640.webp"
-             srcset="assets/img/bureaux-map73-640.webp 640w, assets/img/bureaux-map73-854.webp 854w"
-             sizes="(max-width: 900px) 100vw, 480px"
-             width="640" height="416" loading="lazy" decoding="async"
-             alt="Le cabinet MAP73, rue de Saint-Ombre à Chambéry, où se déroulent les séances en présentiel">
+        <!-- Un lien, et non un bouton : sans JavaScript il ouvre l'image, et
+             le script se contente de detourner le clic vers la visionneuse. -->
+        <a class="agrandir"
+           href="assets/img/bureaux-map73-854.webp"
+           data-agrandir="assets/img/bureaux-map73-854.webp"
+           data-agrandir-alt="Le cabinet MAP73, rue de Saint-Ombre à Chambéry, où se déroulent les séances en présentiel"
+           data-agrandir-legende="Nos bureaux, 56 rue de Saint-Ombre à Chambéry.">
+          <img src="assets/img/bureaux-map73-640.webp"
+               srcset="assets/img/bureaux-map73-640.webp 640w, assets/img/bureaux-map73-854.webp 854w"
+               sizes="(max-width: 900px) 100vw, 480px"
+               width="640" height="416" loading="lazy" decoding="async"
+               alt="Le cabinet MAP73, rue de Saint-Ombre à Chambéry, où se déroulent les séances en présentiel">
+          <span class="agrandir__signe" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" focusable="false">
+              <circle cx="10.5" cy="10.5" r="6.5"/>
+              <path d="M15.5 15.5 21 21M10.5 7.5v6M7.5 10.5h6"/>
+            </svg>
+          </span>
+          <span class="visuellement-cache">Agrandir la photo du cabinet</span>
+        </a>
         <figcaption class="propos__legende">Nos bureaux, 56 rue de Saint-Ombre à Chambéry.</figcaption>
       </figure>
     </div>
@@ -734,6 +748,18 @@
 
 </main>
 
+<!-- Visionneuse : un seul dialogue pour toutes les images agrandissables. -->
+<dialog class="visionneuse" id="visionneuse">
+  <button class="visionneuse__fermer" type="button" id="visionneuse-fermer">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
+      <path d="M6 6l12 12M18 6L6 18"/>
+    </svg>
+    <span class="visuellement-cache">Fermer</span>
+  </button>
+  <img id="visionneuse-image" alt="">
+  <p class="visionneuse__legende" id="visionneuse-legende"></p>
+</dialog>
+
 <!-- couture -->
 <div class="couture couture--encre-craie couture--miroir" aria-hidden="true">
   <svg viewBox="0 0 600 54" preserveAspectRatio="none" focusable="false">
@@ -793,8 +819,8 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20260909-2239" defer></script>
-<script type="module" src="assets/js/site-data.js?v=20260909-2239"></script>
+<script src="assets/js/main.js?v=20260909-2252" defer></script>
+<script type="module" src="assets/js/site-data.js?v=20260909-2252"></script>
 
 <script type="application/ld+json">
 {

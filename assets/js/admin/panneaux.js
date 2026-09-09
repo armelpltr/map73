@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2239";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2252";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
@@ -231,7 +231,6 @@ export function construirePanneaux(contenu, onChange) {
   [
     { cle: "titre", label: "Titre principal (H1)", large: true },
     { cle: "chapo", label: "Texte d’introduction", type: "zone", large: true },
-    { cle: "note", label: "Mention sous les boutons" },
     { cle: "itineraireIntro", label: "Phrase au-dessus de l’itinéraire" },
     { cle: "reperesTitre", label: "Phrase au-dessus de la légende" }
   ].forEach((def) =>

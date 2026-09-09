@@ -20,7 +20,6 @@ export const CONTENU_DEFAUT = {
     titre: "Inquiet sur l’orientation de votre ado ?",
     chapo:
       "MAP73 l’accompagne de la troisième à la terminale pour mieux se connaître, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance.",
-    note: "Crédit d’impôt de 50 % | services à la personne",
     itineraireIntro: "Où en est votre ado ? Choisissez son étape.",
     reperesTitre: "Ce que couvre l’accompagnement"
   },
@@ -40,7 +39,7 @@ export const CONTENU_DEFAUT = {
       id: "duree",
       ordre: 10,
       glyphe: "etendue",
-      fait: "3<sup>e</sup> → terminale",
+      fait: "De la troisième à la terminale",
       quoi: "Le même binôme à chaque palier, sans repartir de zéro."
     },
     {
@@ -48,7 +47,7 @@ export const CONTENU_DEFAUT = {
       ordre: 20,
       glyphe: "binome",
       fait: "Deux expertes",
-      quoi: "Une responsable RH kinésiologue, une enseignante certifiée."
+      quoi: "Une responsable RH kinésiologue et une enseignante certifiée."
     },
     {
       id: "credit-impot",
@@ -62,7 +61,7 @@ export const CONTENU_DEFAUT = {
       ordre: 40,
       glyphe: "epingle",
       fait: "Chambéry",
-      quoi: "Au cabinet, en Savoie, ou en visio partout en France."
+      quoi: "Au cabinet à Chambéry en Savoie, ou en visio partout en France."
     }
   ],
 

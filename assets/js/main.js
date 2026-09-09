@@ -46,6 +46,46 @@
     ).observe(sentinelle);
   }
 
+  /* ---- Visionneuse d'images ----
+     Le declencheur est un lien vers l'image : sans script, le clic ouvre le
+     fichier, ce qui reste utilisable. Avec script, on ouvre le dialogue
+     natif, qui gere deja le piege de tabulation, la touche Echap et le
+     retour du focus sur le lien. */
+  const visionneuse = document.getElementById("visionneuse");
+  const declencheurs = document.querySelectorAll("[data-agrandir]");
+
+  if (visionneuse && declencheurs.length && typeof visionneuse.showModal === "function") {
+    const image = document.getElementById("visionneuse-image");
+    const legende = document.getElementById("visionneuse-legende");
+    const fermer = document.getElementById("visionneuse-fermer");
+
+    declencheurs.forEach((declencheur) => {
+      declencheur.addEventListener("click", (e) => {
+        e.preventDefault();
+        image.src = declencheur.dataset.agrandir;
+        image.alt = declencheur.dataset.agrandirAlt || "";
+        legende.textContent = declencheur.dataset.agrandirLegende || "";
+        legende.hidden = !legende.textContent;
+        visionneuse.showModal();
+      });
+    });
+
+    if (fermer) fermer.addEventListener("click", () => visionneuse.close());
+
+    /* Un clic hors de l'image ferme : le dialogue occupe tout l'ecran, donc
+       la cible du clic n'est le dialogue lui-meme que dans sa marge. */
+    visionneuse.addEventListener("click", (e) => {
+      if (e.target === visionneuse) visionneuse.close();
+    });
+
+    /* L'image est liberee a la fermeture : la garder chargee n'a pas d'utilite
+       et la prochaine ouverture peut montrer une autre photo. */
+    visionneuse.addEventListener("close", () => {
+      image.removeAttribute("src");
+      image.alt = "";
+    });
+  }
+
   /* ---- Année du copyright ---- */
   const annee = document.getElementById("annee");
   if (annee) annee.textContent = String(new Date().getFullYear());

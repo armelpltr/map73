@@ -8,8 +8,8 @@
 // Rien sur cette page ne dépend de Firestore pour fonctionner.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2239";
-import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2239";
+import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2252";
+import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2252";
 
 const $ = (id) => document.getElementById(id);
 
@@ -19,7 +19,6 @@ function rendreHero(hero) {
   if (!hero) return;
   poserTexte($("hero-titre"), hero.titre);
   poserTexte($("hero-chapo"), hero.chapo);
-  poserTexte($("hero-note"), hero.note);
   poserTexte($("itineraire-intro"), hero.itineraireIntro);
   poserTexte($("legende-titre"), hero.reperesTitre);
 }

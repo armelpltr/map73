@@ -193,6 +193,8 @@ p:last-child { margin-bottom: 0; }
 /* Sans image de fond, une carte n'aurait plus aucune limite : a l'impression
    et en contraste renforce, le cadre ferme revient. */
 @media (prefers-contrast: more) {
+  .agrandir__signe { width: 2rem; height: 2rem; right: 0.5rem; bottom: 0.5rem; }
+  .visionneuse img { max-height: 70vh; }
   .formule,
   .fondatrice,
   .legende__item,
@@ -283,7 +285,6 @@ p:last-child { margin-bottom: 0; }
 }
 .hero__chapo strong { color: var(--ink); font-weight: 600; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: center; }
-.hero__note { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
 
 /* ---------- Itinéraire (élément signature) ---------- */
 .itineraire { margin-top: clamp(3rem, 6vw, 5rem); position: relative; }
@@ -470,8 +471,81 @@ p:last-child { margin-bottom: 0; }
   font-size: 1.35em;
   margin-right: 0.15em;
 }
-.propos__media img { border-radius: var(--rayon-l); width: 100%; }
+.propos__media img { width: 100%; }
 .propos__legende { font-size: var(--fs-micro); color: var(--ink-soft); margin-top: 0.6rem; }
+
+/* ---------- Images agrandissables ---------- */
+/* Le signe est une loupe posee dans l'angle, du cote ou l'image touche la
+   gouttiere : rien n'indiquait qu'on pouvait cliquer. */
+.agrandir {
+  display: block;
+  position: relative;
+  line-height: 0;
+  cursor: zoom-in;
+}
+.agrandir__signe {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--trait);
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.agrandir:hover .agrandir__signe,
+.agrandir:focus-visible .agrandir__signe { background: var(--vert); color: var(--ink); }
+
+.visionneuse {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  border: 0;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: transparent;
+  color: var(--paper);
+  /* place-content plutot que place-items : l'image garde sa taille naturelle
+     et reste centree, y compris quand elle est plus petite que l'ecran. */
+  display: grid;
+  place-content: center;
+  gap: 0.85rem;
+}
+.visionneuse:not([open]) { display: none; }
+.visionneuse::backdrop { background: rgba(20, 36, 59, 0.88); }
+.visionneuse img {
+  max-width: min(100%, 854px);
+  max-height: 78vh;
+  width: auto;
+  border: 1px solid rgba(255, 253, 249, 0.22);
+}
+.visionneuse__legende {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: #cfd7e4;
+  text-align: center;
+  max-width: 60ch;
+  justify-self: center;
+}
+.visionneuse__fermer {
+  position: fixed;
+  top: clamp(0.75rem, 2vw, 1.5rem);
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid rgba(255, 253, 249, 0.35);
+  color: var(--paper);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.visionneuse__fermer:hover { background: var(--paper); color: var(--ink); }
 
 /* ---------- Piliers ---------- */
 .piliers {
