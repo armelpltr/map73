@@ -17,3 +17,6 @@ BRIEF-REFONTE-MAP73.md
 
 # Cache local de wrangler
 .wrangler/
+
+# Skills et config Claude Code, hors depot public
+.claude/
