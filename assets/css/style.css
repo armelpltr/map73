@@ -42,6 +42,10 @@
 
   --rayon: 3px;
   --rayon-l: 6px;
+
+  /* Couleur des equerres quand la carte n'appartient a aucune famille
+     coloree : le filet courant est trop pale pour se lire en repere. */
+  --equerre-neutre: color-mix(in srgb, var(--trait) 62%, var(--ink));
 }
 
 /* ---------- Base ---------- */
@@ -137,6 +141,63 @@ p:last-child { margin-bottom: 0; }
 .bouton--clair { border-color: rgba(255, 253, 249, 0.45); color: var(--blanc); }
 .bouton--clair:hover { background: var(--blanc); color: var(--ink); }
 .bouton svg { flex: none; }
+
+/* ---------- Cartes : les coins équerre ---------- */
+/* Les quatre familles de cartes portaient le meme filet d'un pixel a 3 px de
+   rayon : un bord propre, mais qui ne disait ni de quelle famille etait la
+   carte, ni d'ou venait le site. Le cadre ferme cede la place a quatre
+   equerres de 18 px, comme les reperes de coupe d'une planche gravee, dans
+   la couleur de la famille : bleu lac pour ce qu'on vend, vert pour les
+   personnes, ambre sur la carte phare, gris fonce pour le reste.
+
+   Les equerres sont peintes en degrades plutot qu'en bordures : quatre coins
+   ne se decrivent pas avec la propriete border, et deux pseudo-elements ne
+   suffisent pas a en faire quatre. Chaque paire tient un coin, une barre
+   horizontale et une verticale. */
+.formule,
+.fondatrice,
+.legende__item,
+.temoignage {
+  --equerre: var(--equerre-neutre);
+  --equerre-taille: 18px;
+  --equerre-trait: 1.5px;
+  /* Retrait des equerres par rapport au bord. Nul sur une carte claire, ou
+     l'equerre marque l'angle meme ; rentre sur la carte phare, dont l'aplat
+     encre tient deja la limite : au ras du bord, l'ambre se perdait contre
+     le papier de la section. */
+  --equerre-marge: 0px;
+  border: 0;
+  border-radius: 0;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--equerre) 0 0), linear-gradient(var(--equerre) 0 0),
+    linear-gradient(var(--equerre) 0 0), linear-gradient(var(--equerre) 0 0),
+    linear-gradient(var(--equerre) 0 0), linear-gradient(var(--equerre) 0 0),
+    linear-gradient(var(--equerre) 0 0), linear-gradient(var(--equerre) 0 0);
+  background-size:
+    var(--equerre-taille) var(--equerre-trait), var(--equerre-trait) var(--equerre-taille),
+    var(--equerre-taille) var(--equerre-trait), var(--equerre-trait) var(--equerre-taille),
+    var(--equerre-taille) var(--equerre-trait), var(--equerre-trait) var(--equerre-taille),
+    var(--equerre-taille) var(--equerre-trait), var(--equerre-trait) var(--equerre-taille);
+  background-position:
+    left var(--equerre-marge) top var(--equerre-marge),
+    left var(--equerre-marge) top var(--equerre-marge),
+    right var(--equerre-marge) top var(--equerre-marge),
+    right var(--equerre-marge) top var(--equerre-marge),
+    left var(--equerre-marge) bottom var(--equerre-marge),
+    left var(--equerre-marge) bottom var(--equerre-marge),
+    right var(--equerre-marge) bottom var(--equerre-marge),
+    right var(--equerre-marge) bottom var(--equerre-marge);
+}
+
+/* Sans image de fond, une carte n'aurait plus aucune limite : a l'impression
+   et en contraste renforce, le cadre ferme revient. */
+@media (prefers-contrast: more) {
+  .formule,
+  .fondatrice,
+  .legende__item,
+  .temoignage { border: 1px solid var(--ink); }
+}
 
 /* ---------- En-tête ---------- */
 .entete {
@@ -322,10 +383,8 @@ p:last-child { margin-bottom: 0; }
   display: grid;
   gap: 0.65rem;
   align-content: start;
-  background: var(--blanc);
-  border: 1px solid var(--trait);
-  border-radius: var(--rayon);
-  padding: clamp(1rem, 2vw, 1.25rem);
+  background-color: var(--blanc);
+  padding: clamp(1.15rem, 2vw, 1.35rem);
 }
 .legende__glyphe { color: var(--vert-dark); }
 .legende__fait {
@@ -459,19 +518,19 @@ p:last-child { margin-bottom: 0; }
   gap: clamp(1rem, 2vw, 1.5rem);
   align-items: stretch;
 }
+/* background-color et non background : la forme courte effacerait les
+   degrades qui dessinent les equerres. */
 .formule {
-  background: var(--blanc);
-  border: 1px solid var(--trait);
-  border-top: 4px solid var(--lac);
-  border-radius: var(--rayon);
+  --equerre: var(--lac);
+  background-color: var(--blanc);
   padding: clamp(1.5rem, 2.5vw, 2rem);
   display: flex;
   flex-direction: column;
 }
 .formule--phare {
-  background: var(--ink);
-  border-color: var(--ink);
-  border-top-color: var(--ambre);
+  --equerre: var(--ambre);
+  --equerre-marge: 8px;
+  background-color: var(--ink);
   color: var(--paper);
 }
 .formule--phare h3 { color: var(--blanc); }
@@ -567,10 +626,8 @@ p:last-child { margin-bottom: 0; }
 }
 
 .fondatrice {
-  background: var(--blanc);
-  border: 1px solid var(--trait);
-  border-top: 4px solid var(--vert-dark);
-  border-radius: var(--rayon);
+  --equerre: var(--vert-dark);
+  background-color: var(--blanc);
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   display: grid;
   gap: 1.25rem;
@@ -588,7 +645,6 @@ p:last-child { margin-bottom: 0; }
 .fondatrice__portrait {
   width: 76px;
   height: 76px;
-  border-radius: var(--rayon);
   object-fit: cover;
   border: 1px solid var(--trait);
 }
@@ -611,7 +667,6 @@ p:last-child { margin-bottom: 0; }
   gap: 1px;
   background: var(--trait);
   border: 1px solid var(--trait);
-  border-radius: var(--rayon);
   overflow: hidden;
 }
 .fondatrice__chiffre { background: var(--paper); padding: 0.85rem 1rem; }
@@ -661,7 +716,7 @@ p:last-child { margin-bottom: 0; }
   border: 1px solid color-mix(in srgb, var(--vert-dark) 30%, var(--blanc));
   /* Angles droits : arrondie a fond, l'etiquette se lisait comme un bouton,
      et rien ne se passe quand on clique dessus. */
-  border-radius: var(--rayon);
+  border-radius: 0;
   padding: 0.28rem 0.7rem;
 }
 
@@ -670,9 +725,7 @@ p:last-child { margin-bottom: 0; }
 .temoignage {
   break-inside: avoid;
   margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
-  background: var(--blanc);
-  border: 1px solid var(--trait);
-  border-radius: var(--rayon);
+  background-color: var(--blanc);
   padding: 1.5rem;
 }
 .temoignage blockquote { margin: 0 0 1rem; font-size: var(--fs-small); }
@@ -918,11 +971,15 @@ p:last-child { margin-bottom: 0; }
   .temoignages { columns: 1; }
 
   .fondatrice__entete { grid-template-columns: 64px minmax(0, 1fr); gap: 0.85rem; }
-  .fondatrice__portrait { width: 64px; height: 64px; border-radius: var(--rayon); }
+  .fondatrice__portrait { width: 64px; height: 64px; }
   .fondatrice h3 { font-size: 1.25rem; }
   .fondatrice__valeur { font-size: 1.25rem; }
   .couture { height: 34px; }
   .couture--fine { height: 22px; }
+  .formule,
+  .fondatrice,
+  .legende__item,
+  .temoignage { --equerre-taille: 14px; }
   .legende__fait { font-size: 1.1rem; }
   .credit-impot { flex-direction: column; gap: 0.75rem; }
   .pied__bas { flex-direction: column; }
@@ -948,5 +1005,8 @@ p:last-child { margin-bottom: 0; }
 
 @media print {
   .entete, .nav, .hero__fond, .formulaire, .couture { display: none; }
+  /* Les navigateurs n'impriment pas les images de fond : sans cadre, les
+     cartes n'auraient plus aucune limite sur le papier. */
+  .formule, .fondatrice, .legende__item, .temoignage { border: 1px solid #999; }
   body { background: #fff; color: #000; }
 }
