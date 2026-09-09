@@ -31,7 +31,7 @@ export function etat(message, ton = "") {
 }
 
 /** Champ de saisie étiqueté. `type` : texte, zone, case. */
-export function champ({ label, valeur, indice, type = "texte", large = false, onChange }) {
+export function champ({ label, valeur, indice, type = "texte", large = false, options, onChange }) {
   const id = `champ-${Math.random().toString(36).slice(2, 9)}`;
 
   if (type === "case") {
@@ -42,6 +42,21 @@ export function champ({ label, valeur, indice, type = "texte", large = false, on
       classe: "case-a-cocher" + (large ? " champ--large" : ""),
       enfants: [entree, el("span", { texte: label })]
     });
+  }
+
+  /* Choix ferme : le site ne connait qu'une liste de valeurs (les glyphes de
+     la legende, par exemple), une saisie libre n'y aurait aucun sens. */
+  if (type === "choix") {
+    const liste = el("select", { attributs: { id } });
+    for (const option of options || []) {
+      liste.appendChild(el("option", { texte: option.libelle, attributs: { value: option.valeur } }));
+    }
+    liste.value = valeur ?? (options?.[0]?.valeur ?? "");
+    liste.addEventListener("change", () => onChange(liste.value));
+
+    const enfantsChoix = [el("label", { texte: label, attributs: { for: id } }), liste];
+    if (indice) enfantsChoix.push(el("span", { classe: "champ__indice", texte: indice }));
+    return el("div", { classe: "champ" + (large ? " champ--large" : ""), enfants: enfantsChoix });
   }
 
   const entree = type === "zone" ? el("textarea", { attributs: { id } }) : el("input", { attributs: { type: "text", id } });

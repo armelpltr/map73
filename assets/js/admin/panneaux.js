@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2159";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260909-2224";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
@@ -83,9 +83,25 @@ const SCHEMA_ITINERAIRE = [
   { cle: "cible", label: "Formule visée", indice: "L’identifiant d’ancre d’une formule, sans le dièse." }
 ];
 
+/* Les glyphes disponibles pour la legende. Ajouter une entree ici suppose
+   d'avoir d'abord dessine le glyphe dans site-data.js. */
+const GLYPHES_LEGENDE = [
+  { valeur: "parcours", libelle: "Segment d’itinéraire (une durée, une progression)" },
+  { valeur: "binome", libelle: "Deux jalons (l’équipe)" },
+  { valeur: "tampon", libelle: "Tampon barré (un tarif, une remise)" },
+  { valeur: "epingle", libelle: "Épingle (un lieu)" }
+];
+
 const SCHEMA_REPERE = [
-  { cle: "valeur", label: "Chiffre ou mot-clé" },
-  { cle: "libelle", label: "Explication", type: "zone", large: true }
+  { cle: "fait", label: "Le fait", indice: "Court, il est affiché en gras. <sup>e</sup> écrit un exposant." },
+  { cle: "quoi", label: "Ce que ça veut dire", type: "zone", large: true },
+  {
+    cle: "glyphe",
+    label: "Dessin",
+    type: "choix",
+    options: GLYPHES_LEGENDE,
+    indice: "Choisissez le dessin qui correspond à la nature du fait."
+  }
 ];
 
 /* ---------- Éditeur de liste générique ---------- */
@@ -131,6 +147,7 @@ function editeurListe({ conteneur, entrees, schema, titrer, nouvelle, libelleAjo
               indice: def.indice,
               type: def.type,
               large: def.large,
+              options: def.options,
               valeur: entree[def.cle],
               onChange: (valeur) => {
                 entree[def.cle] = valeur;
@@ -215,7 +232,8 @@ export function construirePanneaux(contenu, onChange) {
     { cle: "titre", label: "Titre principal (H1)", large: true },
     { cle: "chapo", label: "Texte d’introduction", type: "zone", large: true },
     { cle: "note", label: "Mention sous les boutons" },
-    { cle: "itineraireIntro", label: "Phrase au-dessus de l’itinéraire" }
+    { cle: "itineraireIntro", label: "Phrase au-dessus de l’itinéraire" },
+    { cle: "reperesTitre", label: "Phrase au-dessus de la légende" }
   ].forEach((def) =>
     grilleHero.appendChild(
       champ({
@@ -246,8 +264,8 @@ export function construirePanneaux(contenu, onChange) {
     conteneur: $("panneau-reperes-liste"),
     entrees: (contenu.reperes ||= []),
     schema: SCHEMA_REPERE,
-    titrer: "valeur",
-    nouvelle: () => ({ valeur: "", libelle: "" }),
+    titrer: "fait",
+    nouvelle: () => ({ id: `repere-${Date.now().toString(36)}`, fait: "", quoi: "", glyphe: "parcours" }),
     libelleAjout: "Ajouter un repère",
     onChange
   });

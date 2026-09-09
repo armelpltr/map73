@@ -116,25 +116,61 @@
     </div>
   </section>
 
-  <!-- ============ Repères ============ -->
-  <div class="reperes" id="reperes-liste">
-    <div class="repere">
-      <span class="repere__valeur">3<sup>e</sup> – T<sup>le</sup></span>
-      <p class="repere__libelle">Un accompagnement continu sur toute la scolarité du secondaire</p>
+  <!-- ============ Reperes : la legende de la carte ============ -->
+  <!-- Le hero dessine des courbes de niveau et un itineraire jalonne. Les
+       quatre reperes en sont la legende : un glyphe dessine par fait, parce
+       qu'une duree, une equipe, un tarif et un lieu ne sont pas quatre
+       indicateurs du meme type. -->
+  <section class="section section--serre legende" aria-labelledby="legende-titre">
+    <div class="enveloppe">
+      <p class="legende__titre" id="legende-titre">Ce que couvre l’accompagnement</p>
+      <ul class="legende__liste" id="reperes-liste">
+        <li class="legende__item">
+          <svg class="legende__glyphe" width="44" height="22" viewBox="0 0 44 22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+            <path d="M4 14C12 14 14 6 22 6s10 8 18 8" stroke-dasharray="4 3"/>
+            <circle cx="4" cy="14" r="3" fill="#f7f6f1"/>
+            <circle cx="40" cy="14" r="3" fill="currentColor"/>
+          </svg>
+          <div>
+            <span class="legende__fait">3<sup>e</sup> → terminale</span>
+            <p class="legende__quoi">Le même binôme à chaque palier, sans repartir de zéro.</p>
+          </div>
+        </li>
+        <li class="legende__item">
+          <svg class="legende__glyphe" width="38" height="22" viewBox="0 0 38 22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+            <circle cx="11" cy="11" r="7"/>
+            <circle cx="27" cy="11" r="7"/>
+            <circle cx="11" cy="11" r="2.2" fill="currentColor" stroke="none"/>
+            <circle cx="27" cy="11" r="2.2" fill="currentColor" stroke="none"/>
+          </svg>
+          <div>
+            <span class="legende__fait">Deux expertes</span>
+            <p class="legende__quoi">Une responsable RH kinésiologue, une enseignante certifiée.</p>
+          </div>
+        </li>
+        <li class="legende__item">
+          <svg class="legende__glyphe" width="40" height="22" viewBox="0 0 40 22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+            <rect x="4" y="4" width="32" height="14" rx="1.5" stroke-dasharray="3 2.5"/>
+            <path d="M12 16 28 6"/>
+          </svg>
+          <div>
+            <span class="legende__fait">−50 % d’impôt</span>
+            <p class="legende__quoi">Services à la personne : 60 € la séance vous reviennent à 30 €.</p>
+          </div>
+        </li>
+        <li class="legende__item">
+          <svg class="legende__glyphe" width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+            <path d="M11 20c4.5-5.4 6.8-9 6.8-11.4A6.8 6.8 0 0 0 4.2 8.6C4.2 11 6.5 14.6 11 20Z"/>
+            <circle cx="11" cy="8.4" r="2.2" fill="currentColor" stroke="none"/>
+          </svg>
+          <div>
+            <span class="legende__fait">Chambéry</span>
+            <p class="legende__quoi">Au cabinet, en Savoie, ou en visio partout en France.</p>
+          </div>
+        </li>
+      </ul>
     </div>
-    <div class="repere">
-      <span class="repere__valeur">2 expertes</span>
-      <p class="repere__libelle">Une responsable RH kinésiologue et une enseignante certifiée</p>
-    </div>
-    <div class="repere">
-      <span class="repere__valeur">−50 %</span>
-      <p class="repere__libelle">Crédit d’impôt au titre des services à la personne</p>
-    </div>
-    <div class="repere">
-      <span class="repere__valeur">Chambéry</span>
-      <p class="repere__libelle">En cabinet, en Savoie, ou en visio partout en France</p>
-    </div>
-  </div>
+  </section>
 
   <!-- ============ À propos ============ -->
   <section class="section" id="a-propos">
@@ -686,8 +722,8 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20260909-2159" defer></script>
-<script type="module" src="assets/js/site-data.js?v=20260909-2159"></script>
+<script src="assets/js/main.js?v=20260909-2224" defer></script>
+<script type="module" src="assets/js/site-data.js?v=20260909-2224"></script>
 
 <script type="application/ld+json">
 {

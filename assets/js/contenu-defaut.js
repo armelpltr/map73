@@ -21,7 +21,8 @@ export const CONTENU_DEFAUT = {
     chapo:
       "MAP73 l’accompagne de la troisième à la terminale pour mieux se connaître, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance.",
     note: "Crédit d’impôt de 50 % — services à la personne",
-    itineraireIntro: "Où en est votre ado ? Choisissez son étape."
+    itineraireIntro: "Où en est votre ado ? Choisissez son étape.",
+    reperesTitre: "Ce que couvre l’accompagnement"
   },
 
   itineraire: [
@@ -31,11 +32,38 @@ export const CONTENU_DEFAUT = {
     { niveau: "Terminale", quoi: "Stratégie Parcoursup", cible: "formule-parcoursup-complet" }
   ],
 
+  /* Les quatre reperes, en legende de carte. `glyphe` designe l'un des
+     dessins connus du site — parcours, binome, tampon, epingle — et rien
+     d'autre : le panel choisit dans cette liste, il ne saisit pas de dessin. */
   reperes: [
-    { valeur: "3<sup>e</sup> – T<sup>le</sup>", libelle: "Un accompagnement continu sur toute la scolarité du secondaire" },
-    { valeur: "2 expertes", libelle: "Une responsable RH kinésiologue et une enseignante certifiée" },
-    { valeur: "−50 %", libelle: "Crédit d’impôt au titre des services à la personne" },
-    { valeur: "Chambéry", libelle: "En cabinet, en Savoie, ou en visio partout en France" }
+    {
+      id: "duree",
+      ordre: 10,
+      glyphe: "parcours",
+      fait: "3<sup>e</sup> → terminale",
+      quoi: "Le même binôme à chaque palier, sans repartir de zéro."
+    },
+    {
+      id: "equipe",
+      ordre: 20,
+      glyphe: "binome",
+      fait: "Deux expertes",
+      quoi: "Une responsable RH kinésiologue, une enseignante certifiée."
+    },
+    {
+      id: "credit-impot",
+      ordre: 30,
+      glyphe: "tampon",
+      fait: "−50 % d’impôt",
+      quoi: "Services à la personne : 60 € la séance vous reviennent à 30 €."
+    },
+    {
+      id: "lieu",
+      ordre: 40,
+      glyphe: "epingle",
+      fait: "Chambéry",
+      quoi: "Au cabinet, en Savoie, ou en visio partout en France."
+    }
   ],
 
   coordonnees: {

@@ -8,8 +8,8 @@
 // Rien sur cette page ne dépend de Firestore pour fonctionner.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2159";
-import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2159";
+import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260909-2224";
+import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260909-2224";
 
 const $ = (id) => document.getElementById(id);
 
@@ -21,6 +21,7 @@ function rendreHero(hero) {
   poserTexte($("hero-chapo"), hero.chapo);
   poserTexte($("hero-note"), hero.note);
   poserTexte($("itineraire-intro"), hero.itineraireIntro);
+  poserTexte($("legende-titre"), hero.reperesTitre);
 }
 
 function rendreItineraire(etapes) {
@@ -43,15 +44,99 @@ function rendreItineraire(etapes) {
   }
 }
 
+/* Les quatre dessins de la legende, decrits en donnees plutot qu'en chaines
+   de balises : le panel choisit une cle, jamais un dessin. Une cle inconnue
+   ne rend aucun glyphe, elle n'ouvre pas la porte a du SVG arbitraire. */
+/* Les quatre dessins de la legende. Chacun est cadre pour que son trace
+   commence a x = 4 et tienne dans la meme bande verticale : sans ca, une
+   epingle etroite et un segment large ne s'alignent pas dans la colonne, et
+   ca se voit surtout en mobile, ou le glyphe passe au-dessus du texte. */
+const GLYPHES = {
+  /* Un segment d'itineraire : depart creux, arrivee pleine. */
+  parcours: {
+    largeur: 44,
+    formes: [
+      ["path", { d: "M4 14C12 14 14 6 22 6s10 8 18 8", "stroke-dasharray": "4 3" }],
+      ["circle", { cx: "4", cy: "14", r: "3", fill: "#f7f6f1" }],
+      ["circle", { cx: "40", cy: "14", r: "3", fill: "currentColor" }]
+    ]
+  },
+  /* Deux jalons cote a cote : le binome. */
+  binome: {
+    largeur: 38,
+    formes: [
+      ["circle", { cx: "11", cy: "11", r: "7" }],
+      ["circle", { cx: "27", cy: "11", r: "7" }],
+      ["circle", { cx: "11", cy: "11", r: "2.2", fill: "currentColor", stroke: "none" }],
+      ["circle", { cx: "27", cy: "11", r: "2.2", fill: "currentColor", stroke: "none" }]
+    ]
+  },
+  /* Un tampon barre : la remise fiscale. */
+  tampon: {
+    largeur: 40,
+    formes: [
+      ["rect", { x: "4", y: "4", width: "32", height: "14", rx: "1.5", "stroke-dasharray": "3 2.5" }],
+      ["path", { d: "M12 16 28 6" }]
+    ]
+  },
+  /* Une epingle : le lieu. */
+  epingle: {
+    largeur: 22,
+    formes: [
+      ["path", { d: "M11 20c4.5-5.4 6.8-9 6.8-11.4A6.8 6.8 0 0 0 4.2 8.6C4.2 11 6.5 14.6 11 20Z" }],
+      ["circle", { cx: "11", cy: "8.4", r: "2.2", fill: "currentColor", stroke: "none" }]
+    ]
+  }
+};
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+function glyphe(cle) {
+  const dessin = GLYPHES[cle];
+  if (!dessin) return null;
+
+  const svg = document.createElementNS(SVG_NS, "svg");
+  for (const [nom, valeur] of Object.entries({
+    class: "legende__glyphe",
+    width: String(dessin.largeur),
+    height: "22",
+    viewBox: `0 0 ${dessin.largeur} 22`,
+    fill: "none",
+    stroke: "currentColor",
+    "stroke-width": "1.6",
+    "aria-hidden": "true",
+    focusable: "false"
+  })) {
+    svg.setAttribute(nom, valeur);
+  }
+
+  for (const [balise, attributs] of dessin.formes) {
+    const forme = document.createElementNS(SVG_NS, balise);
+    for (const [nom, valeur] of Object.entries(attributs)) forme.setAttribute(nom, valeur);
+    svg.appendChild(forme);
+  }
+  return svg;
+}
+
 function rendreReperes(reperes) {
   const liste = $("reperes-liste");
   if (!liste || !Array.isArray(reperes) || !reperes.length) return;
 
   liste.textContent = "";
   for (const repere of parOrdre(reperes)) {
-    const bloc = creer("div", "repere");
-    bloc.append(creer("span", "repere__valeur", repere.valeur), creer("p", "repere__libelle", repere.libelle));
-    liste.appendChild(bloc);
+    /* Un document publie avant la legende porte encore `valeur` et `libelle` :
+       on le lit plutot que de vider la section. */
+    const fait = repere.fait ?? repere.valeur;
+    const quoi = repere.quoi ?? repere.libelle;
+
+    const item = creer("li", "legende__item");
+    const dessin = glyphe(repere.glyphe);
+    if (dessin) item.appendChild(dessin);
+
+    const texte = document.createElement("div");
+    texte.append(creer("span", "legende__fait", fait), creer("p", "legende__quoi", quoi));
+    item.appendChild(texte);
+    liste.appendChild(item);
   }
 }
 
