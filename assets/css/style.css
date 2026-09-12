@@ -469,7 +469,6 @@ p:last-child { margin-bottom: 0; }
   font-weight: 800;
   color: var(--vert-dark);
   font-size: 1.35em;
-  margin-right: 0.15em;
 }
 .propos__media img { width: 100%; }
 .propos__legende { font-size: var(--fs-micro); color: var(--ink-soft); margin-top: 0.6rem; }
