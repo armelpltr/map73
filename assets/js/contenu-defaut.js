@@ -20,15 +20,16 @@ export const CONTENU_DEFAUT = {
     titre: "L’orientation scolaire. Plus qu’un choix, un avenir.",
     chapo:
       "MAP Orientation l’accompagne de la troisième à la terminale pour mieux se connaître, explorer des voies auxquelles il n’avait pas pensé auparavant, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance. À l’issue de l’accompagnement individualisé avec Camille et Julie, votre enfant aura toutes les cartes en main pour Maîtriser son Avenir et son Parcours.",
-    itineraireIntro: "Où en est votre ado ? Choisissez son étape.",
+    itineraireIntro:
+      "MAP propose des formules en fonction de l’âge de votre enfant. « Votre enfant est en quelle classe ? »",
     reperesTitre: "Ce que couvre l’accompagnement"
   },
 
   itineraire: [
-    { niveau: "3<sup>e</sup>", quoi: "Quelle voie après le collège", cible: "formule-premiere-orientation" },
-    { niveau: "2<sup>de</sup>", quoi: "Choix des spécialités", cible: "formule-premiere-orientation" },
-    { niveau: "1<sup>re</sup>", quoi: "Affiner le projet post-bac", cible: "formule-premiere-orientation" },
-    { niveau: "Terminale", quoi: "Stratégie Parcoursup", cible: "formule-parcoursup-complet" }
+    { niveau: "3<sup>e</sup>", quoi: "Quelle voie après le collège", cible: "formule-a-la-map" },
+    { niveau: "2<sup>de</sup>", quoi: "Choix des spécialités", cible: "formule-map-seconde" },
+    { niveau: "1<sup>re</sup>", quoi: "Affiner le projet post-bac", cible: "formule-map-premiere" },
+    { niveau: "Terminale", quoi: "Stratégie Parcoursup", cible: "formule-map-terminale" }
   ],
 
   /* Les quatre reperes, en legende de carte. `glyphe` designe l'un des
@@ -115,74 +116,122 @@ export const CONTENU_DEFAUT = {
       ordre: 10,
       cible: "Tous niveaux, à la carte",
       titre: "À LA MAP",
-      objectif: "Accompagner les jeunes sur des problématiques précises.",
+      objectif: "Accompagner les enfants sur des problématiques précises.",
       objectifs: [],
-      contenu: "Une séance individuelle de 45 minutes",
+      contenu: "Une séance individuelle d’une heure.",
       detailsTitre: "Séance à la carte, parmi les services proposés",
       details: [
         "Création du CV et de la lettre de motivation",
         "Accompagnement pour les oraux",
         "Accompagnement méthodologique",
-        "Un point précis d’orientation"
+        "Un point précis sur la stratégie d’orientation"
       ],
-      prix: "à partir de 60 €",
+      prix: "60 €",
       prixNote: "la séance",
       phare: false,
       libelleBouton: "Prendre rendez-vous",
       lienBouton: LIEN_RDV
     },
     {
-      id: "formule-premiere-orientation",
+      id: "formule-map-seconde",
       ordre: 20,
-      cible: "Collégiens, élèves de seconde et de première",
-      titre: "MAP’REMIERE ORIENTATION",
-      objectif: "",
-      objectifs: [
-        "Effectuer un bilan d’orientation scolaire",
-        "Aider dans le choix en fin de 3<sup>e</sup>",
-        "Choisir ses spécialités en 2<sup>de</sup> et 1<sup>re</sup>"
+      cible: "Élèves de seconde",
+      titre: "MAP SECONDE 1 AN",
+      objectif: "Préparer votre enfant à faire les bons choix de spécialités et l’initier aux orientations post-bac.",
+      objectifs: [],
+      contenu: "5 séances individuelles.",
+      detailsTitre: "Le programme",
+      details: [
+        "Méthodologie de travail",
+        "Test de personnalité",
+        "Cartographie des talents et des compétences"
       ],
-      contenu: "5 séances de suivi",
-      detailsTitre: "",
-      details: [],
-      prix: "à partir de 55 €",
+      prix: "à partir de 40 €",
       prixNote: "par mois",
       phare: false,
       libelleBouton: "Prendre rendez-vous",
       lienBouton: LIEN_RDV
     },
     {
-      id: "formule-parcoursup-light",
+      id: "formule-map-integrale",
       ordre: 30,
-      cible: "Élèves de terminale",
-      titre: "MAP’ARCOURSUP LIGHT",
-      objectif: "Construire sa stratégie individuelle d’orientation post-bac.",
+      cible: "Élèves de seconde, sur les trois années de lycée",
+      titre: "MAP INTÉGRALE 3 ANS",
+      objectif: "Accompagner votre enfant sur ses trois années au lycée.",
       objectifs: [],
-      contenu: "5 séances de suivi",
-      detailsTitre: "",
-      details: [],
-      prix: "à partir de 59 €",
+      contenu: "15 séances sur 3 ans.",
+      detailsTitre: "Le programme",
+      details: [
+        "Méthodologie de travail",
+        "Préparation aux oraux",
+        "Élaboration d’une stratégie d’orientation scolaire",
+        "Stratégie Parcoursup"
+      ],
+      prix: "45 €",
       prixNote: "par mois",
       phare: false,
       libelleBouton: "Prendre rendez-vous",
       lienBouton: LIEN_RDV
     },
     {
-      id: "formule-parcoursup-complet",
+      id: "formule-map-premiere",
       ordre: 40,
-      cible: "Élèves de terminale",
-      titre: "MAP’ARCOURSUP COMPLET",
-      objectif:
-        "Construire sa stratégie individuelle d’orientation post-bac, jusqu’à la finalisation du dossier Parcoursup.",
+      cible: "Élèves de première",
+      titre: "MAP PREMIÈRE 1 AN",
+      objectif: "Se préparer à aborder la dernière année de lycée avec des bases méthodologiques consolidées.",
       objectifs: [],
-      contenu: "8 séances de suivi",
-      detailsTitre: "",
-      details: [],
-      prix: "Tarif sur mesure",
-      prixNote: "nous contacter pour un tarif adapté",
+      contenu: "4 séances individuelles ou sous forme d’atelier méthodologique.",
+      detailsTitre: "Le programme",
+      details: [
+        "Méthodologie et préparation aux oraux du bac français",
+        "Apprendre à rédiger un CV et une lettre de motivation",
+        "Cartographie des talents et des compétences"
+      ],
+      prix: "à partir de 35 €",
+      prixNote: "par mois",
+      phare: false,
+      libelleBouton: "Prendre rendez-vous",
+      lienBouton: LIEN_RDV
+    },
+    {
+      id: "formule-map-premium",
+      ordre: 50,
+      cible: "Élèves de première et de terminale",
+      titre: "MAP PREMIUM 2 ANS",
+      objectif: "Établir une stratégie personnalisée d’orientation jusqu’à l’étape Parcoursup.",
+      objectifs: [],
+      contenu: "5 séances en première et 7 séances en terminale.",
+      detailsTitre: "Le programme",
+      details: [
+        "Bilan d’orientation scolaire",
+        "Préparation aux oraux et test de personnalité",
+        "Coaching",
+        "Stratégie d’orientation post-bac et gestion des étapes Parcoursup"
+      ],
+      prix: "50 €",
+      prixNote: "par mois",
       phare: true,
-      libelleBouton: "Demander un devis",
-      lienBouton: "#contact"
+      libelleBouton: "Prendre rendez-vous",
+      lienBouton: LIEN_RDV
+    },
+    {
+      id: "formule-map-terminale",
+      ordre: 60,
+      cible: "Élèves de terminale",
+      titre: "TERMINALE PARCOURSUP 1 AN",
+      objectif: "Élaborer la stratégie complète du parcours Parcoursup.",
+      objectifs: [],
+      contenu: "7 séances.",
+      detailsTitre: "Le programme",
+      details: [
+        "Exploration des différentes orientations post-bac",
+        "Gestion des différentes étapes Parcoursup"
+      ],
+      prix: "89 €",
+      prixNote: "par mois",
+      phare: false,
+      libelleBouton: "Prendre rendez-vous",
+      lienBouton: LIEN_RDV
     }
   ],
 
