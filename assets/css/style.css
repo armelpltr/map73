@@ -13,11 +13,10 @@
   --ink: #14243b;
   --ink-soft: #4a5872;
   /* Le vert du logo, mesure sur assets/img/logo-480.webp : #94C412, une teinte
-     olive a 76 deg. C'est un vert clair (1,91 sur le papier) : il sert de
-     surface et d'accent sur fond encre, jamais de couleur de texte sur fond
-     clair. Pour ca, --vert-dark reprend la meme teinte en plus sombre. */
+     olive a 76 deg. C'est le seul vert du site. Vert clair (1,91 sur le
+     papier), il ne porte que l'aplat, le trait et le dessin ; tout ce qui est
+     texte sur fond clair prend l'encre ou le lac, sinon ca ne se lit plus. */
   --vert: #94c412;
-  --vert-dark: #577506;
   --lac: #2b759d; /* assombri : le bleu d'origine tombait a 4,48 sur blanc,
                      sous le seuil AA des petits textes qui l'utilisent. */
   --ambre: #e8a33d;
@@ -67,7 +66,7 @@ body {
 
 img { max-width: 100%; height: auto; display: block; }
 
-a { color: var(--vert-dark); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a { color: var(--lac); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { color: var(--ink); }
 
 :where(a, button, input, textarea, summary, [tabindex]):focus-visible {
@@ -135,7 +134,7 @@ p:last-child { margin-bottom: 0; }
   transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 .bouton--plein { background: var(--vert); color: var(--ink); }
-.bouton--plein:hover { background: var(--vert-dark); color: var(--blanc); }
+.bouton--plein:hover { background: var(--ink); color: var(--blanc); }
 .bouton--contour { border-color: var(--ink); color: var(--ink); }
 .bouton--contour:hover { background: var(--ink); color: var(--paper); }
 .bouton--clair { border-color: rgba(255, 253, 249, 0.45); color: var(--blanc); }
@@ -246,7 +245,7 @@ p:last-child { margin-bottom: 0; }
   border-bottom: 2px solid transparent;
   display: inline-block;
 }
-.nav__lien:hover { border-bottom-color: var(--vert-dark); }
+.nav__lien:hover { border-bottom-color: var(--vert); }
 
 .entete__bascule {
   display: none;
@@ -342,7 +341,7 @@ p:last-child { margin-bottom: 0; }
   background: var(--ink);
   transition: background-color 0.18s ease;
 }
-.etape__lien:hover .etape__point { background: var(--vert); border-color: var(--vert-dark); }
+.etape__lien:hover .etape__point { background: var(--vert); border-color: var(--vert); }
 .etape__lien:hover .etape__point::after { background: var(--ink); }
 .etape__niveau {
   font-family: var(--display);
@@ -389,7 +388,7 @@ p:last-child { margin-bottom: 0; }
   background-color: var(--blanc);
   padding: clamp(1.15rem, 2vw, 1.35rem);
 }
-.legende__glyphe { color: var(--vert-dark); }
+.legende__glyphe { color: var(--vert); }
 .legende__fait {
   font-family: var(--display);
   font-size: 1.2rem;
@@ -433,7 +432,7 @@ p:last-child { margin-bottom: 0; }
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--vert-dark);
+  color: var(--ink);
   margin: 0;
 }
 .news__intitule { font-size: 1.2rem; line-height: 1.2; margin: 0; }
@@ -508,7 +507,7 @@ p:last-child { margin-bottom: 0; }
 }
 .propos__titre { font-size: var(--fs-h2); }
 .propos__acronyme {
-  border-left: 3px solid var(--vert-dark);
+  border-left: 3px solid var(--vert);
   padding: 0 0 0 1.25rem;
   margin: 0;
   list-style: none;
@@ -516,7 +515,7 @@ p:last-child { margin-bottom: 0; }
 .propos__acronyme li { font-family: var(--display); font-size: 1.05rem; padding: 0.35rem 0; }
 .propos__acronyme b {
   font-weight: 800;
-  color: var(--vert-dark);
+  color: var(--vert);
   font-size: 1.35em;
 }
 .propos__media img { width: 100%; }
@@ -672,13 +671,14 @@ p:last-child { margin-bottom: 0; }
 .formule h3 { font-size: 1.2rem; margin-bottom: 0.85rem; }
 
 /* « Objectif » et « Contenu » sont les deux intitules avec lesquels le
-   client decrit ses formules : ils sont repris tels quels, en display et en
-   vert, pour qu'on retrouve la meme lecture que sur ses documents. */
+   client decrit ses formules : ils sont repris tels quels, en display, pour
+   qu'on retrouve la meme lecture que sur ses documents. Le vert leur est
+   reserve sur la carte phare, ou le fond encre le rend lisible. */
 .formule__intitule {
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--vert-dark);
+  color: var(--ink-soft);
 }
 .formule--phare .formule__intitule { color: var(--vert); }
 .formule__intitule--seul { display: block; margin: 0 0 0.4rem; }
@@ -693,7 +693,7 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--vert-dark);
+  color: var(--ink);
   line-height: 1.1;
   display: block;
 }
@@ -748,7 +748,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 .fondatrice {
-  --equerre: var(--vert-dark);
+  --equerre: var(--vert);
   background-color: var(--blanc);
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   display: grid;
@@ -776,7 +776,7 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: var(--fs-small);
   font-weight: 600;
-  color: var(--vert-dark);
+  color: var(--ink-soft);
   margin: 0;
 }
 
@@ -798,7 +798,7 @@ p:last-child { margin-bottom: 0; }
   font-size: 1.45rem;
   font-weight: 700;
   line-height: 1.1;
-  color: var(--vert-dark);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 .fondatrice__mesure {
@@ -833,9 +833,9 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--vert-dark);
+  color: var(--ink);
   background: color-mix(in srgb, var(--vert) 10%, var(--blanc));
-  border: 1px solid color-mix(in srgb, var(--vert-dark) 30%, var(--blanc));
+  border: 1px solid color-mix(in srgb, var(--vert) 45%, var(--blanc));
   /* Angles droits : arrondie a fond, l'etiquette se lisait comme un bouton,
      et rien ne se passe quand on clique dessus. */
   border-radius: 0;
@@ -875,13 +875,13 @@ p:last-child { margin-bottom: 0; }
   width: 100%;
   transition: border-color 0.18s ease;
 }
-.presse__lien:hover img { border-color: var(--vert-dark); }
+.presse__lien:hover img { border-color: var(--vert); }
 .presse__citation { font-size: var(--fs-small); margin: 0.9rem 0 0.4rem; }
 .presse__source {
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--vert-dark);
+  color: var(--ink-soft);
 }
 
 /* ---------- Contact ---------- */
@@ -942,7 +942,7 @@ p:last-child { margin-bottom: 0; }
   padding: 0.75rem 1rem;
   border-radius: var(--rayon);
   background: color-mix(in srgb, var(--vert) 12%, var(--blanc));
-  border: 1px solid var(--vert-dark);
+  border: 1px solid var(--vert);
 }
 
 /* ---------- Pied de page ---------- */
@@ -1010,8 +1010,8 @@ p:last-child { margin-bottom: 0; }
   top: 1.5rem;
   width: 9px;
   height: 9px;
-  border-right: 2px solid var(--vert-dark);
-  border-bottom: 2px solid var(--vert-dark);
+  border-right: 2px solid var(--vert);
+  border-bottom: 2px solid var(--vert);
   transform: rotate(45deg);
   transition: transform 0.18s ease;
 }
@@ -1061,7 +1061,7 @@ p:last-child { margin-bottom: 0; }
   .nav[data-ouvert="oui"] { display: block; }
   .nav__liste { flex-direction: column; align-items: stretch; gap: 0; }
   .nav__lien { display: block; padding: 0.85rem 0; border-bottom: 1px solid var(--trait); }
-  .nav__lien:hover { border-bottom-color: var(--vert-dark); }
+  .nav__lien:hover { border-bottom-color: var(--vert); }
   .nav .bouton { margin-top: 1rem; width: 100%; justify-content: center; }
 
   .itineraire__etapes { grid-template-columns: 1fr; gap: 0; }
