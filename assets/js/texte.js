@@ -3,29 +3,30 @@
 //
 // Le contenu est saisi dans le panel puis affiché sur le site public : il
 // ne doit jamais pouvoir devenir du code. Tout passe donc par textContent,
-// à une exception près, <sup>, indispensable pour écrire 3ᵉ, 2ᵈᵉ, 1ʳᵉ
-// correctement. Cette exception est traitée par un analyseur maison qui ne
-// reconnaît que cette balise et pose le reste en texte brut.
+// à deux exceptions près : <sup>, indispensable pour écrire 3ᵉ, 2ᵈᵉ, 1ʳᵉ
+// correctement, et <strong>, pour mettre une phrase en avant dans un
+// paragraphe. Ces exceptions sont traitées par un analyseur maison qui ne
+// reconnaît que ces deux balises et pose le reste en texte brut.
 // ============================================================
 
-const SUP = /<sup>(.*?)<\/sup>/gi;
+const BALISES = /<(sup|strong)>(.*?)<\/\1>/gi;
 
-/** Vide `el` puis y écrit `texte`, en ne rendant que les balises <sup>. */
+/** Vide `el` puis y écrit `texte`, en ne rendant que <sup> et <strong>. */
 export function poserTexte(el, texte) {
   if (!el || texte === undefined || texte === null) return;
   el.textContent = "";
 
   let position = 0;
   let m;
-  SUP.lastIndex = 0;
+  BALISES.lastIndex = 0;
 
-  while ((m = SUP.exec(texte)) !== null) {
+  while ((m = BALISES.exec(texte)) !== null) {
     if (m.index > position) {
       el.appendChild(document.createTextNode(texte.slice(position, m.index)));
     }
-    const sup = document.createElement("sup");
-    sup.textContent = m[1];
-    el.appendChild(sup);
+    const balise = document.createElement(m[1].toLowerCase());
+    balise.textContent = m[2];
+    el.appendChild(balise);
     position = m.index + m[0].length;
   }
 

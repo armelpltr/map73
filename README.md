@@ -44,7 +44,7 @@ L'élément signature est l'**itinéraire** du hero (3ᵉ → terminale), qui se
 
 Tout le contenu tient dans **un seul document Firestore**, `contenu/site` : une lecture par visite du site, une écriture par publication. Le site public s'en sert s'il est disponible, et retombe sur le HTML écrit en dur sinon — une panne de Firebase n'a aucun effet visible.
 
-Aucun texte saisi n'est injecté en `innerHTML`. Seule la balise `<sup>` est interprétée, par un analyseur maison (`assets/js/texte.js`), pour pouvoir écrire 3ᵉ ou 1ʳᵉ correctement.
+Aucun texte saisi n'est injecté en `innerHTML`. Seules les balises `<sup>` et `<strong>` sont interprétées, par un analyseur maison (`assets/js/texte.js`) : la première pour pouvoir écrire 3ᵉ ou 1ʳᵉ correctement, la seconde pour mettre un passage en avant dans un paragraphe.
 
 ### Mise en service de Firebase
 

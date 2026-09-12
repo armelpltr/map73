@@ -17,9 +17,9 @@ export const LIEN_RDV = "https://calendly.com/map73/formation";
 
 export const CONTENU_DEFAUT = {
   hero: {
-    titre: "Inquiet sur l’orientation de votre ado ?",
+    titre: "L’orientation scolaire. Plus qu’un choix, un avenir.",
     chapo:
-      "MAP73 l’accompagne de la troisième à la terminale pour mieux se connaître, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance.",
+      "MAP Orientation l’accompagne de la troisième à la terminale pour mieux se connaître, explorer des voies auxquelles il n’avait pas pensé auparavant, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance. À l’issue de l’accompagnement individualisé avec Camille et Julie, votre enfant aura toutes les cartes en main pour Maîtriser son Avenir et son Parcours.",
     itineraireIntro: "Où en est votre ado ? Choisissez son étape.",
     reperesTitre: "Ce que couvre l’accompagnement"
   },
