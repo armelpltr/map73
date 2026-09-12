@@ -40,7 +40,7 @@ export const CONTENU_DEFAUT = {
       ordre: 10,
       glyphe: "etendue",
       fait: "De la troisième à la terminale",
-      quoi: "Le même binôme à chaque palier, sans repartir de zéro."
+      quoi: "Un suivi personnalisé de la fin du collège jusqu’au bac."
     },
     {
       id: "equipe",
