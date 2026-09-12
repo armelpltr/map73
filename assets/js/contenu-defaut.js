@@ -58,9 +58,40 @@ export const CONTENU_DEFAUT = {
     }
   ],
 
-  /* Aucune nouveaute au depart : la rubrique MAP news reste masquee tant que
-     le panel n'en publie pas. */
-  news: [],
+  /* Les nouveautes du haut de page. Ce sont des textes de depart : le panel
+     les remplace, et vider la liste fait disparaitre la rubrique du site. */
+  news: [
+    {
+      id: "news-inscriptions",
+      ordre: 10,
+      date: "Rentrée 2026",
+      titre: "Les inscriptions sont ouvertes",
+      texte:
+        "Les créneaux d’accompagnement de l’année scolaire se réservent dès maintenant, en présentiel ou à distance.",
+      libelleLien: "Prendre rendez-vous",
+      lien: LIEN_RDV
+    },
+    {
+      id: "news-ateliers",
+      ordre: 20,
+      date: "Nouveau",
+      titre: "Ateliers collectifs",
+      texte:
+        "Des séances en petit groupe pour explorer les métiers autrement, en complément du suivi individuel.",
+      libelleLien: "Voir les formules",
+      lien: "#formules"
+    },
+    {
+      id: "news-portes-ouvertes",
+      ordre: 30,
+      date: "Toute l’année",
+      titre: "Venez nous rencontrer",
+      texte:
+        "Le cabinet est ouvert rue de Saint-Ombre à Chambéry : poussez la porte pour en parler de vive voix.",
+      libelleLien: "Nous trouver",
+      lien: "#contact"
+    }
+  ],
 
   coordonnees: {
     raisonSociale: "MAP73",
