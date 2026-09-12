@@ -58,6 +58,10 @@ export const CONTENU_DEFAUT = {
     }
   ],
 
+  /* Aucune nouveaute au depart : la rubrique MAP news reste masquee tant que
+     le panel n'en publie pas. */
+  news: [],
+
   coordonnees: {
     raisonSociale: "MAP73",
     adresse: "56 rue de Saint-Ombre",

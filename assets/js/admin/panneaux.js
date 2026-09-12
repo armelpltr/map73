@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260912-2117";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260912-2143";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
@@ -91,6 +91,14 @@ const GLYPHES_LEGENDE = [
   { valeur: "binome", libelle: "Deux jalons (l’équipe)" },
   { valeur: "tampon", libelle: "Tampon barré (un tarif, une remise)" },
   { valeur: "epingle", libelle: "Épingle (un lieu)" }
+];
+
+const SCHEMA_NEWS = [
+  { cle: "date", label: "Date affichée", indice: "Texte libre : 4 octobre 2026, Rentrée 2026, Nouveau…" },
+  { cle: "titre", label: "Titre" },
+  { cle: "texte", label: "Ce que ça annonce", type: "zone", large: true, indice: "Deux ou trois lignes suffisent." },
+  { cle: "libelleLien", label: "Texte du lien", indice: "Laisser vide s’il n’y a pas de lien." },
+  { cle: "lien", label: "Lien", large: true, indice: "Une adresse complète, ou #formules pour une section du site." }
 ];
 
 const SCHEMA_REPERE = [
@@ -267,6 +275,24 @@ export function construirePanneaux(contenu, onChange) {
     titrer: "fait",
     nouvelle: () => ({ id: `repere-${Date.now().toString(36)}`, fait: "", quoi: "", glyphe: "etendue" }),
     libelleAjout: "Ajouter un repère",
+    onChange
+  });
+
+  /* MAP news */
+  editeurListe({
+    conteneur: $("panneau-news-liste"),
+    entrees: (contenu.news ||= []),
+    schema: SCHEMA_NEWS,
+    titrer: "titre",
+    nouvelle: () => ({
+      id: `news-${Date.now().toString(36)}`,
+      date: "",
+      titre: "Nouveauté",
+      texte: "",
+      libelleLien: "",
+      lien: ""
+    }),
+    libelleAjout: "Ajouter une nouveauté",
     onChange
   });
 

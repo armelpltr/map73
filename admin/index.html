@@ -105,6 +105,7 @@
   <nav class="admin-onglets" aria-label="Sections du contenu">
     <div class="enveloppe" style="display:flex;gap:.25rem">
       <button class="admin-onglet est-actif" type="button" data-panneau="hero">Accueil</button>
+      <button class="admin-onglet" type="button" data-panneau="news">MAP news</button>
       <button class="admin-onglet" type="button" data-panneau="formules">Formules</button>
       <button class="admin-onglet" type="button" data-panneau="fondatrices">Fondatrices</button>
       <button class="admin-onglet" type="button" data-panneau="temoignages">Témoignages</button>
@@ -139,6 +140,15 @@
       <h3 style="margin-top:2.5rem">Repères</h3>
       <p class="admin-panneau__intro">Le bandeau de quatre chiffres-clés sous l’accueil.</p>
       <div id="panneau-reperes-liste"></div>
+    </section>
+
+    <section class="admin-panneau" id="panneau-news">
+      <h2>MAP news</h2>
+      <p class="admin-panneau__intro">
+        Les nouveautés mises en avant en haut de la page d’accueil, entre les repères et « À propos ».
+        La rubrique n’apparaît sur le site que s’il y a au moins une nouveauté : supprimez-les toutes pour la faire disparaître.
+      </p>
+      <div id="panneau-news-liste"></div>
     </section>
 
     <section class="admin-panneau" id="panneau-formules">
@@ -253,6 +263,6 @@
 
 </div>
 
-<script type="module" src="../assets/js/admin/app.js?v=20260912-2117"></script>
+<script type="module" src="../assets/js/admin/app.js?v=20260912-2143"></script>
 </body>
 </html>

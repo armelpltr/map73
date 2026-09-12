@@ -8,8 +8,8 @@
 // Rien sur cette page ne dépend de Firestore pour fonctionner.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260912-2117";
-import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260912-2117";
+import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260912-2143";
+import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260912-2143";
 
 const $ = (id) => document.getElementById(id);
 
@@ -138,6 +138,41 @@ function rendreReperes(reperes) {
     item.appendChild(texte);
     liste.appendChild(item);
   }
+}
+
+/* ---------- MAP news ---------- */
+
+/* La section est ecrite masquee dans index.html : elle n'existe a l'ecran que
+   si le panel a publie au moins une nouveaute. Une entree sans titre ni texte
+   est ignoree, sans quoi un ajout laisse en blanc dans le panel ferait
+   apparaitre une carte vide sur la page. */
+function rendreNews(news) {
+  const section = $("news");
+  const liste = $("news-liste");
+  if (!section || !liste || !Array.isArray(news)) return;
+
+  liste.textContent = "";
+  for (const n of parOrdre(news)) {
+    if (!n.titre && !n.texte) continue;
+
+    const carte = creer("li", "news__carte");
+    if (n.date) carte.appendChild(creer("p", "news__date", n.date));
+    if (n.titre) carte.appendChild(creer("h3", "news__intitule", n.titre));
+    if (n.texte) carte.appendChild(creer("p", "news__texte", n.texte));
+
+    const url = lienSur(n.lien);
+    if (url) {
+      const lien = creer("a", "news__lien", n.libelleLien || "En savoir plus");
+      lien.href = url;
+      if (url.startsWith("http")) {
+        lien.target = "_blank";
+        lien.rel = "noopener";
+      }
+      carte.appendChild(lien);
+    }
+    liste.appendChild(carte);
+  }
+  section.hidden = !liste.children.length;
 }
 
 /* ---------- Formules ---------- */
@@ -396,6 +431,7 @@ async function charger() {
     rendreHero(d.hero);
     rendreItineraire(d.itineraire);
     rendreReperes(d.reperes);
+    rendreNews(d.news);
     rendreFormules(d.formules);
     rendreFondatrices(d.fondatrices);
     rendreTemoignages(d.temoignages);

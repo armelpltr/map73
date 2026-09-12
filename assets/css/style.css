@@ -157,6 +157,7 @@ p:last-child { margin-bottom: 0; }
 .formule,
 .fondatrice,
 .legende__item,
+.news__carte,
 .temoignage {
   --equerre: var(--equerre-neutre);
   --equerre-taille: 18px;
@@ -198,6 +199,7 @@ p:last-child { margin-bottom: 0; }
   .formule,
   .fondatrice,
   .legende__item,
+  .news__carte,
   .temoignage { border: 1px solid var(--ink); }
 }
 
@@ -396,6 +398,53 @@ p:last-child { margin-bottom: 0; }
   display: block;
 }
 .legende__quoi { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
+
+/* ---------- MAP news ---------- */
+/* Les nouveautes du cabinet, posees entre la legende et « A propos ». Meme
+   traitement en cartes que la legende juste au-dessus, pour que les deux
+   bandes se lisent comme un seul haut de page, avec une date en vert en
+   guise de vignette plutot qu’un glyphe. */
+.news { border-bottom: 1px solid var(--trait); }
+.news__titre {
+  font-family: var(--display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin: 0 0 1.5rem;
+}
+.news__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(0.75rem, 1.6vw, 1.1rem);
+}
+.news__carte {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  background-color: var(--blanc);
+  padding: clamp(1.15rem, 2vw, 1.35rem);
+}
+.news__date {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--vert-dark);
+  margin: 0;
+}
+.news__intitule { font-size: 1.2rem; line-height: 1.2; margin: 0; }
+.news__texte { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
+.news__lien {
+  font-family: var(--display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--lac);
+  justify-self: start;
+}
 
 /* ---------- Coutures : la courbe de niveau ---------- */
 /* Les sections se posaient bord a bord, et l'arete des sections encre
@@ -1052,6 +1101,7 @@ p:last-child { margin-bottom: 0; }
   .formule,
   .fondatrice,
   .legende__item,
+  .news__carte,
   .temoignage { --equerre-taille: 14px; }
   .legende__fait { font-size: 1.1rem; }
   .pied__bas { flex-direction: column; }
