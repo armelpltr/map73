@@ -8,8 +8,8 @@
 // Rien sur cette page ne dépend de Firestore pour fonctionner.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260912-2116";
-import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260912-2116";
+import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260912-2117";
+import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260912-2117";
 
 const $ = (id) => document.getElementById(id);
 

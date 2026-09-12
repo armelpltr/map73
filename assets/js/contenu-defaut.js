@@ -46,7 +46,7 @@ export const CONTENU_DEFAUT = {
       id: "equipe",
       ordre: 20,
       glyphe: "binome",
-      fait: "Deux expertes",
+      fait: "Deux expertes en orientation scolaire",
       quoi: "Une responsable ressources humaines et une enseignante certifiée."
     },
     {
