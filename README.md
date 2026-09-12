@@ -135,7 +135,6 @@ Le script d'optimisation lit les originaux de l'ancien site (`../www.map73.fr/im
 ## À faire avant la mise en ligne
 
 - [ ] **Formulaire de contact** : `index.html` pointe vers `https://formspree.io/f/REMPLACER_PAR_VOTRE_ID`. Tant que l'identifiant n'est pas renseigné, le formulaire bascule automatiquement sur le client mail de l'internaute. Remplacer par le service d'envoi retenu.
-- [ ] **Numéro d'agrément préfectoral** : absent de l'ancien site (`N°…`), à récupérer auprès de MAP73 pour la mention du crédit d'impôt.
 - [ ] **Logo en SVG** : le logo est pour l'instant un WebP de 4 Ko issu du PNG d'origine (256 Ko). Demander le fichier vectoriel.
 - [ ] **Photos** : prévoir de vraies photos de Julie et Camille, et une image d'ouverture.
 - [ ] **Image Open Graph** : `assets/img/og-preview.jpg` fait 560 × 292 px, en produire une en 1200 × 630 px.

@@ -47,14 +47,7 @@ export const CONTENU_DEFAUT = {
       ordre: 20,
       glyphe: "binome",
       fait: "Deux expertes",
-      quoi: "Une responsable RH kinésiologue et une enseignante certifiée."
-    },
-    {
-      id: "credit-impot",
-      ordre: 30,
-      glyphe: "tampon",
-      fait: "−50 % d’impôt",
-      quoi: "Services à la personne : 60 € la séance vous reviennent à 30 €."
+      quoi: "Une responsable ressources humaines et une enseignante certifiée."
     },
     {
       id: "lieu",
@@ -262,13 +255,6 @@ export const CONTENU_DEFAUT = {
   ],
 
   faq: [
-    {
-      id: "credit-impot",
-      ordre: 10,
-      question: "Comment fonctionne le crédit d’impôt de 50 % ?",
-      reponse:
-        "Nos prestations relèvent des services à la personne. Vous réglez la séance, nous vous remettons une attestation fiscale, et 50 % du montant vous sont restitués par l’administration fiscale. Une séance facturée 60 € vous revient à 30 €."
-    },
     {
       id: "lieu",
       ordre: 20,

@@ -683,21 +683,6 @@ p:last-child { margin-bottom: 0; }
 .formule__details ul { margin: 0.75rem 0 0; padding-left: 1.1rem; }
 .formule__details li { padding: 0.15rem 0; }
 
-.credit-impot {
-  margin-top: clamp(1.75rem, 3vw, 2.5rem);
-  border: 1px dashed var(--vert-dark);
-  border-radius: var(--rayon);
-  background: color-mix(in srgb, var(--vert) 7%, var(--paper));
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  max-width: none;
-  font-size: var(--fs-small);
-}
-.credit-impot strong { font-family: var(--display); }
-.credit-impot svg { flex: none; color: var(--vert-dark); }
-
 /* ---------- Fondatrices ---------- */
 /* Traitement en fiches : formation, expérience, certifications, chacune à sa
    ligne. C'est ce qu'un parent compare quand il choisit entre plusieurs
@@ -1070,7 +1055,6 @@ p:last-child { margin-bottom: 0; }
   .legende__item,
   .temoignage { --equerre-taille: 14px; }
   .legende__fait { font-size: 1.1rem; }
-  .credit-impot { flex-direction: column; gap: 0.75rem; }
   .pied__bas { flex-direction: column; }
 }
 

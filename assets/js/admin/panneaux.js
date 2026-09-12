@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260912-1301";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260912-2111";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
@@ -28,7 +28,7 @@ const SCHEMA_FORMULE = [
 
 const SCHEMA_FONDATRICE = [
   { cle: "prenom", label: "Prénom" },
-  { cle: "role", label: "Rôle", indice: "Par exemple : Ressources humaines et kinésiologie" },
+  { cle: "role", label: "Rôle", indice: "Par exemple : Ressources humaines" },
   {
     cle: "chiffres",
     label: "Repères chiffrés",
