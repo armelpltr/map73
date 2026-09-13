@@ -26,7 +26,7 @@ export const CONTENU_DEFAUT = {
   },
 
   itineraire: [
-    { niveau: "3<sup>e</sup>", quoi: "Quelle voie après le collège", cible: "formule-a-la-map" },
+    { niveau: "3<sup>e</sup>", quoi: "Quelle voie après le collège", cible: "formule-map-troisieme" },
     { niveau: "2<sup>de</sup>", quoi: "Choix des spécialités", cible: "formule-map-seconde" },
     { niveau: "1<sup>re</sup>", quoi: "Affiner le projet post-bac", cible: "formule-map-premiere" },
     { niveau: "Terminale", quoi: "Stratégie Parcoursup", cible: "formule-map-terminale" }
@@ -106,7 +106,7 @@ export const CONTENU_DEFAUT = {
     horaires: ["Du lundi au vendredi, de 9h à 18h30", "Le samedi, de 9h à 12h"]
   },
 
-  /* Les quatre formules, reprises du site en ligne : chacune porte un
+  /* Les sept formules, reprises du site en ligne : chacune porte un
      objectif (ou une liste d'objectifs) et un contenu, les deux intitules
      que le client utilise pour les decrire. `lignes` reste lu par le rendu
      pour les documents publies avant cette distinction. */
@@ -128,6 +128,25 @@ export const CONTENU_DEFAUT = {
       ],
       prix: "60 €",
       prixNote: "la séance",
+      phare: false,
+      libelleBouton: "Prendre rendez-vous",
+      lienBouton: LIEN_RDV
+    },
+    {
+      id: "formule-map-troisieme",
+      ordre: 15,
+      cible: "Élèves de troisième",
+      titre: "MAP TROISIÈME 1 AN",
+      objectif: "Aider votre enfant à choisir entre la voie générale et technologique et la voie professionnelle en seconde.",
+      objectifs: [],
+      contenu: "5 séances individuelles.",
+      detailsTitre: "Le programme",
+      details: [
+        "Test de personnalité",
+        "Exploration des différentes options d’orientation en fin de troisième"
+      ],
+      prix: "à partir de 40 €",
+      prixNote: "par mois",
       phare: false,
       libelleBouton: "Prendre rendez-vous",
       lienBouton: LIEN_RDV
