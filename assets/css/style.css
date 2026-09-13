@@ -677,14 +677,27 @@ p:last-child { margin-bottom: 0; }
 .formule--phare .formule__prix { color: var(--ambre); }
 .formule--phare .formule__details summary { color: var(--ambre); }
 
+/* Deux lignes reservees a la cible et au titre, meme quand ils n'en
+   occupent qu'une : « Eleves de seconde, sur les trois annees de lycee »
+   et « TERMINALE PARCOURSUP 1 AN » debordent, et sans cette reserve elles
+   poussaient de 22 px tout ce qui les suit sur leur carte. Les titres et
+   les objectifs d'une meme bande se lisent desormais sur une ligne. */
 .formule__cible {
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
+  line-height: 1.3;
+  min-height: 2.6em;
   color: var(--lac-clair);
   margin: 0 0 0.5rem;
 }
-.formule h3 { font-size: 1.2rem; color: var(--blanc); margin-bottom: 0.85rem; }
+.formule h3 {
+  font-size: 1.2rem;
+  line-height: 1.15;
+  min-height: 2.3em;
+  color: var(--blanc);
+  margin-bottom: 0.85rem;
+}
 
 /* « Objectif » et « Contenu » sont les deux intitules avec lesquels le
    client decrit ses formules : ils sont repris tels quels, en display, pour
@@ -702,7 +715,14 @@ p:last-child { margin-bottom: 0; }
 .formule__contenu { font-size: var(--fs-small); margin-bottom: 1.25rem; }
 .formule__liste { list-style: none; margin: 0 0 1rem; padding: 0; font-size: var(--fs-small); }
 .formule__liste li { padding: 0.5rem 0; border-top: 1px solid rgba(255, 253, 249, 0.18); }
-.formule__pied { margin-top: auto; }
+/* Le depliant, le prix et le bouton forment le bloc du bas, et c'est leur
+   alignement d'une carte a l'autre qui fait tenir la grille. L'espace
+   libre revient donc au dernier element de la partie haute : le contenu
+   d'ordinaire, l'objectif sur une carte qui n'en a pas, le pied lui-meme
+   sur une carte reduite au seul prix. */
+.formule__contenu { margin-bottom: auto; }
+.formule:not(:has(.formule__contenu)) .formule__objectif { margin-bottom: auto; }
+.formule:not(:has(.formule__contenu, .formule__objectif)) .formule__pied { margin-top: auto; }
 .formule__prix {
   font-family: var(--display);
   font-size: 1.6rem;
@@ -734,7 +754,17 @@ p:last-child { margin-bottom: 0; }
 .formule__details summary::-webkit-details-marker { display: none; }
 /* Meme chevron que les questions frequentes, plutot que le couple « + » et
    « - » : un tiret de moins a l'ecran, et un seul signe a apprendre. */
-.formule__details summary { display: flex; align-items: center; gap: 0.5rem; }
+/* Deux lignes reservees ici aussi, et le chevron cale en haut plutot
+   qu'au milieu : « Seance a la carte, parmi les services proposes » en
+   occupe deux quand les autres cartes disent « Le programme » en une, et
+   le depliant partait alors 26 px plus haut sur cette seule carte. */
+.formule__details summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.3;
+  min-height: 2.6em;
+}
 .formule__details summary::before {
   content: "";
   width: 7px;
@@ -742,10 +772,10 @@ p:last-child { margin-bottom: 0; }
   flex: none;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
+  transform: translateY(3px) rotate(45deg);
   transition: transform 0.18s ease;
 }
-.formule__details[open] summary::before { transform: translateY(1px) rotate(-135deg); }
+.formule__details[open] summary::before { transform: translateY(6px) rotate(-135deg); }
 .formule__details ul { margin: 0.75rem 0 0; padding-left: 1.1rem; }
 .formule__details li { padding: 0.15rem 0; }
 
