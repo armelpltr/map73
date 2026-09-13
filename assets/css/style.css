@@ -9,7 +9,12 @@
 
   /* Couleurs */
   --paper: #f7f6f1;
-  --paper-2: #efece2;
+  /* La seconde surface passait du beige chaud ; elle est desormais un bleu
+     pale, pour que le bleu du bandeau « Le concept » se retrouve aussi sur
+     les grands aplats clairs — fondatrices, presse, pied de page. Choisie
+     assez claire pour que les liens en lac y tiennent 4,52, la ou l'ancien
+     beige les laissait a 4,30. */
+  --paper-2: #eef2f7;
   --ink: #14243b;
   --ink-soft: #4a5872;
   /* Le vert du logo, mesure sur assets/img/logo-480.webp : #94C412, une teinte
@@ -24,8 +29,13 @@
      7,18, de quoi porter les intitules et les depliants des formules. */
   --lac-clair: #79b8d8;
   --ambre: #e8a33d;
-  --trait: #d5d1c2;
-  --blanc: #fffdf9;
+  /* Meme luminance que le beige qu'il remplace (0,642 contre 0,636) : seule
+     la teinte change, le filet ne devient ni plus ni moins visible. */
+  --trait: #c9d3dd;
+  /* Neutralise : le blanc chaud d'origine tirait au jaune des qu'il se
+     posait sur un aplat bleu, cartes des fondatrices et de la presse en
+     tete. Il reste un blanc sur le papier chaud, sans y paraitre froid. */
+  --blanc: #fcfdfe;
 
   /* Typographie */
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
@@ -218,7 +228,7 @@ p:last-child { margin-bottom: 0; }
 }
 .entete[data-defile="oui"] {
   border-bottom-color: var(--trait);
-  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  background: color-mix(in srgb, var(--paper-2) 96%, transparent);
 }
 .entete__barre {
   display: flex;
@@ -273,7 +283,9 @@ p:last-child { margin-bottom: 0; }
   inset: 0;
   width: 100%;
   height: 100%;
-  color: var(--trait);
+  /* Les courbes de niveau ouvrent la page : elles portent le lac, dilue
+     dans le papier, plutot que le filet courant. */
+  color: color-mix(in srgb, var(--lac) 34%, var(--paper));
   pointer-events: none;
 }
 .hero__contenu { position: relative; }
@@ -485,6 +497,11 @@ p:last-child { margin-bottom: 0; }
   --couture-sortant: var(--ink);
   --couture-entrant: var(--paper);
   --couture-niveau: color-mix(in srgb, var(--ink) 62%, var(--paper));
+}
+.couture--craie-encre {
+  --couture-sortant: var(--paper-2);
+  --couture-entrant: var(--ink);
+  --couture-niveau: color-mix(in srgb, var(--trait) 74%, var(--ink));
 }
 .couture--encre-craie {
   --couture-sortant: var(--ink);
@@ -857,10 +874,15 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- Témoignages ---------- */
 .temoignages { columns: 3 260px; column-gap: clamp(1.25rem, 2.5vw, 2rem); }
+/* La section est passee a l'encre : les cartes suivent, sur le meme aplat
+   legerement tire vers le lac que la formule phare, et leurs equerres
+   prennent le lac eclairci — le lac sombre ne se lit pas sur l'encre. */
 .temoignage {
   break-inside: avoid;
   margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
-  background-color: var(--blanc);
+  --equerre: var(--lac-clair);
+  background-color: color-mix(in srgb, var(--ink) 86%, var(--lac));
+  color: var(--paper);
   padding: 1.5rem;
 }
 .temoignage blockquote { margin: 0 0 1rem; font-size: var(--fs-small); }
@@ -869,7 +891,7 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--ink-soft);
+  color: #b9c3d4;
 }
 
 /* ---------- Presse ---------- */
