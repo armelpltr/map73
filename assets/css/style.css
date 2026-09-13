@@ -161,7 +161,8 @@ p:last-child { margin-bottom: 0; }
 .fondatrice,
 .legende__item,
 .news__carte,
-.temoignage {
+.temoignage,
+.billet {
   --equerre: var(--equerre-neutre);
   --equerre-taille: 18px;
   --equerre-trait: 1.5px;
@@ -201,6 +202,7 @@ p:last-child { margin-bottom: 0; }
   .visionneuse img { max-height: 70vh; }
   .formule,
   .fondatrice,
+  .billet,
   .legende__item,
   .news__carte,
   .temoignage { border: 1px solid var(--ink); }
@@ -1089,6 +1091,121 @@ p:last-child { margin-bottom: 0; }
 .page-texte h1 { font-size: var(--fs-h2); margin-bottom: 1.5rem; }
 .page-texte h2 { font-size: 1.35rem; margin-top: 2.25rem; }
 
+/* ---------- Blog ---------- */
+/* Les billets reprennent la carte encre du reste du site. Le sommaire du
+   blog est une grille de cartes ; l'article, lui, est une colonne de
+   lecture etroite sur le papier, parce qu'on y reste plusieurs minutes et
+   qu'un aplat sombre sur mille mots fatigue. */
+.blog__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  /* auto-fill et non auto-fit : avec un seul article, auto-fit etirait la
+     carte sur toute la largeur de la page. La colonne garde sa mesure,
+     que le blog compte un billet ou douze. */
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+.billet {
+  --equerre: var(--lac-clair);
+  --equerre-marge: 8px;
+  background-color: var(--ink);
+  color: var(--paper);
+  padding: clamp(1.5rem, 2.5vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.billet__meta {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lac-clair);
+  margin: 0;
+}
+.billet__titre { font-size: 1.2rem; line-height: 1.2; margin: 0; }
+.billet__titre a {
+  color: var(--blanc);
+  text-decoration: none;
+}
+/* Toute la carte est cliquable, mais c'est le titre qui porte le lien :
+   un lecteur au clavier n'a ainsi qu'une seule tabulation par billet. */
+.billet__titre a::after { content: ""; position: absolute; inset: 0; }
+.billet { position: relative; }
+.billet:hover { background-color: color-mix(in srgb, var(--ink) 92%, var(--lac)); }
+.billet__titre a:focus-visible { outline: 2px solid var(--lac-clair); outline-offset: 4px; }
+.billet__chapo { font-size: var(--fs-small); color: #b9c3d4; margin: 0; }
+.billet__lire {
+  font-family: var(--display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--lac-clair);
+  margin: auto 0 0;
+}
+
+/* L'article lui-meme */
+.article { max-width: 68ch; }
+.article__meta {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lac);
+  margin: 0 0 0.75rem;
+}
+.article h1 { font-size: var(--fs-h2); margin-bottom: 1rem; text-wrap: balance; }
+.article__chapo {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--trait);
+}
+.article__corps h2 { font-size: 1.35rem; margin-top: 2.5rem; margin-bottom: 0.75rem; }
+.article__corps h3 { font-size: 1.1rem; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+.article__corps p { margin: 0 0 1.1rem; }
+.article__corps ul, .article__corps ol { margin: 0 0 1.4rem; padding-left: 1.3rem; }
+.article__corps li { margin-bottom: 0.5rem; }
+.article__corps a { font-weight: 600; }
+/* L'encadre : un conseil detache du fil, marque par un filet lac plutot
+   que par un aplat, pour ne pas concurrencer les cartes du site. */
+.article__encadre {
+  border-left: 3px solid var(--lac);
+  background: var(--blanc);
+  padding: 1.1rem 1.25rem;
+  margin: 0 0 1.4rem;
+  font-size: var(--fs-small);
+}
+.article__encadre p:last-child { margin-bottom: 0; }
+.article__encadre strong { font-family: var(--display); }
+
+/* Le pied d'article ramene vers l'offre : c'est la raison d'etre du blog. */
+.article__pied {
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--trait);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+.article__pied p { margin: 0; flex: 1 1 22ch; font-size: var(--fs-small); color: var(--ink-soft); }
+
+.fil {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin: 0 0 1.5rem;
+}
+.fil a { color: var(--lac); }
+.fil span { padding: 0 0.4rem; opacity: 0.5; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .propos,
@@ -1181,6 +1298,6 @@ p:last-child { margin-bottom: 0; }
   .entete, .nav, .hero__fond, .formulaire, .couture { display: none; }
   /* Les navigateurs n'impriment pas les images de fond : sans cadre, les
      cartes n'auraient plus aucune limite sur le papier. */
-  .formule, .fondatrice, .legende__item, .temoignage { border: 1px solid #999; }
+  .formule, .fondatrice, .legende__item, .temoignage, .billet { border: 1px solid #999; }
   body { background: #fff; color: #000; }
 }

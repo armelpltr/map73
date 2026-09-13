@@ -7,6 +7,18 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://www.map73.fr/blog/</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.map73.fr/blog/choisir-ses-specialites-en-seconde/</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.map73.fr/mentions-legales.html</loc>
     <lastmod>2026-09-08</lastmod>
     <changefreq>yearly</changefreq>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<!--
+  ============================================================
+  GABARIT D'ARTICLE — à dupliquer, jamais à publier tel quel
+  ============================================================
+
+  Pour écrire un article :
+
+    1. Créer un dossier « blog/mon-titre-en-minuscules/ ». Le nom du
+       dossier EST l'adresse de l'article, et il ne se change plus une
+       fois indexé : court, en minuscules, sans accent, mots séparés par
+       des tirets. Il doit contenir les mots que l'on cherche sur Google.
+
+    2. Y copier ce fichier sous le nom « index.html », ce qui donne
+       l'adresse propre /blog/mon-titre-en-minuscules/ sans .html visible.
+
+    3. Remplacer tout ce qui est écrit À-REMPLACER. Il y en a dans le
+       <head>, dans l'article et dans les deux blocs JSON-LD du bas :
+       une recherche du mot suffit à n'en oublier aucun.
+
+    4. Ajouter le billet en haut de la liste de blog/index.html.
+
+    5. Ajouter l'adresse dans sitemap.xml, sinon Google mettra beaucoup
+       plus longtemps à la trouver.
+
+  Ce fichier porte « noindex » : même s'il reste en ligne, il ne sera pas
+  référencé. Ne pas retirer cette balise d'ici — seulement de la copie.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Le titre s'affiche dans l'onglet et surtout dans Google. Environ 60
+     caractères avant la troncature, le mot important au début. -->
+<title>À-REMPLACER titre de l’article | MAP73</title>
+
+<!-- La description est le paragraphe gris sous le lien dans Google. Elle
+     ne joue pas sur le classement mais beaucoup sur le fait qu'on clique.
+     Environ 155 caractères, une phrase qui donne envie et ne ment pas. -->
+<meta name="description" content="À-REMPLACER une phrase qui résume l’article et donne envie de le lire.">
+
+<!-- Retirer cette ligne dans la copie : elle empêche l'indexation. -->
+<meta name="robots" content="noindex, nofollow">
+
+<!-- L'adresse canonique : la même que le dossier, avec la barre finale. -->
+<link rel="canonical" href="https://www.map73.fr/blog/À-REMPLACER-nom-du-dossier/">
+
+<!-- Ce bloc pilote l'aperçu quand le lien est partagé sur les réseaux. -->
+<meta property="og:type" content="article">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="MAP73">
+<meta property="og:title" content="À-REMPLACER titre de l’article">
+<meta property="og:description" content="À-REMPLACER la même phrase que la description.">
+<meta property="og:url" content="https://www.map73.fr/blog/À-REMPLACER-nom-du-dossier/">
+<meta property="og:image" content="https://www.map73.fr/assets/img/og-preview.jpg">
+<meta property="article:published_time" content="À-REMPLACER-AAAA-MM-JJ">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+
+<body>
+<a class="saut-contenu" href="#contenu">Aller au contenu</a>
+
+<header class="entete" id="entete">
+  <div class="enveloppe entete__barre">
+    <a class="entete__logo" href="../../index.html" aria-label="MAP73, accueil">
+      <img src="../../assets/img/logo-240.webp" srcset="../../assets/img/logo-240.webp 240w, ../../assets/img/logo-480.webp 480w" sizes="104px" width="240" height="145" alt="MAP Orientation">
+    </a>
+
+    <button class="entete__bascule" type="button" id="bascule-menu" aria-expanded="false" aria-controls="navigation">
+      <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M0 1h22M0 8h22M0 15h22"/></svg>
+      <span class="visuellement-cache">Menu</span>
+    </button>
+
+    <nav class="nav" id="navigation" aria-label="Navigation principale">
+      <ul class="nav__liste">
+        <li><a class="nav__lien" href="../../index.html#concept">Le concept</a></li>
+        <li><a class="nav__lien" href="../../index.html#formules">Formules</a></li>
+        <li><a class="nav__lien" href="../../index.html#fondatrices">Qui sommes-nous</a></li>
+        <li><a class="nav__lien" href="../">Blog</a></li>
+        <li><a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="section">
+    <div class="enveloppe">
+      <article class="article">
+        <!-- Le fil d'Ariane : « Blog / le niveau ou le thème ». -->
+        <p class="fil"><a href="../">Blog</a><span>/</span>À-REMPLACER thème</p>
+
+        <p class="article__meta"><time datetime="À-REMPLACER-AAAA-MM-JJ">À-REMPLACER 1er janvier 2026</time> · À-REMPLACER 5 min de lecture</p>
+
+        <!-- Un seul <h1> par page, et c'est le titre de l'article. -->
+        <h1>À-REMPLACER titre de l’article</h1>
+
+        <!-- Le chapô : deux ou trois phrases qui posent le problème du
+             lecteur. C'est ce qu'il lit avant de décider de rester. -->
+        <p class="article__chapo">À-REMPLACER le chapô.</p>
+
+        <div class="article__corps">
+          <!-- Les intertitres structurent la lecture ET le référencement :
+               des <h2> pour les parties, des <h3> à l'intérieur. Ne pas
+               sauter de niveau, ne pas les choisir pour leur taille. -->
+          <h2>À-REMPLACER premier intertitre</h2>
+          <p>À-REMPLACER le texte.</p>
+
+          <h2>À-REMPLACER deuxième intertitre</h2>
+          <p>À-REMPLACER le texte.</p>
+
+          <h3>À-REMPLACER un sous-point</h3>
+          <p>À-REMPLACER le texte.</p>
+
+          <!-- Bloc facultatif : un conseil détaché du fil de lecture. -->
+          <div class="article__encadre">
+            <p><strong>À-REMPLACER l’accroche.</strong> À-REMPLACER le conseil.</p>
+          </div>
+
+          <!-- Listes facultatives, <ul> sans ordre, <ol> pour des étapes. -->
+          <ul>
+            <li>À-REMPLACER un point.</li>
+          </ul>
+        </div>
+
+        <!-- Le pied ramène vers une formule : c'est la raison d'être du
+             blog. Pointer la formule qui correspond au niveau traité. -->
+        <div class="article__pied">
+          <p>À-REMPLACER une phrase qui fait le lien avec l’accompagnement.</p>
+          <a class="bouton bouton--contour" href="../../index.html#formules">Voir les formules</a>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="pied">
+  <div class="enveloppe">
+    <div class="pied__bas">
+      <p>© <span id="annee">2026</span> MAP73 | SIRET 920 815 362 00016</p>
+      <p><a href="../">Tous les articles</a> · <a href="../../index.html">Retour à l’accueil</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- Ces deux blocs décrivent l'article aux moteurs dans leur propre
+     langage. Ce sont eux qui permettent l'affichage enrichi (date, fil
+     d'Ariane) dans les résultats de recherche. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "À-REMPLACER titre de l’article",
+  "description": "À-REMPLACER la même phrase que la description.",
+  "datePublished": "À-REMPLACER-AAAA-MM-JJ",
+  "dateModified": "À-REMPLACER-AAAA-MM-JJ",
+  "inLanguage": "fr-FR",
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.map73.fr/blog/À-REMPLACER-nom-du-dossier/" },
+  "author": { "@type": "Organization", "name": "MAP73", "url": "https://www.map73.fr/" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "MAP73",
+    "logo": { "@type": "ImageObject", "url": "https://www.map73.fr/assets/img/logo-480.webp" }
+  },
+  "image": "https://www.map73.fr/assets/img/og-preview.jpg"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://www.map73.fr/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://www.map73.fr/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "À-REMPLACER titre de l’article" }
+  ]
+}
+</script>
+
+<script src="../../assets/js/main.js?v=20260913-1015" defer></script>
+</body>
+</html>
