@@ -52,7 +52,7 @@ export function lienSur(url) {
   if (typeof url !== "string") return "";
   const valeur = url.trim();
   if (!valeur) return "";
-  if (valeur.startsWith("#") || valeur.startsWith("/") || valeur.startsWith("assets/")) return valeur;
+  if (valeur.startsWith("#") || valeur.startsWith("/") || valeur.startsWith("assets/") || valeur.startsWith("blog/")) return valeur;
   try {
     const parsee = new URL(valeur, window.location.origin);
     return ["http:", "https:", "mailto:", "tel:"].includes(parsee.protocol) ? valeur : "";

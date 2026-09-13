@@ -70,7 +70,8 @@ export const CONTENU_DEFAUT = {
       texte:
         "Les créneaux d’accompagnement de l’année scolaire se réservent dès maintenant, en présentiel ou à distance.",
       libelleLien: "Prendre rendez-vous",
-      lien: LIEN_RDV
+      lien: LIEN_RDV,
+      portrait: ""
     },
     {
       id: "news-ateliers",
@@ -80,17 +81,18 @@ export const CONTENU_DEFAUT = {
       texte:
         "Des séances en petit groupe pour explorer les métiers autrement, en complément du suivi individuel.",
       libelleLien: "Voir les formules",
-      lien: "#formules"
+      lien: "#formules",
+      portrait: ""
     },
     {
-      id: "news-portes-ouvertes",
+      id: "news-edito-parcoursup",
       ordre: 30,
-      date: "Toute l’année",
-      titre: "Venez nous rencontrer",
-      texte:
-        "Le cabinet est ouvert rue de Saint-Ombre à Chambéry : poussez la porte pour en parler de vive voix.",
-      libelleLien: "Nous trouver",
-      lien: "#contact"
+      date: "L’édito",
+      titre: "L’édito de Camille Dorel",
+      texte: "Camille vous explique Parcoursup.",
+      libelleLien: "Lire l’édito",
+      lien: "blog/edito-parcoursup-camille-dorel/",
+      portrait: "assets/img/portrait-camille.webp"
     }
   ],
 

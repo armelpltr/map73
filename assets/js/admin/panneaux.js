@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260913-1015";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260913-1530";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
@@ -98,7 +98,13 @@ const SCHEMA_NEWS = [
   { cle: "titre", label: "Titre" },
   { cle: "texte", label: "Ce que ça annonce", type: "zone", large: true, indice: "Deux ou trois lignes suffisent." },
   { cle: "libelleLien", label: "Texte du lien", indice: "Laisser vide s’il n’y a pas de lien." },
-  { cle: "lien", label: "Lien", large: true, indice: "Une adresse complète, ou #formules pour une section du site." }
+  { cle: "lien", label: "Lien", large: true, indice: "Une adresse complète, ou #formules pour une section du site." },
+  {
+    cle: "portrait",
+    label: "Portrait",
+    large: true,
+    indice: "Laisser vide sauf pour un édito signé. Exemple : assets/img/portrait-camille.webp"
+  }
 ];
 
 const SCHEMA_REPERE = [
@@ -290,7 +296,8 @@ export function construirePanneaux(contenu, onChange) {
       titre: "Nouveauté",
       texte: "",
       libelleLien: "",
-      lien: ""
+      lien: "",
+      portrait: ""
     }),
     libelleAjout: "Ajouter une nouveauté",
     onChange

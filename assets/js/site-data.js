@@ -8,8 +8,8 @@
 // Rien sur cette page ne dépend de Firestore pour fonctionner.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260913-1015";
-import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260913-1015";
+import { FIREBASE_CONFIGURE, obtenirFirestore } from "./firebase-config.js?v=20260913-1530";
+import { poserTexte, creer, lienSur, sansBalises, parOrdre } from "./texte.js?v=20260913-1530";
 
 const $ = (id) => document.getElementById(id);
 
@@ -156,6 +156,20 @@ function rendreNews(news) {
     if (!n.titre && !n.texte) continue;
 
     const carte = creer("li", "news__carte");
+    /* Le portrait est facultatif : un edito est signe, une annonce de
+       rentree ne l'est pas. Le texte de remplacement reprend le titre,
+       faute de mieux : le panel ne demande pas de le saisir. */
+    const portrait = lienSur(n.portrait);
+    if (portrait) {
+      const img = creer("img", "news__portrait");
+      img.src = portrait;
+      img.width = 200;
+      img.height = 200;
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.alt = sansBalises(n.titre || "");
+      carte.appendChild(img);
+    }
     if (n.date) carte.appendChild(creer("p", "news__date", n.date));
     if (n.titre) carte.appendChild(creer("h3", "news__intitule", n.titre));
     if (n.texte) carte.appendChild(creer("p", "news__texte", n.texte));
