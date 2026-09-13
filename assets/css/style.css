@@ -667,11 +667,12 @@ p:last-child { margin-bottom: 0; }
   display: flex;
   flex-direction: column;
 }
-/* La carte phare ne peut plus se distinguer par son fond seul : elle prend
-   un encre legerement tire vers le lac, et garde l'ambre pour elle. */
+/* La carte phare partage l'encre de toutes les autres : un fond a peine
+   plus clair se lisait comme un defaut d'impression, pas comme une
+   intention, alors que l'ambre de ses equerres et de son prix la designe
+   deja sans ambiguite. */
 .formule--phare {
   --equerre: var(--ambre);
-  background-color: color-mix(in srgb, var(--ink) 86%, var(--lac));
 }
 .formule--phare .formule__prix { color: var(--ambre); }
 .formule--phare .formule__details summary { color: var(--ambre); }
