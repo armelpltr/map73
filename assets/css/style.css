@@ -19,6 +19,10 @@
   --vert: #94c412;
   --lac: #2b759d; /* assombri : le bleu d'origine tombait a 4,48 sur blanc,
                      sous le seuil AA des petits textes qui l'utilisent. */
+  /* Le meme lac, eclairci pour l'aplat encre : sur #14243b, le lac courant
+     ne monte qu'a 3,07 et aucun petit texte ne s'y lit. Celui-ci tient
+     7,18, de quoi porter les intitules et les depliants des formules. */
+  --lac-clair: #79b8d8;
   --ambre: #e8a33d;
   --trait: #d5d1c2;
   --blanc: #fffdf9;
@@ -341,7 +345,7 @@ p:last-child { margin-bottom: 0; }
   background: var(--ink);
   transition: background-color 0.18s ease;
 }
-.etape__lien:hover .etape__point { background: var(--vert); border-color: var(--vert); }
+.etape__lien:hover .etape__point { background: var(--lac); border-color: var(--lac); }
 .etape__lien:hover .etape__point::after { background: var(--ink); }
 .etape__niveau {
   font-family: var(--display);
@@ -388,7 +392,10 @@ p:last-child { margin-bottom: 0; }
   background-color: var(--blanc);
   padding: clamp(1.15rem, 2vw, 1.35rem);
 }
-.legende__glyphe { color: var(--vert); }
+/* Les reperes disent ce que couvre l'accompagnement : ils appartiennent
+   a ce qu'on vend, et prennent le lac plutot que le vert des personnes. */
+.legende__item { --equerre: var(--lac); }
+.legende__glyphe { color: var(--lac); }
 .legende__fait {
   font-family: var(--display);
   font-size: 1.2rem;
@@ -419,7 +426,7 @@ p:last-child { margin-bottom: 0; }
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: clamp(0.75rem, 1.6vw, 1.1rem);
 }
-.news__carte {
+.news__carte { --equerre: var(--lac);
   display: grid;
   gap: 0.5rem;
   align-content: start;
@@ -641,23 +648,27 @@ p:last-child { margin-bottom: 0; }
 }
 /* background-color et non background : la forme courte effacerait les
    degrades qui dessinent les equerres. */
+/* Les cartes portent l'aplat encre du bloc « Le concept », que la cliente
+   voulait retrouver sur toute l'offre. Elles passent donc en fond sombre :
+   les accents clairs (lac eclairci, vert, blanc) remplacent l'encre et le
+   lac sombre, qui ne se lisaient plus. Les equerres rentrent de 8 px, comme
+   sur la carte phare : au ras du bord, elles se perdaient contre le papier
+   de la section. */
 .formule {
-  --equerre: var(--lac);
-  background-color: var(--blanc);
+  --equerre: var(--lac-clair);
+  --equerre-marge: 8px;
+  background-color: var(--ink);
+  color: var(--paper);
   padding: clamp(1.5rem, 2.5vw, 2rem);
   display: flex;
   flex-direction: column;
 }
+/* La carte phare ne peut plus se distinguer par son fond seul : elle prend
+   un encre legerement tire vers le lac, et garde l'ambre pour elle. */
 .formule--phare {
   --equerre: var(--ambre);
-  --equerre-marge: 8px;
-  background-color: var(--ink);
-  color: var(--paper);
+  background-color: color-mix(in srgb, var(--ink) 86%, var(--lac));
 }
-.formule--phare h3 { color: var(--blanc); }
-.formule--phare .formule__cible,
-.formule--phare .formule__prix-note { color: #b9c3d4; }
-.formule--phare .formule__liste li { border-top-color: rgba(255, 253, 249, 0.18); }
 .formule--phare .formule__prix { color: var(--ambre); }
 .formule--phare .formule__details summary { color: var(--ambre); }
 
@@ -665,52 +676,54 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--lac);
+  color: var(--lac-clair);
   margin: 0 0 0.5rem;
 }
-.formule h3 { font-size: 1.2rem; margin-bottom: 0.85rem; }
+.formule h3 { font-size: 1.2rem; color: var(--blanc); margin-bottom: 0.85rem; }
 
 /* « Objectif » et « Contenu » sont les deux intitules avec lesquels le
    client decrit ses formules : ils sont repris tels quels, en display, pour
-   qu'on retrouve la meme lecture que sur ses documents. Le vert leur est
-   reserve sur la carte phare, ou le fond encre le rend lisible. */
+   qu'on retrouve la meme lecture que sur ses documents. Le vert les porte
+   sur l'encre, ou il tient 7,56 de contraste. */
 .formule__intitule {
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--ink-soft);
+  color: var(--vert);
 }
-.formule--phare .formule__intitule { color: var(--vert); }
 .formule__intitule--seul { display: block; margin: 0 0 0.4rem; }
 
 .formule__objectif { font-size: var(--fs-small); margin-bottom: 0.85rem; }
 .formule__contenu { font-size: var(--fs-small); margin-bottom: 1.25rem; }
 .formule__liste { list-style: none; margin: 0 0 1rem; padding: 0; font-size: var(--fs-small); }
-.formule__liste li { padding: 0.5rem 0; border-top: 1px solid var(--trait); }
-.formule--phare .formule__liste li { border-top-color: rgba(255, 253, 249, 0.18); }
+.formule__liste li { padding: 0.5rem 0; border-top: 1px solid rgba(255, 253, 249, 0.18); }
 .formule__pied { margin-top: auto; }
 .formule__prix {
   font-family: var(--display);
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--blanc);
   line-height: 1.1;
   display: block;
 }
 .formule__prix-note {
   font-size: var(--fs-micro);
-  color: var(--ink-soft);
+  color: #b9c3d4;
   display: block;
   margin-bottom: 1rem;
 }
 .formule__pied .bouton { width: 100%; justify-content: center; }
+/* Le bouton contour est dessine pour le papier : sur l'aplat encre, son
+   filet encre disparaissait. */
+.formule .bouton--contour { border-color: rgba(255, 253, 249, 0.45); color: var(--blanc); }
+.formule .bouton--contour:hover { background: var(--blanc); color: var(--ink); }
 
 .formule__details { margin: 0 0 1.25rem; font-size: var(--fs-small); }
 .formule__details summary {
   cursor: pointer;
   font-family: var(--display);
   font-weight: 600;
-  color: var(--lac);
+  color: var(--lac-clair);
   list-style: none;
 }
 .formule__details summary::-webkit-details-marker { display: none; }
@@ -1010,8 +1023,8 @@ p:last-child { margin-bottom: 0; }
   top: 1.5rem;
   width: 9px;
   height: 9px;
-  border-right: 2px solid var(--vert);
-  border-bottom: 2px solid var(--vert);
+  border-right: 2px solid var(--lac);
+  border-bottom: 2px solid var(--lac);
   transform: rotate(45deg);
   transition: transform 0.18s ease;
 }
