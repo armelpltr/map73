@@ -6,7 +6,7 @@
 // rien n'est écrit tant que « Publier les modifications » n'est pas cliqué.
 // ============================================================
 
-import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260913-1530";
+import { $, el, champ, sousListe, sousListePaires, confirmer } from "./ui.js?v=20260913-1545";
 
 /* Schémas de saisie : ce que l'on montre, dans quel ordre, sous quelle forme. */
 
@@ -54,7 +54,7 @@ const SCHEMA_FONDATRICE = [
   {
     cle: "portrait",
     label: "Portrait",
-    indice: "Chemin dans le dépôt, par exemple assets/img/portrait-julie.webp. Carré, 800 × 800 px."
+    indice: "Chemin dans le dépôt, par exemple assets/img/portrait-julie.webp. Carré, 240 × 240 px suffisent : il s’affiche en 76 px."
   },
   { cle: "portraitAlt", label: "Description du portrait", type: "zone", large: true, indice: "Lue par les lecteurs d’écran." }
 ];
