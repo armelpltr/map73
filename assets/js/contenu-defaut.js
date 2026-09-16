@@ -282,15 +282,15 @@ export const CONTENU_DEFAUT = {
       id: "jade",
       ordre: 40,
       texte:
-        "Les conseils de Julie et Camille m’ont beaucoup aidé pour mon orientation et pour compléter Parcoursup. Je recommande.",
-      auteur: "Jade, terminale générale"
+        "Les conseils de Julie et Camille m’ont beaucoup aidée pour mon orientation et pour choisir mes vœux sur Parcoursup. Elles m’ont accompagnée de la seconde à la terminale. Sans elles je ne sais pas comment j’aurais fait !! Merci beaucoup 🙂",
+      auteur: "Jade, promo MAP 2025"
     },
     {
       id: "alexandra",
       ordre: 50,
       texte:
-        "Julie est quelqu’un de très humain et également une excellente professionnelle. Elle est très à l’écoute et vous met à l’aise, je ne peux que recommander.",
-      auteur: "Alexandra"
+        "Julie est quelqu’un de très humain et également une excellente professionnelle. Avec Camille elles m’ont suivie quand j’étais en troisième. Elles m’ont aidée à décider de faire une seconde professionnelle et aujourd’hui je suis dans une école d’infirmière ! Et j’adore !!",
+      auteur: "Alexandra, promo MAP 2024"
     },
     {
       id: "claire",

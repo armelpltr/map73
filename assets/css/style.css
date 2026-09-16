@@ -680,12 +680,11 @@ p:last-child { margin-bottom: 0; }
 }
 /* La carte phare partage l'encre de toutes les autres : un fond a peine
    plus clair se lisait comme un defaut d'impression, pas comme une
-   intention, alors que l'ambre de ses equerres et de son prix la designe
-   deja sans ambiguite. */
+   intention. Le prix est passe a l'ambre sur toutes les cartes ; ce sont
+   donc ses equerres et son depliant qui la designent. */
 .formule--phare {
   --equerre: var(--ambre);
 }
-.formule--phare .formule__prix { color: var(--ambre); }
 .formule--phare .formule__details summary { color: var(--ambre); }
 
 /* Deux lignes reservees a la cible et au titre, meme quand ils n'en
@@ -738,7 +737,7 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--blanc);
+  color: var(--ambre);
   line-height: 1.1;
   display: block;
 }
@@ -919,7 +918,7 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: #b9c3d4;
+  color: var(--lac-clair);
 }
 
 /* ---------- Presse ---------- */
