@@ -25,24 +25,19 @@ from datetime import datetime
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Fichiers a estampiller : les pages qui chargent un module, et les modules
-# qui en importent d'autres.
+# Fichiers a estampiller : toutes les pages qui chargent main.js.
 CIBLES = [
     "index.html",
     "mentions-legales.html",
-    "admin/index.html",
-    "assets/js/site-data.js",
-    "assets/js/admin/app.js",
-    "assets/js/admin/auth.js",
-    "assets/js/admin/acces.js",
-    "assets/js/admin/panneaux.js",
+    "blog/index.html",
+    "blog/_modele-article.html",
+    "blog/choisir-ses-specialites-en-seconde/index.html",
+    "blog/edito-parcoursup-camille-dorel/index.html",
 ]
 
-# `src="..."` dans le HTML, et les specificateurs d'import relatifs dans le JS.
+# `src="..."` dans le HTML.
 MOTIFS = [
     re.compile(r'(src=")([^"]+?\.js)(\?v=[0-9-]+)?(")'),
-    re.compile(r'(from ")(\.{1,2}/[^"]+?\.js)(\?v=[0-9-]+)?(")'),
-    re.compile(r'(import\(")(\.{1,2}/[^"]+?\.js)(\?v=[0-9-]+)?(")'),
 ]
 
 
