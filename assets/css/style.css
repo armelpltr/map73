@@ -151,7 +151,7 @@ p:last-child { margin-bottom: 0; }
    carte, ni d'ou venait le site. Le cadre ferme cede la place a quatre
    equerres de 18 px, comme les reperes de coupe d'une planche gravee, dans
    la couleur de la famille : bleu lac pour ce qu'on vend, vert pour les
-   personnes, ambre sur la carte phare, gris fonce pour le reste.
+   personnes, gris fonce pour le reste.
 
    Les equerres sont peintes en degrades plutot qu'en bordures : quatre coins
    ne se decrivent pas avec la propriete border, et deux pseudo-elements ne
@@ -167,9 +167,9 @@ p:last-child { margin-bottom: 0; }
   --equerre-taille: 18px;
   --equerre-trait: 1.5px;
   /* Retrait des equerres par rapport au bord. Nul sur une carte claire, ou
-     l'equerre marque l'angle meme ; rentre sur la carte phare, dont l'aplat
-     encre tient deja la limite : au ras du bord, l'ambre se perdait contre
-     le papier de la section. */
+     l'equerre marque l'angle meme ; rentre sur les cartes a l'aplat encre,
+     qui tiennent deja la limite : au ras du bord, l'equerre se perdait
+     contre le papier de la section. */
   --equerre-marge: 0px;
   border: 0;
   border-radius: 0;
@@ -771,9 +771,8 @@ p:last-child { margin-bottom: 0; }
 /* Les cartes portent l'aplat encre du bloc « Le concept », que la cliente
    voulait retrouver sur toute l'offre. Elles passent donc en fond sombre :
    les accents clairs (lac eclairci, vert, blanc) remplacent l'encre et le
-   lac sombre, qui ne se lisaient plus. Les equerres rentrent de 8 px, comme
-   sur la carte phare : au ras du bord, elles se perdaient contre le papier
-   de la section. */
+   lac sombre, qui ne se lisaient plus. Les equerres rentrent de 8 px : au
+   ras du bord, elles se perdaient contre le papier de la section. */
 .formule {
   --equerre: var(--lac-clair);
   --equerre-marge: 8px;
@@ -783,15 +782,6 @@ p:last-child { margin-bottom: 0; }
   display: flex;
   flex-direction: column;
 }
-/* La carte phare partage l'encre de toutes les autres : un fond a peine
-   plus clair se lisait comme un defaut d'impression, pas comme une
-   intention. Le prix est passe a l'ambre sur toutes les cartes ; ce sont
-   donc ses equerres et son depliant qui la designent. */
-.formule--phare {
-  --equerre: var(--ambre);
-}
-.formule--phare .formule__details summary { color: var(--ambre); }
-
 /* Deux lignes reservees a la cible et au titre, meme quand ils n'en
    occupent qu'une : « Eleves de seconde, sur les trois annees de lycee »
    et « TERMINALE PARCOURSUP 1 AN » debordent, et sans cette reserve elles
