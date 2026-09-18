@@ -19,9 +19,9 @@
 // code. L'interface ne fait que refuser plus tôt, et plus clairement.
 // ============================================================
 
-import { FIREBASE_CONFIGURE, obtenirAuth, obtenirFirestore } from "../firebase-config.js?v=20260913-1545";
-import { WORKER_URL, TURNSTILE_SITE_KEY } from "../config.js?v=20260913-1545";
-import { $ } from "./ui.js?v=20260913-1545";
+import { FIREBASE_CONFIGURE, obtenirAuth, obtenirFirestore } from "../firebase-config.js?v=20260919-0054";
+import { WORKER_URL, TURNSTILE_SITE_KEY } from "../config.js?v=20260919-0054";
+import { $ } from "./ui.js?v=20260919-0054";
 
 const MESSAGES_FIREBASE = {
   "auth/invalid-custom-token": "Session refusée. Réessayez de vous connecter.",

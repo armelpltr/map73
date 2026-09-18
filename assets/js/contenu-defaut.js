@@ -19,7 +19,7 @@ export const CONTENU_DEFAUT = {
   hero: {
     titre: "L’orientation scolaire. Plus qu’un choix, un avenir.",
     chapo:
-      "MAP Orientation l’accompagne de la troisième à la terminale pour mieux se connaître, explorer des voies auxquelles il n’avait pas pensé auparavant, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Cabinet de conseil en orientation scolaire à Chambéry, en présentiel ou à distance. À l’issue de l’accompagnement individualisé avec Camille et Julie, votre enfant aura toutes les cartes en main pour Maîtriser son Avenir et son Parcours.",
+      "<strong>Vous êtes inquiet pour l’orientation scolaire de votre enfant\u00A0?</strong> MAP Orientation l’accompagne de la troisième à la terminale pour mieux se connaître, explorer des voies auxquelles il n’avait pas pensé auparavant, découvrir les métiers, choisir ses études et construire un projet qui lui ressemble. Camille Dorel et Julie Mazetk, spécialistes en orientation scolaire, vous accueillent dans leur cabinet de conseil à Chambéry, en présentiel ou à distance. À l’issue de l’accompagnement individualisé avec Camille et Julie, votre enfant aura toutes les cartes en main pour Maîtriser son Avenir et son Parcours.",
     itineraireIntro:
       "MAP propose des formules en fonction de l’âge de votre enfant. « Votre enfant est en quelle classe ? »",
     reperesTitre: "Ce que couvre l’accompagnement"
