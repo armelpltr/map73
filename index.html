@@ -81,6 +81,43 @@
         <a class="bouton bouton--contour" href="#formules">Voir les formules</a>
       </div>
 
+      <!-- Trois preuves chiffrees, dans le blanc laisse a droite du chapo.
+           Elles repondent a la question que se pose un parent avant meme de
+           lire les formules : est-ce que ca marche, et pour combien d'eleves.
+           En colonne plutot qu'en rangee de cartes : la place libre est une
+           colonne etroite sous le bouton de l'en-tete, et trois cadres de
+           plus, a deux cents pixels des cartes de la legende, feraient une
+           seconde serie de tuiles sans rien dire de neuf. -->
+      <ul class="hero__preuves" id="hero-preuves">
+        <li class="preuve">
+          <span class="preuve__tuile" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" focusable="false"><path d="M12 19.6 4.9 12.5a4.3 4.3 0 1 1 6.1-6.1l1 1 1-1a4.3 4.3 0 1 1 6.1 6.1Z"/></svg>
+          </span>
+          <span class="preuve__texte">
+            <span class="preuve__valeur">100&nbsp;%</span>
+            <span class="preuve__quoi">de parents satisfaits</span>
+          </span>
+        </li>
+        <li class="preuve">
+          <span class="preuve__tuile" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" focusable="false"><circle cx="12" cy="8" r="3.4"/><path d="M5.6 19.4a6.4 6.4 0 0 1 12.8 0"/></svg>
+          </span>
+          <span class="preuve__texte">
+            <span class="preuve__valeur">+500</span>
+            <span class="preuve__quoi">ados orientés</span>
+          </span>
+        </li>
+        <li class="preuve">
+          <span class="preuve__tuile" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M8.4 14.2a4.5 4.5 0 0 0 7.2 0"/><path d="M9.3 9.4h.01M14.7 9.4h.01" stroke-width="2.4"/></svg>
+          </span>
+          <span class="preuve__texte">
+            <span class="preuve__valeur">100&nbsp;%</span>
+            <span class="preuve__quoi">d’admission Parcoursup</span>
+          </span>
+        </li>
+      </ul>
+
       <div class="itineraire">
         <p class="itineraire__intro" id="itineraire-intro">MAP propose des formules en fonction de l’âge de votre enfant. «&nbsp;Votre enfant est en quelle classe&nbsp;?&nbsp;»</p>
         <ul class="itineraire__etapes" id="itineraire-liste">

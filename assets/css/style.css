@@ -280,7 +280,20 @@ p:last-child { margin-bottom: 0; }
   color: color-mix(in srgb, var(--lac) 34%, var(--paper));
   pointer-events: none;
 }
-.hero__contenu { position: relative; }
+/* Le titre est borne a 15ch et le chapo a 52ch : le hero laissait donc une
+   colonne de blanc a droite, sous le bouton de l'en-tete. Les preuves
+   chiffrees s'y logent, et le titre garde sa mesure. La grille ne vaut qu'a
+   partir de 900 px ; en dessous, tout retombe dans le flux. */
+.hero__contenu {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(15rem, 23vw, 18.5rem);
+  column-gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+.hero h1,
+.hero__chapo,
+.hero__actions { grid-column: 1; }
 .hero h1 {
   font-size: var(--fs-hero);
   max-width: 15ch;
@@ -295,8 +308,62 @@ p:last-child { margin-bottom: 0; }
 .hero__chapo strong { color: var(--ink); font-weight: 600; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: center; }
 
+/* ---------- Preuves chiffrées du hero ---------- */
+/* Trois faits qu'un parent vérifie avant de lire une formule. Pas de carte :
+   la colonne se lit comme une liste, séparée par le filet courant, et le
+   vert ne porte que la tuile du glyphe — sur fond clair, ce vert olive ne
+   tient pas un texte, c'est la règle posée sur le jeton `--vert`.
+   Le bloc occupe les trois premières rangées de la grille, donc toute la
+   hauteur du titre, du chapo et des boutons. */
+.hero__preuves {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  background: var(--trait);
+  border-block: 1px solid var(--trait);
+}
+.preuve {
+  background: var(--paper);
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 0.25rem;
+}
+/* Aplat vert plein, glyphe à l'encre : le même contraste que le logo, et le
+   seul endroit du hero où le vert est une surface. */
+.preuve__tuile {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: var(--vert);
+  color: var(--ink);
+}
+.preuve__valeur {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.preuve__quoi {
+  display: block;
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
 /* ---------- Itinéraire (élément signature) ---------- */
 .itineraire { margin-top: clamp(3rem, 6vw, 5rem); position: relative; }
+/* Les quatre jalons gardent toute la largeur : les borner à la colonne du
+   texte rétrécirait la frise signature de trois cents pixels. */
+.hero__contenu > .itineraire { grid-column: 1 / -1; }
 .itineraire__intro {
   font-family: var(--display);
   font-size: 0.95rem;
@@ -1245,6 +1312,22 @@ p:last-child { margin-bottom: 0; }
   .propos,
   .contact { grid-template-columns: 1fr; }
   .propos__media { order: -1; }
+
+  /* Plus de colonne de blanc à droite : les preuves repassent sous les
+     boutons, en rangée de trois, glyphe au-dessus du chiffre. */
+  .hero__contenu { display: block; }
+  .hero__preuves {
+    margin-top: clamp(2rem, 5vw, 2.75rem);
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--trait);
+  }
+  .preuve {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 0.6rem;
+    padding: 1rem 0.75rem;
+  }
 }
 
 @media (max-width: 780px) {
@@ -1312,6 +1395,16 @@ p:last-child { margin-bottom: 0; }
 
 @media (max-width: 480px) {
   .hero h1 { max-width: none; }
+  /* « d'admission Parcoursup » sur trois colonnes de cent pixels se coupe en
+     quatre lignes : sous 480 px la rangée redevient une liste. */
+  .hero__preuves { grid-template-columns: 1fr; }
+  .preuve {
+    grid-template-columns: 44px minmax(0, 1fr);
+    justify-items: start;
+    text-align: left;
+    gap: 0.9rem;
+    padding: 0.85rem 1rem;
+  }
   .hero__actions .bouton { width: 100%; justify-content: center; }
   .formule { padding: 1.35rem; }
   .legende__item { padding: 0.9rem 1rem; }
