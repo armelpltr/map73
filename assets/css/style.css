@@ -464,7 +464,7 @@ p:last-child { margin-bottom: 0; }
   color: var(--paper);
   padding: clamp(1.15rem, 2vw, 1.35rem);
 }
-/* Les reperes disent ce que couvre l'accompagnement : ils appartiennent
+/* Les reperes disent ce que couvre l'accompagnement scolaire : ils appartiennent
    a ce qu'on vend, et prennent le lac plutot que le vert des personnes. */
 .legende__item { --equerre: var(--lac-clair); }
 .legende__glyphe { color: var(--lac-clair); }
