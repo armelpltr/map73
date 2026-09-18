@@ -587,6 +587,44 @@ p:last-child { margin-bottom: 0; }
   --couture-niveau: color-mix(in srgb, var(--trait) 74%, var(--ink));
 }
 
+/* ---------- L'ADN ---------- */
+/* Trois valeurs, chacune ouverte par un adage. La legende et les nouveautes
+   viennent d'aligner six cartes a l'encre : une septieme rangee de tuiles
+   aurait fait du haut de page une grille. Ici, rien qu'une borne verte, un
+   intitule et du texte — la bande respire, et l'adage porte la section a lui
+   seul. C'est le seul italique du site, et le seul endroit ou une phrase est
+   citee pour elle-meme. */
+.adn { border-bottom: 1px solid var(--trait); }
+.adn__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+  gap: clamp(1.75rem, 3.5vw, 3.25rem);
+}
+.adn__valeur { display: grid; gap: 0.7rem; align-content: start; }
+/* La meme borne que les jalons de l'itineraire portent en vert : elle dit a
+   quelle famille appartient le bloc sans lui poser de cadre. */
+.adn__nom {
+  font-size: var(--fs-h3);
+  margin: 0;
+  padding-top: 0.9rem;
+  border-top: 3px solid var(--vert);
+  justify-self: start;
+  padding-right: 1.5rem;
+}
+.adn__adage {
+  font-style: italic;
+  font-size: 1.1875rem;
+  line-height: 1.45;
+  color: var(--lac);
+  margin: 0;
+  text-wrap: pretty;
+}
+.adn__texte { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
+
+
 /* ---------- À propos ---------- */
 .propos {
   display: grid;
