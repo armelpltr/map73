@@ -130,14 +130,12 @@
      - la copie est marquee aria-hidden et ses liens sortent du parcours
        de tabulation, sinon chaque parution est annoncee et atteinte deux
        fois ;
-     - le bouton d'arret n'existe que si le ruban est monte : sans
-       script, la rangee reste une grille immobile ;
+     - sans script, la rangee reste une grille immobile, complete ;
      - la duree est proportionnelle au nombre de parutions, sinon
        ajouter une coupure de presse accelererait tout le ruban. */
   const presse = document.getElementById("presse-liste");
-  const pause = document.getElementById("presse-pause");
 
-  if (presse && pause && presse.children.length > 2) {
+  if (presse && presse.children.length > 2) {
     const piste = document.createElement("div");
     piste.className = "presse__piste";
     piste.append(...presse.children);
@@ -161,14 +159,6 @@
     // sont les seuls mouvements que le site conserve dans tous les cas.
     piste.style.setProperty("animation-duration", parutions * 6 + "s", "important");
 
-    pause.hidden = false;
-    pause.addEventListener("click", () => {
-      const arrete = presse.dataset.anime === "non";
-      presse.dataset.anime = arrete ? "oui" : "non";
-      pause.setAttribute("aria-pressed", String(!arrete));
-      pause.querySelector(".bouton-pause__mot").textContent =
-        arrete ? "Arrêter le défilement" : "Reprendre le défilement";
-    });
   }
 
   /* ---- Témoignages : les cartes se posent ----

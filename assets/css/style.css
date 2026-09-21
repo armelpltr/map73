@@ -1,3 +1,4 @@
+@charset "utf-8";
 /* =========================================================
    MAP73 — feuille de style unique
    Direction : cartographie / itinéraire (Savoie, parcours scolaire)
@@ -1238,12 +1239,16 @@ p:last-child { margin-bottom: 0; }
 
 /* Le guillemet qui se leve, derriere le texte. */
 .temoignage::after {
-  content: "C";
+  /* Le chevron ouvrant, dans la serif du corps de texte : c'est le
+     guillemet que les temoignages portent deja dans leur texte. Le
+     double apostrophe du display, a cette taille, se lisait comme un
+     grand C. */
+  content: "«";
   position: absolute;
-  right: 0.6rem;
-  bottom: -2.4rem;
-  font-family: var(--display);
-  font-size: 7rem;
+  right: 0.7rem;
+  bottom: -1.6rem;
+  font-family: var(--texte);
+  font-size: 6.5rem;
   line-height: 1;
   color: var(--vert);
   opacity: 0.16;
@@ -1288,43 +1293,6 @@ p:last-child { margin-bottom: 0; }
   gap: clamp(1rem, 2vw, 1.75rem);
 }
 .presse__article { display: flex; flex-direction: column; margin: 0; }
-
-.section-entete--action {
-  max-width: none;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-.section-entete--action > div { max-width: 46ch; }
-.bouton-pause {
-  font-family: var(--display);
-  font-size: var(--fs-micro);
-  font-weight: 600;
-  color: var(--ink);
-  background: var(--paper);
-  border: 1px solid var(--trait);
-  border-radius: 999px;
-  padding: 0.45rem 0.9rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex: none;
-}
-.bouton-pause:hover { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
-/* Deux barres pour « en marche », un triangle pour « arrete ». */
-.bouton-pause__signe {
-  width: 9px;
-  height: 11px;
-  background: currentColor;
-  clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 0 0, 65% 0, 100% 0, 100% 100%, 65% 100%, 65% 0);
-  flex: none;
-}
-.bouton-pause[aria-pressed="true"] .bouton-pause__signe {
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
-}
 
 /* Ruban : monte par le script uniquement. */
 .presse[data-ruban="oui"] {
@@ -1376,12 +1344,6 @@ p:last-child { margin-bottom: 0; }
    et le filet des vignettes prennent les valeurs claires de la famille. */
 .section--encre .presse__source { color: #b9c3d4; }
 .section--encre .presse__lien img { border-color: rgba(255, 253, 249, 0.28); }
-.section--encre .bouton-pause {
-  background: transparent;
-  color: var(--paper);
-  border-color: rgba(255, 253, 249, 0.35);
-}
-.section--encre .bouton-pause:hover { background: var(--blanc); border-color: var(--blanc); color: var(--ink); }
 
 /* ---------- Contact ---------- */
 .contact {
