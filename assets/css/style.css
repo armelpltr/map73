@@ -208,19 +208,23 @@ p:last-child { margin-bottom: 0; }
   .temoignage { border: 1px solid var(--ink); }
 }
 
-/* ---------- En-tête ---------- */
+/* ---------- En-tête ----------
+   L'en-tete tient sur un bandeau d'encre : le meme bleu que le fond des
+   cartes de formules et du bloc « Le concept ». Il donne au site sa
+   couleur des la premiere ligne, la ou l'ancien site posait du noir.
+   Le bandeau est opaque : translucide, le papier du hero le delavait et
+   le logo blanc perdait son fond. */
 .entete {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  background: var(--ink);
+  border-bottom: 1px solid rgba(255, 253, 249, 0.14);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .entete[data-defile="oui"] {
-  border-bottom-color: var(--trait);
-  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  border-bottom-color: rgba(255, 253, 249, 0.22);
+  box-shadow: 0 1px 12px rgba(20, 36, 59, 0.28);
 }
 .entete__barre {
   display: flex;
@@ -230,7 +234,11 @@ p:last-child { margin-bottom: 0; }
   position: relative;
 }
 .entete__logo { flex: none; line-height: 0; }
-.entete__logo img { width: 104px; height: 63px; object-fit: contain; }
+/* Version blanche du logo, detouree : sur le bandeau, le bleu passe entre
+   les lettres. Le pied de page, lui, garde le logo encre sur son papier.
+   Ce dessin est plus large et plus bas que l'ancien (rapport 2,3 contre
+   1,66), d'ou les dimensions propres. */
+.entete__logo img { width: 148px; height: 64px; object-fit: contain; }
 
 .nav { margin-left: auto; }
 .nav__liste {
@@ -245,22 +253,22 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--ink);
+  color: var(--paper);
   text-decoration: none;
   padding: 0.4rem 0;
   border-bottom: 2px solid transparent;
   display: inline-block;
 }
-.nav__lien:hover { border-bottom-color: var(--vert); }
+.nav__lien:hover { color: var(--blanc); border-bottom-color: var(--vert); }
 
 .entete__bascule {
   display: none;
   margin-left: auto;
   background: none;
-  border: 1.5px solid var(--trait);
+  border: 1.5px solid rgba(255, 253, 249, 0.35);
   border-radius: var(--rayon);
   padding: 0.5rem 0.7rem;
-  color: var(--ink);
+  color: var(--paper);
   cursor: pointer;
 }
 
@@ -1361,20 +1369,22 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 780px) {
   .entete__bascule { display: block; }
   .entete__barre { min-height: 4.75rem; }
-  .entete__logo img { width: 88px; height: 53px; }
+  .entete__logo img { width: 122px; height: 53px; }
+  /* Le menu deroulant prolonge le bandeau : meme encre, filets clairs.
+     En papier, il retombait en blanc sous une barre bleue. */
   .nav {
     display: none;
     position: absolute;
     inset-inline: calc(var(--gouttiere) * -1);
     top: 100%;
-    background: var(--paper);
-    border-block: 1px solid var(--trait);
+    background: var(--ink);
+    border-block: 1px solid rgba(255, 253, 249, 0.18);
     padding: 1rem var(--gouttiere) 1.5rem;
     margin-left: 0;
   }
   .nav[data-ouvert="oui"] { display: block; }
   .nav__liste { flex-direction: column; align-items: stretch; gap: 0; }
-  .nav__lien { display: block; padding: 0.85rem 0; border-bottom: 1px solid var(--trait); }
+  .nav__lien { display: block; padding: 0.85rem 0; border-bottom: 1px solid rgba(255, 253, 249, 0.18); }
   .nav__lien:hover { border-bottom-color: var(--vert); }
   .nav .bouton { margin-top: 1rem; width: 100%; justify-content: center; }
 
