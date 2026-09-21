@@ -1005,25 +1005,30 @@ p:last-child { margin-bottom: 0; }
      fond blanc de la carte. Seuls les intitules, qui portent leur propre
      couleur, restaient lisibles. */
   color: var(--ink);
-  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  padding: clamp(1.5rem, 2.5vw, 1.9rem);
   display: grid;
-  gap: 1.25rem;
+  gap: 1rem;
+  /* Traitement « profil » : portrait rond cercle de vert, nom et role
+     centres, faits alignes a gauche sous un filet. C'est le seul rond du
+     site, assume : la fiche parle de personnes, pas d'une offre. */
+  justify-items: center;
+  text-align: center;
 }
 
 .fondatrice__entete {
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
-  gap: 1rem;
-  align-items: center;
+  justify-items: center;
+  gap: 0.6rem;
 }
 
 /* Le portrait est carré, comme les fichiers attendus : un cadrage décidé ici
    plutôt qu'au moment de la photo se verrait au premier remplacement. */
 .fondatrice__portrait {
-  width: 76px;
-  height: 76px;
+  width: 92px;
+  height: 92px;
   object-fit: cover;
-  border: 1px solid var(--trait);
+  border-radius: 50%;
+  border: 3px solid var(--vert);
 }
 
 .fondatrice h3 { font-size: 1.4rem; margin: 0 0 0.15rem; }
@@ -1035,18 +1040,15 @@ p:last-child { margin-bottom: 0; }
   margin: 0;
 }
 
-/* Repères chiffrés, sur une surface légèrement en creux. */
+/* Reperes chiffres : une rangee centree, sans creux ni filets. Le
+   panneau autorise un ou trois reperes, d'ou le retour a la ligne. */
 .fondatrice__chiffres {
-  display: grid;
-  /* auto-fit plutot que 1fr 1fr : le panel autorise un ou trois reperes,
-     la rangee doit rester lisible sans revenir dans la feuille de style. */
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: 1px;
-  background: var(--trait);
-  border: 1px solid var(--trait);
-  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.75rem;
 }
-.fondatrice__chiffre { background: var(--paper); padding: 0.85rem 1rem; }
+.fondatrice__chiffre { padding: 0; }
 .fondatrice__valeur {
   display: block;
   font-family: var(--display);
@@ -1063,7 +1065,18 @@ p:last-child { margin-bottom: 0; }
   margin-top: 0.15rem;
 }
 
-.fondatrice__faits { margin: 0; font-size: var(--fs-small); display: grid; gap: 0.9rem; }
+.fondatrice__faits {
+  margin: 0;
+  font-size: var(--fs-small);
+  display: grid;
+  gap: 0.9rem;
+  /* Le texte courant reste aligne a gauche : trois paragraphes centres
+     ne se lisent pas. Seuls le portrait, le nom et les chiffres le sont. */
+  text-align: left;
+  width: 100%;
+  border-top: 1px solid var(--trait);
+  padding-top: 1rem;
+}
 .fondatrice__ligne { display: grid; gap: 0.2rem; }
 /* Intitules en casse normale : six libelles en capitales dans une meme carte
    se lisent comme un gabarit, et le contraste de graisse suffit a les
@@ -1082,6 +1095,7 @@ p:last-child { margin-bottom: 0; }
   padding: 0;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.4rem;
 }
 .pastille {
@@ -1649,7 +1663,8 @@ p:last-child { margin-bottom: 0; }
   .champs { grid-template-columns: 1fr; }
   .temoignages { columns: 1; }
 
-  .fondatrice__entete { grid-template-columns: 64px minmax(0, 1fr); gap: 0.85rem; }
+  .fondatrice__portrait { width: 80px; height: 80px; }
+  .fondatrice__chiffres { gap: 1.25rem; }
   .fondatrice__portrait { width: 64px; height: 64px; }
   .fondatrice h3 { font-size: 1.25rem; }
   .fondatrice__valeur { font-size: 1.25rem; }
