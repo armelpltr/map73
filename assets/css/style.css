@@ -269,17 +269,17 @@ p:last-child { margin-bottom: 0; }
 .entete[data-defile="oui"] .entete__barre { min-height: 4.25rem; }
 
 .entete__logo { flex: none; line-height: 0; }
-/* Version blanche du logo, detouree : sur le bandeau, le bleu passe entre
-   les lettres. Le pied de page, lui, garde le logo encre sur son papier.
-   Ce dessin est plus large et plus bas que l'ancien (rapport 2,3 contre
-   1,66), d'ou les dimensions propres. */
+/* Version blanche du logo : sur le bandeau, le bleu passe entre les
+   lettres. Le pied de page, lui, garde le logo encre sur son papier.
+   Le dessin fait 2,45 de rapport, d'ou ces mesures : la hauteur reste le
+   reperage, la largeur suit. */
 .entete__logo img {
-  width: 148px;
+  width: 156px;
   height: 64px;
   object-fit: contain;
   transition: width 0.25s ease, height 0.25s ease;
 }
-.entete[data-defile="oui"] .entete__logo img { width: 116px; height: 50px; }
+.entete[data-defile="oui"] .entete__logo img { width: 122px; height: 50px; }
 
 /* Le filet du lien courant se deplace d'un intitule a l'autre : la barre
    cesse d'etre une liste de liens et devient un repere de position. Il
@@ -1282,7 +1282,7 @@ p:last-child { margin-bottom: 0; }
 .pied li { padding: 0.2rem 0; }
 .pied a { color: var(--ink); text-decoration: none; }
 .pied a:hover { text-decoration: underline; }
-.pied__logo img { width: 150px; height: 91px; object-fit: contain; margin-bottom: 0.85rem; }
+.pied__logo img { width: 160px; height: 65px; object-fit: contain; margin-bottom: 0.85rem; }
 .pied__bas {
   border-top: 1px solid var(--trait);
   padding-top: 1.25rem;
@@ -1563,8 +1563,8 @@ p:last-child { margin-bottom: 0; }
   .entete__bascule { display: block; }
   .entete__barre { min-height: 4.75rem; }
   .entete[data-defile="oui"] .entete__barre { min-height: 4rem; }
-  .entete__logo img { width: 122px; height: 53px; }
-  .entete[data-defile="oui"] .entete__logo img { width: 100px; height: 43px; }
+  .entete__logo img { width: 130px; height: 53px; }
+  .entete[data-defile="oui"] .entete__logo img { width: 105px; height: 43px; }
   /* Le menu déroulant est une colonne : un filet qui glisse d'une ligne à
      l'autre n'y veut rien dire. Seul aria-current reste. */
   .nav__curseur { display: none; }
