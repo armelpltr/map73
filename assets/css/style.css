@@ -306,15 +306,21 @@ p:last-child { margin-bottom: 0; }
 .nav__liste {
   display: flex;
   align-items: center;
-  gap: clamp(0.75rem, 1.8vw, 1.6rem);
+  /* Huit intitules plus le bouton d'appel : l'ecart se resserre, sinon
+     « Qui sommes-nous » se coupe en deux lignes et la barre double de
+     hauteur. */
+  gap: clamp(0.6rem, 1.25vw, 1.15rem);
   list-style: none;
   margin: 0;
   padding: 0;
 }
 .nav__lien {
   font-family: var(--display);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
+  /* Un intitule ne se coupe jamais : mieux vaut basculer en menu
+     deroulant que garder une barre sur deux lignes. */
+  white-space: nowrap;
   color: var(--paper);
   text-decoration: none;
   padding: 0.4rem 0;
@@ -1553,12 +1559,13 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- En-tête : bascule en menu déroulant ----------
    Sept intitulés plus un bouton d'appel ne tiennent pas sur une ligne en
-   dessous de 1180 px : ils passaient sur deux ou trois lignes et le bouton
-   d'appel enflait en pavé. Mesuré au rendu : la barre tient d'une pièce à
-   partir de 1120 px de conteneur, soit 1200 px de fenêtre ; elle déborde
-   dès 1100. Le seuil est celui de l'en-tête seul, pas celui du reste de la
-   mise en page, qui bascule plus bas. */
-@media (max-width: 1180px) {
+   dessous de 1240 px : ils passaient sur deux ou trois lignes et le bouton
+   d'appel enflait en pavé. Mesuré au rendu : la barre réclame 1125 px, et
+   le conteneur vaut la fenêtre moins deux gouttières de 40 px — il faut
+   donc 1205 px de fenêtre, 1240 avec la marge de sécurité. Le seuil est
+   celui de l'en-tête seul, pas celui du reste de la mise en page, qui
+   bascule plus bas. */
+@media (max-width: 1240px) {
   body { padding-top: 4.75rem; }
   .entete__bascule { display: block; }
   .entete__barre { min-height: 4.75rem; }
