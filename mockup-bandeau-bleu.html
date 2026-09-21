@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-demo="bleu">
+<html lang="fr" data-demo="bleu" data-vert="site">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,14 +34,21 @@
   box-shadow: 0 1px 12px rgba(20, 36, 59, 0.28);
 }
 
-/* Le logo est en encre sur fond transparent : posé tel quel sur le bandeau,
-   il disparaîtrait. Il garde donc son papier, sous forme de cartouche. */
-[data-demo="bleu"] .entete__logo {
-  display: inline-flex;
-  background: var(--blanc);
-  padding: 0.4rem 0.7rem;
-  border-radius: var(--rayon);
+/* Le logo existant est en encre : posé sur le bandeau il disparaîtrait.
+   La version blanche du logo prend sa place, détourée, sans cartouche —
+   le bleu du bandeau passe entre les lettres. */
+.entete__logo { display: inline-flex; }
+.entete__logo .logo--blanc { display: none; width: 148px; height: 64px; object-fit: contain; }
+[data-demo="bleu"] .entete__logo .logo--encre { display: none; }
+[data-demo="bleu"] .entete__logo .logo--blanc { display: block; }
+@media (max-width: 780px) {
+  .entete__logo .logo--blanc { width: 122px; height: 53px; }
 }
+
+/* Le nouveau logo porte un vert vif (#17e157), pas l'olive du site
+   (#94c412). Les deux dans la même page se battent. Ce bouton rebascule
+   tout le vert du site sur celui du logo, pour juger sur pièce. */
+[data-vert="logo"] { --vert: #17e157; }
 
 [data-demo="bleu"] .nav__lien { color: var(--paper); }
 [data-demo="bleu"] .nav__lien:hover {
@@ -76,6 +83,9 @@
   background: var(--blanc);
   border: 1px solid var(--trait);
   border-radius: 999px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: calc(100vw - 1.5rem);
   padding: 0.45rem 0.55rem 0.45rem 1rem;
   box-shadow: 0 6px 24px rgba(20, 36, 59, 0.18);
   font-family: var(--display);
@@ -123,7 +133,10 @@
 <header class="entete" id="entete">
   <div class="enveloppe entete__barre">
     <a class="entete__logo" href="index.html" aria-label="MAP73, accueil">
-      <img src="assets/img/logo-240.webp" srcset="assets/img/logo-240.webp 240w, assets/img/logo-480.webp 480w" sizes="104px" width="240" height="145" alt="MAP Orientation" fetchpriority="high">
+      <!-- Deux logos, un par version de l'en-tete : l'encre sur papier, le
+           blanc sur le bandeau bleu. Le CSS n'en montre qu'un. -->
+      <img class="logo logo--encre" src="assets/img/logo-240.webp" srcset="assets/img/logo-240.webp 240w, assets/img/logo-480.webp 480w" sizes="104px" width="240" height="145" alt="MAP Orientation" fetchpriority="high">
+      <img class="logo logo--blanc" src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="148px" width="240" height="104" alt="MAP Orientation" fetchpriority="high">
     </a>
 
     <button class="entete__bascule" type="button" id="bascule-menu" aria-expanded="false" aria-controls="navigation">
@@ -404,6 +417,11 @@
     <button type="button" id="demo-actuel" aria-pressed="false">Actuel (papier)</button>
     <button type="button" id="demo-bleu" aria-pressed="true">Bandeau bleu</button>
   </div>
+  <span class="demo-barre__titre">Vert&nbsp;:</span>
+  <div class="demo-barre__choix">
+    <button type="button" id="vert-site" aria-pressed="true">Olive du site</button>
+    <button type="button" id="vert-logo" aria-pressed="false">Vert du logo</button>
+  </div>
 </div>
 
 <script src="assets/js/main.js"></script>
@@ -422,6 +440,20 @@
   };
   for (const [cle, bouton] of Object.entries(boutons)) {
     bouton.addEventListener("click", () => appliquer(cle));
+  }
+
+  const verts = {
+    site: document.getElementById("vert-site"),
+    logo: document.getElementById("vert-logo")
+  };
+  const appliquerVert = (mode) => {
+    racine.dataset.vert = mode;
+    for (const [cle, bouton] of Object.entries(verts)) {
+      bouton.setAttribute("aria-pressed", String(cle === mode));
+    }
+  };
+  for (const [cle, bouton] of Object.entries(verts)) {
+    bouton.addEventListener("click", () => appliquerVert(cle));
   }
 })();
 </script>
