@@ -1191,9 +1191,9 @@ p:last-child { margin-bottom: 0; }
   grid-auto-columns: minmax(270px, 1fr);
   gap: clamp(1.25rem, 2.5vw, 2rem);
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  /* Pas d'accrochage : la rangee avance en continu, et un point
+     d'accrochage la ramenerait en arriere a chaque pixel parcouru. */
   overscroll-behavior-x: contain;
-  scroll-behavior: smooth;
   padding-bottom: 0.9rem;
   scrollbar-width: thin;
   /* Les bords s'estompent : c'est ce qui dit qu'il y a une suite. */
@@ -1202,7 +1202,6 @@ p:last-child { margin-bottom: 0; }
 /* La carte seule passe a l'encre, la section garde son papier : c'est ce
    qui separe cette mise en page d'un bandeau plein. */
 .temoignage {
-  scroll-snap-align: start;
   margin: 0;
   --equerre: var(--lac-clair);
   background-color: var(--ink);

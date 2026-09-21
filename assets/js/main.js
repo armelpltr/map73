@@ -168,74 +168,78 @@
     });
   }
 
-  /* ---- Témoignages : le rail qui avance seul ----
-     Un temoignage toutes les cinq secondes, et la main rendue au
-     premier geste du visiteur — molette, doigt, clavier, survol. On ne
-     reprend pas la main ensuite : un carrousel qui repart pendant
-     qu'on lit est le defaut classique du genre. Le rail reste un vrai
-     scroller : sans script, il se fait glisser a la main et rien ne
-     manque. */
+  /* ---- Témoignages : la rangée qui glisse en continu ----
+     Le rail avance tout seul, d'un mouvement continu plutot que par
+     sauts : sur un texte, un a-coup toutes les cinq secondes se voit
+     plus que la lecture.
+
+     La serie est doublee et la position ramenee a mi-course des qu'on
+     y arrive : la copie se presente exactement la ou etait
+     l'originale, donc la boucle ne se voit pas. La copie est masquee
+     aux lecteurs d'ecran et sortie du parcours de tabulation.
+
+     Le mouvement s'arrete au survol, au clavier, et pendant que le
+     visiteur fait glisser la rangee lui-meme ; il reprend deux
+     secondes apres son dernier geste. C'est ce qui remplace le bouton
+     d'arret : sans lui, il faut au moins que poser le doigt suffise a
+     figer le texte qu'on lit. */
   const rail = document.getElementById("temoignages-liste");
-  const railPause = document.getElementById("temoignages-pause");
+  const moinsDeMouvement = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  if (rail && railPause && rail.children.length > 1) {
-    let minuterie = null;
-    let rendu = false;
-
-    const arreter = () => {
-      clearInterval(minuterie);
-      minuterie = null;
-    };
-
-    const avancer = () => {
-      const carte = rail.querySelector(".temoignage");
-      if (!carte) return;
-      const pas = carte.offsetWidth + parseFloat(getComputedStyle(rail).columnGap || 0);
-      const fin = rail.scrollWidth - rail.clientWidth - 2;
-      rail.scrollTo({
-        left: rail.scrollLeft >= fin ? 0 : rail.scrollLeft + pas,
-        behavior: "smooth"
-      });
-    };
-
-    const lancer = () => {
-      if (rendu) return;
-      arreter();
-      minuterie = setInterval(avancer, 5000);
-    };
-
-    // La main rendue pour de bon : le bouton reste, pour le cas ou le
-    // visiteur voudrait relancer.
-    const rendreLaMain = () => {
-      rendu = true;
-      arreter();
-      railPause.setAttribute("aria-pressed", "true");
-      railPause.querySelector(".bouton-pause__mot").textContent = "Reprendre le défilement";
-    };
-
-    for (const evenement of ["pointerdown", "wheel", "keydown", "mouseenter", "focusin"]) {
-      rail.addEventListener(evenement, rendreLaMain, { passive: true });
+  if (rail && rail.children.length > 1) {
+    for (const carte of [...rail.children]) {
+      const copie = carte.cloneNode(true);
+      copie.setAttribute("aria-hidden", "true");
+      for (const cible of copie.querySelectorAll("a, button")) cible.tabIndex = -1;
+      rail.append(copie);
     }
 
-    railPause.hidden = false;
-    railPause.addEventListener("click", () => {
-      if (rendu) {
-        rendu = false;
-        railPause.setAttribute("aria-pressed", "false");
-        railPause.querySelector(".bouton-pause__mot").textContent = "Arrêter le défilement";
-        lancer();
-      } else {
-        rendreLaMain();
-      }
-    });
+    const VITESSE = 0.03; // pixels par milliseconde, soit 30 px/s : un
+                          // temoignage passe en une dizaine de secondes
+    let arrets = 0;       // survol, focus, geste en cours
+    let reprise = null;
+    let visible = false;
+    let precedent = null;
 
-    // Le rail ne tourne que lorsqu'il est a l'ecran.
-    new IntersectionObserver((entrees) => {
-      for (const entree of entrees) {
-        if (entree.isIntersecting) lancer();
-        else arreter();
+    const pas = (maintenant) => {
+      if (precedent === null) precedent = maintenant;
+      const delta = Math.min(maintenant - precedent, 50);
+      precedent = maintenant;
+
+      if (visible && arrets === 0 && !moinsDeMouvement.matches) {
+        const moitie = rail.scrollWidth / 2;
+        // Le retour a mi-course se fait sur la position, pas sur zero :
+        // remettre a zero ferait un saut d'une serie entiere.
+        if (rail.scrollLeft >= moitie) rail.scrollLeft -= moitie;
+        rail.scrollLeft += VITESSE * delta;
       }
-    }, { threshold: 0.35 }).observe(rail);
+      requestAnimationFrame(pas);
+    };
+    requestAnimationFrame(pas);
+
+    const suspendre = () => { arrets += 1; };
+    const relacher = () => { arrets = Math.max(0, arrets - 1); };
+
+    rail.addEventListener("mouseenter", suspendre);
+    rail.addEventListener("mouseleave", relacher);
+    rail.addEventListener("focusin", suspendre);
+    rail.addEventListener("focusout", relacher);
+
+    // Molette, doigt, clavier : on rend la main le temps du geste, puis
+    // deux secondes de repit avant de reprendre.
+    const geste = () => {
+      if (reprise === null) suspendre();
+      else clearTimeout(reprise);
+      reprise = setTimeout(() => { reprise = null; relacher(); }, 2000);
+    };
+    for (const evenement of ["pointerdown", "wheel", "keydown", "touchmove"]) {
+      rail.addEventListener(evenement, geste, { passive: true });
+    }
+
+    // Rien ne tourne tant que la section n'est pas a l'ecran.
+    new IntersectionObserver((entrees) => {
+      for (const entree of entrees) visible = entree.isIntersecting;
+    }, { threshold: 0.2 }).observe(rail);
   }
 
   /* ---- Visionneuse d'images ----
