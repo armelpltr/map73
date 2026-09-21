@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Maquette — le bas des fiches | MAP73</title>
+
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+
+<style>
+/* =========================================================
+   MAQUETTE — dix traitements du bas des fiches
+
+   Le haut ne bouge jamais : portrait rond cercle de vert, nom et role
+   centres, les deux reperes chiffres en rangee. C'est ce qui a ete
+   valide. Seul change ce qui suit — les trois faits et les
+   certifications, qui terminent aujourd'hui la carte en formulaire
+   administratif : six blocs de texte de meme poids sur six lignes.
+
+   Contenu ecrit une fois, en donnees, et remis en page par chaque
+   variante : aucune fiche ne peut dire autre chose qu'une autre.
+   ========================================================= */
+
+.demo-note {
+  background: var(--ambre);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-align: center;
+  padding: 0.5rem var(--gouttiere);
+}
+.demos { display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); }
+.demo { border: 1px solid var(--trait); background: var(--blanc); }
+.demo__tete { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; padding: clamp(1rem, 2vw, 1.4rem) clamp(1rem, 2vw, 1.4rem) 0; }
+.demo__num { font-family: var(--display); font-weight: 800; font-size: 1.4rem; color: var(--lac); line-height: 1; }
+.demo__tete h2 { font-size: 1.15rem; margin: 0; }
+.demo__quoi { font-size: var(--fs-small); color: var(--ink-soft); margin: 0.5rem clamp(1rem, 2vw, 1.4rem) 1rem; max-width: 70ch; }
+.demo__note {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  color: var(--ink-soft);
+  margin: 0;
+  padding: 0.75rem clamp(1rem, 2vw, 1.4rem) clamp(1rem, 2vw, 1.4rem);
+  border-top: 1px solid var(--trait);
+}
+.demo__note b { color: var(--ink); }
+.scene { background: var(--ink); padding: clamp(1.25rem, 2.5vw, 2rem); }
+.paire { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: clamp(1rem, 2vw, 1.5rem); align-items: start; }
+
+/* Le bas de fiche est seul a changer : on neutralise la regle du site,
+   chaque variante repose la sienne. */
+.scene .fondatrice__faits { border-top: 0; padding-top: 0; gap: 0; }
+
+/* ---------- 01. Notice a deux colonnes ---------- */
+.v1 .fondatrice__ligne {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0 1rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--trait);
+}
+.v1 .fondatrice__ligne dt { color: var(--ink-soft); padding-top: 0.15rem; }
+
+/* ---------- 02. Registre ---------- */
+.v2 .fondatrice__ligne { padding: 0.7rem 0.85rem; }
+.v2 .fondatrice__ligne:nth-child(odd) { background: var(--paper); }
+.v2 .fondatrice__ligne dt {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  color: var(--lac);
+  margin-bottom: 0.2rem;
+}
+
+/* ---------- 03. Intitules dans la marge ---------- */
+.v3 .fondatrice__ligne {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0 1rem;
+  padding: 0.6rem 0;
+}
+.v3 .fondatrice__ligne dt {
+  text-align: right;
+  color: var(--lac);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: 0.3rem;
+}
+.v3 .fondatrice__ligne dd { border-left: 2px solid var(--vert); padding-left: 0.85rem; }
+
+/* ---------- 04. Jalons ---------- */
+.v4 .fondatrice__faits { position: relative; padding-left: 1.5rem; gap: 1rem; }
+.v4 .fondatrice__faits::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 8px; bottom: 8px;
+  width: 2px;
+  background: repeating-linear-gradient(180deg, var(--vert) 0 6px, transparent 6px 11px);
+}
+.v4 .fondatrice__ligne { position: relative; }
+.v4 .fondatrice__ligne::before {
+  content: "";
+  position: absolute;
+  left: -1.5rem; top: 5px;
+  width: 10px; height: 10px;
+  background: var(--vert);
+}
+.v4 .fondatrice__ligne dt { color: var(--ink-soft); }
+
+/* ---------- 05. Puces vertes, sans intitules ---------- */
+.v5 .fondatrice__faits { gap: 0.55rem; }
+.v5 .fondatrice__ligne dt { display: none; }
+.v5 .fondatrice__ligne dd { position: relative; padding-left: 1.1rem; }
+.v5 .fondatrice__ligne dd::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.55em;
+  width: 7px; height: 7px;
+  background: var(--vert);
+}
+
+/* ---------- 06. Trois cartouches ----------
+   Chaque fait dans son petit bloc en creux : la fiche se termine sur
+   trois objets, pas sur un pave de texte. */
+.v6 .fondatrice__faits { gap: 0.5rem; }
+.v6 .fondatrice__ligne {
+  background: var(--paper);
+  border-left: 3px solid var(--vert);
+  padding: 0.7rem 0.9rem;
+  gap: 0.25rem;
+}
+.v6 .fondatrice__ligne dt { color: var(--ink-soft); }
+
+/* ---------- 07. Prose ----------
+   L'intitule rentre dans la ligne, en gras, suivi d'un tiret. Le bas
+   de fiche redevient du texte, et c'est le traitement le plus court
+   en hauteur. */
+.v7 .fondatrice__faits { gap: 0.5rem; }
+.v7 .fondatrice__ligne { display: block; }
+.v7 .fondatrice__ligne dt { display: inline; font-weight: 700; color: var(--ink); font-size: var(--fs-small); }
+.v7 .fondatrice__ligne dt::after { content: " — "; color: var(--ink-soft); font-weight: 400; }
+.v7 .fondatrice__ligne dd { display: inline; }
+
+/* ---------- 08. Grille deux par deux ----------
+   Formation et experience cote a cote, ce qu'elle fait en seance sur
+   toute la largeur, en vert : la fiche distingue enfin le parcours de
+   ce qu'un parent y gagne. */
+.v8 .fondatrice__faits { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.v8 .fondatrice__ligne {
+  background: var(--paper);
+  padding: 0.75rem 0.9rem;
+  gap: 0.3rem;
+}
+.v8 .fondatrice__ligne:last-child {
+  grid-column: 1 / -1;
+  background: color-mix(in srgb, var(--vert) 16%, var(--blanc));
+  border-top: 2px solid var(--vert);
+}
+.v8 .fondatrice__ligne dt { color: var(--ink-soft); }
+
+/* ---------- 09. Depliant ----------
+   La fiche ne montre que ce qu'elle fait en seance ; le parcours se
+   deroule a la demande. C'est la seule variante qui raccourcit
+   vraiment la section. */
+.v9 .fondatrice__faits { gap: 0.6rem; }
+.v9 .fondatrice__ligne:not(:last-child) { display: none; }
+.v9 .parcours { width: 100%; text-align: left; font-size: var(--fs-small); }
+.v9 .parcours summary {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--lac);
+  cursor: pointer;
+  list-style: none;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--trait);
+}
+.v9 .parcours summary::-webkit-details-marker { display: none; }
+.v9 .parcours summary::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: 0.5rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+.v9 .parcours[open] summary::before { transform: translateY(1px) rotate(-135deg); }
+.v9 .parcours dl { display: grid; gap: 0.7rem; margin: 0.3rem 0 0; }
+.v9 .parcours dt { font-family: var(--display); font-size: var(--fs-micro); font-weight: 600; color: var(--ink-soft); }
+.v9 .parcours dd { margin: 0; }
+
+/* ---------- 10. Intitules souligne vert ----------
+   L'intitule prend un trait vert sous lui, comme les valeurs de
+   l'ADN : la meme borne, a l'echelle de la ligne. */
+.v10 .fondatrice__faits { gap: 0.9rem; }
+.v10 .fondatrice__ligne dt {
+  border-bottom: 2px solid var(--vert);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
+  justify-self: start;
+  color: var(--ink);
+}
+</style>
+</head>
+
+<body>
+<p class="demo-note">Maquette de travail — dix traitements du bas des fiches. Le haut ne change pas. Ce n'est pas le site en ligne.</p>
+
+<header class="entete" id="entete">
+  <div class="enveloppe entete__barre">
+    <a class="entete__logo" href="index.html" aria-label="MAP73, accueil">
+      <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="156px" width="240" height="98" alt="MAP Orientation">
+    </a>
+    <nav class="nav" id="navigation" aria-label="Navigation principale">
+      <ul class="nav__liste">
+        <li><a class="nav__lien" href="index.html">Retour au site</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="section section--serre">
+    <div class="enveloppe">
+      <div class="section-entete">
+        <h2>Le bas des fiches, dix versions</h2>
+        <p>Portrait rond, nom centré, repères chiffrés&nbsp;: le haut est validé, il ne bouge dans aucune des dix. Seul change ce qui suit — les trois faits et les certifications.</p>
+      </div>
+      <div class="demos" id="demos"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const gens = [
+    {
+      nom: "Camille Dorel",
+      role: "Enseignement et droit social",
+      portrait: "assets/img/portrait-camille.webp",
+      alt: "Camille Dorel, cofondatrice de MAP73, enseignante certifiée et juriste",
+      chiffres: [
+        { valeur: "10 ans", mesure: "d’enseignement" },
+        { valeur: "7 ans", mesure: "en juridique et RH" }
+      ],
+      faits: [
+        { intitule: "Formation", texte: "Licence de droit, master en gestion sociale et CAPES de lettres modernes" },
+        { intitule: "Expérience", texte: "Enseignante en collège et lycée, puis chargée juridique et RH" },
+        { intitule: "Dans les séances", texte: "Choix des filières et des spécialités, stratégie Parcoursup" }
+      ],
+      etiquettes: ["CAPES de lettres modernes", "Formation en orientation"]
+    },
+    {
+      nom: "Julie Mazet",
+      role: "Ressources humaines",
+      portrait: "assets/img/portrait-julie.webp",
+      alt: "Julie Mazet, cofondatrice de MAP73, responsable ressources humaines",
+      chiffres: [
+        { valeur: "15 ans", mesure: "en entreprise, côté RH" },
+        { valeur: "1", mesure: "certification" }
+      ],
+      faits: [
+        { intitule: "Formation", texte: "Master en gestion et innovations RH" },
+        { intitule: "Expérience", texte: "Gestionnaire RH : responsable de formation et de recrutements" },
+        { intitule: "Dans les séances", texte: "Connaissance de soi, découverte du monde professionnel" }
+      ],
+      etiquettes: ["Ennéagramme cycle 1 (CEE)"]
+    }
+  ];
+
+  // Le haut de fiche, identique partout : c'est la partie validée.
+  const haut = (g) => `
+    <div class="fondatrice__entete">
+      <img class="fondatrice__portrait" src="${g.portrait}" width="200" height="200" loading="lazy" decoding="async" alt="${g.alt}">
+      <div><h3>${g.nom}</h3><p class="fondatrice__role">${g.role}</p></div>
+    </div>
+    <div class="fondatrice__chiffres">
+      ${g.chiffres.map((c) => `<div class="fondatrice__chiffre"><span class="fondatrice__valeur">${c.valeur}</span><span class="fondatrice__mesure">${c.mesure}</span></div>`).join("")}
+    </div>`;
+
+  const faits = (g) => `
+    <dl class="fondatrice__faits">
+      ${g.faits.map((f) => `<div class="fondatrice__ligne"><dt>${f.intitule}</dt><dd>${f.texte}</dd></div>`).join("")}
+    </dl>`;
+
+  const etiquettes = (g) =>
+    `<ul class="fondatrice__pastilles">${g.etiquettes.map((e) => `<li class="pastille">${e}</li>`).join("")}</ul>`;
+
+  // Le dépliant de la variante 09 a besoin de son propre balisage.
+  const fiche = (g, i) => {
+    if (i === 8) {
+      const seances = g.faits[g.faits.length - 1];
+      const parcours = g.faits.slice(0, -1);
+      return `
+        <article class="fondatrice">
+          ${haut(g)}
+          <dl class="fondatrice__faits">
+            <div class="fondatrice__ligne"><dt>${seances.intitule}</dt><dd>${seances.texte}</dd></div>
+          </dl>
+          <details class="parcours">
+            <summary>Son parcours</summary>
+            <dl>
+              ${parcours.map((f) => `<div><dt>${f.intitule}</dt><dd>${f.texte}</dd></div>`).join("")}
+            </dl>
+          </details>
+          ${etiquettes(g)}
+        </article>`;
+    }
+    return `<article class="fondatrice">${haut(g)}${faits(g)}${etiquettes(g)}</article>`;
+  };
+
+  const variantes = [
+    {
+      titre: "Notice à deux colonnes",
+      quoi: "L'intitulé tient sa colonne, le texte la sienne, un filet fin entre chaque ligne.",
+      note: "<b>Le plus lisible des dix.</b> L'œil descend une seule verticale au lieu de zigzaguer. <b>Réserve :</b> sous 320 px, la colonne d'intitulés mange la moitié de la largeur."
+    },
+    {
+      titre: "Registre",
+      quoi: "Une ligne sur deux en creux, intitulés en capitales espacées et plus petits que le texte qu'ils annoncent.",
+      note: "<b>Cohérent avec le dessin du site,</b> qui est celui d'un relevé — repères de coupe, filets, courbes de niveau."
+    },
+    {
+      titre: "Intitulés dans la marge",
+      quoi: "L'intitulé sort du texte, se range à droite dans une marge étroite, et le texte prend un filet vert en tête de ligne.",
+      note: "<b>Mon choix.</b> L'intitulé annonce sans peser, les trois textes forment une colonne nette, et le vert revient en trait — son usage partout ailleurs sur le site."
+    },
+    {
+      titre: "Jalons",
+      quoi: "Trois bornes vertes reliées par un pointillé : le dessin de l'itinéraire du hero, appliqué à un parcours professionnel.",
+      note: "<b>La plus signée.</b> <b>Réserve :</b> formation, expérience et séances ne sont pas une chronologie, et le jalon le laisse croire."
+    },
+    {
+      titre: "Puces vertes",
+      quoi: "Les intitulés disparaissent : trois lignes ouvertes par une borne verte, c'est tout.",
+      note: "<b>Le plus léger, et le plus discutable :</b> « Licence de droit, master, CAPES » se devine, mais « choix des filières » sans son intitulé ne dit plus que c'est ce qu'elle fait en séance."
+    },
+    {
+      titre: "Trois cartouches",
+      quoi: "Chaque fait dans son bloc en creux, ouvert par un filet vert vertical. La fiche se termine sur trois objets plutôt que sur un pavé.",
+      note: "<b>Gain :</b> les trois faits se distinguent enfin les uns des autres. <b>Coût :</b> la fiche gagne une vingtaine de pixels de hauteur."
+    },
+    {
+      titre: "Prose",
+      quoi: "L'intitulé rentre dans la ligne, en gras, suivi d'un tiret cadratin. Le bas de fiche redevient du texte suivi.",
+      note: "<b>Le plus court en hauteur</b> — un tiers de moins que l'existant. <b>Réserve :</b> on ne peut plus balayer la fiche en diagonale, il faut la lire."
+    },
+    {
+      titre: "Grille deux par deux",
+      quoi: "Formation et expérience côte à côte, et ce qu'elle fait en séance sur toute la largeur, en vert.",
+      note: "<b>Le seul qui hiérarchise :</b> le parcours d'un côté, ce qu'un parent y gagne de l'autre, mis en avant. C'est pourtant la seule ligne des trois qui parle de son enfant."
+    },
+    {
+      titre: "Dépliant",
+      quoi: "La fiche ne montre que ce qu'elle fait en séance ; le parcours se déroule à la demande, sous « Son parcours ».",
+      note: "<b>Le seul qui raccourcit vraiment la section</b> — de moitié. <b>Réserve :</b> les diplômes sont l'argument de confiance, et ils passent sous un clic que peu de gens feront."
+    },
+    {
+      titre: "Intitulés soulignés",
+      quoi: "Chaque intitulé prend un trait vert sous lui, comme les trois valeurs de l'ADN : la même borne, à l'échelle de la ligne.",
+      note: "<b>Le plus proche du reste du site</b> sans rien inventer. <b>Réserve :</b> trois traits verts par fiche, six sur la section, là où l'ADN n'en pose que trois sur toute une bande."
+    }
+  ];
+
+  document.getElementById("demos").innerHTML = variantes.map((v, i) => `
+    <section class="demo">
+      <div class="demo__tete"><span class="demo__num">${String(i + 1).padStart(2, "0")}</span><h2>${v.titre}</h2></div>
+      <p class="demo__quoi">${v.quoi}</p>
+      <div class="scene v${i + 1}"><div class="paire">${gens.map((g) => fiche(g, i)).join("")}</div></div>
+      <p class="demo__note">${v.note}</p>
+    </section>`).join("");
+})();
+</script>
+</body>
+</html>
