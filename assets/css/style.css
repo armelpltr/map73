@@ -1144,6 +1144,38 @@ p:last-child { margin-bottom: 0; }
   padding: 0.28rem 0.7rem;
 }
 
+/* Alignement des rangees d'une fiche a l'autre. Etirer les cartes a la
+   meme hauteur ne suffisait pas : un parcours plus long allongeait ses
+   cartouches, et « dans les seances » puis les certifications tombaient
+   plus bas d'un cote que de l'autre. Chaque fiche calque donc ses
+   rangees sur celles de la section — portrait, chiffres, premiere
+   rangee de faits, seances, certifications — et son bloc de faits fait
+   de meme sur deux d'entre elles.
+
+   Derriere un @supports : sans subgrid, les fiches gardent la colonne
+   souple d'avant, simplement moins bien alignees. */
+@supports (grid-template-rows: subgrid) {
+  .fondatrices {
+    grid-template-rows: repeat(5, auto);
+    row-gap: 1rem;
+  }
+  .fondatrice {
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    row-gap: 1rem;
+    justify-items: center;
+  }
+  .fondatrice__faits {
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    row-gap: 0.75rem;
+  }
+  /* La rangee etant commune aux deux fiches, les etiquettes s'alignent
+     d'elles-memes : le calage en pied n'a plus lieu d'etre. */
+  .fondatrice__pastilles { margin: 0; align-self: end; }
+}
+
 /* ---------- Témoignages ---------- */
 .temoignages { columns: 3 260px; column-gap: clamp(1.25rem, 2.5vw, 2rem); }
 /* La carte seule passe a l'encre, la section garde son papier : c'est ce
