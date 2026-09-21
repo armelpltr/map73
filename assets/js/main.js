@@ -171,35 +171,22 @@
     });
   }
 
-  /* ---- Témoignages : le ruban qui défile ----
-     Meme mecanique que « On parle de nous » : la serie est doublee, la
-     copie marquee aria-hidden et sortie du parcours de tabulation, et
-     le CSS anime la piste jusqu'a -50 % pour que la boucle ne se voie
-     pas. Sans script, la rangee reste un simple scroller horizontal.
+  /* ---- Témoignages : les cartes se posent ----
+     Une seule fois, a l'entree dans le champ. Le decalage est porte par
+     une variable sur chaque carte ; le reste — inclinaison, guillemet,
+     filet — est du CSS. */
+  const temoignages = document.getElementById("temoignages-liste");
 
-     La duree est proportionnelle au nombre de temoignages — quinze
-     secondes chacun, un texte demande plus de temps qu'une vignette de
-     presse — et posee en !important pour survivre au bloc « moins de
-     mouvement » de la feuille. */
-  const rail = document.getElementById("temoignages-liste");
+  if (temoignages) {
+    [...temoignages.children].forEach((carte, i) => carte.style.setProperty("--i", i));
 
-  if (rail && rail.children.length > 2) {
-    const piste = document.createElement("div");
-    piste.className = "temoignages__piste";
-    piste.append(...rail.children);
-
-    const copie = piste.cloneNode(true);
-    for (const carte of copie.children) {
-      carte.setAttribute("aria-hidden", "true");
-      for (const cible of carte.querySelectorAll("a, button")) cible.tabIndex = -1;
-    }
-    piste.append(...copie.children);
-
-    rail.append(piste);
-    rail.dataset.ruban = "oui";
-
-    const temoins = piste.children.length / 2;
-    piste.style.setProperty("animation-duration", temoins * 15 + "s", "important");
+    new IntersectionObserver((entrees, oeil) => {
+      for (const entree of entrees) {
+        if (!entree.isIntersecting) continue;
+        temoignages.dataset.pose = "oui";
+        oeil.unobserve(entree.target);
+      }
+    }, { threshold: 0.15 }).observe(temoignages);
   }
 
   /* ---- Visionneuse d'images ----

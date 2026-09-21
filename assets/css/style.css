@@ -1177,57 +1177,85 @@ p:last-child { margin-bottom: 0; }
 }
 
 /* ---------- Témoignages ----------
-   Meme mecanique que « On parle de nous » : la rangee defile en
-   continu. Deux etats :
+   Retour aux colonnes : la rangee qui defilait cachait la moitie des
+   temoignages, et un texte qui bouge ne se lit pas. Trois mouvements
+   les remplacent, tous discrets et rendus a la carte :
 
-   - sans script, une rangee qu'on fait glisser a la main. Rien ne
-     bouge, rien ne manque.
-   - avec script, main.js double la serie, marque la copie en
-     aria-hidden et pose data-ruban. Le CSS bascule alors en piste et
-     l'anime jusqu'a -50 % : la copie arrive exactement la ou etait
-     l'originale, la boucle ne se voit pas.
+   - un guillemet vert qui se leve derriere le texte au survol ;
+   - un filet vert qui se trace le long du bord gauche, et la
+     signature qui glisse de six pixels ;
+   - a l'entree dans le champ, la carte arrive legerement inclinee et
+     se redresse, comme une fiche qu'on pose.
 
-   Le mouvement s'arrete au survol et au clavier. */
-.temoignages {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(270px, 1fr);
-  gap: clamp(1.25rem, 2.5vw, 2rem);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding-bottom: 0.9rem;
-  scrollbar-width: thin;
+   Aucun ne promet de clic : une carte qui se souleve, sur un bloc
+   inerte, annonce une action qui n'existe pas.
+
+   Les durees sont en !important : le bloc « moins de mouvement » de la
+   feuille les ramenerait a un millieme de seconde, et ces trois effets
+   doivent rester visibles partout. */
+.temoignages { columns: 3 260px; column-gap: clamp(1.25rem, 2.5vw, 2rem); }
+
+@keyframes temoin-pose {
+  from { opacity: 0; transform: translateY(26px) rotate(var(--angle)) scale(0.97); }
+  to { opacity: 1; transform: none; }
 }
-.temoignages[data-ruban="oui"] {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0;
-  /* Les bords s'estompent : c'est ce qui dit qu'il y a une suite. */
-  mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+.temoignages[data-pose="oui"] .temoignage {
+  animation: temoin-pose 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-duration: 0.6s !important;
+  animation-delay: calc(var(--i, 0) * 80ms);
 }
-.temoignages__piste {
-  display: flex;
-  align-items: stretch;
-  gap: clamp(1.25rem, 2.5vw, 2rem);
-  width: max-content;
-}
-.temoignages__piste > .temoignage { width: 300px; flex: none; }
-.temoignages[data-ruban="oui"] .temoignages__piste {
-  animation: temoignages-ruban 90s linear infinite;
-}
-@keyframes temoignages-ruban { to { transform: translateX(-50%); } }
-.temoignages[data-ruban="oui"]:hover .temoignages__piste,
-.temoignages[data-ruban="oui"]:focus-within .temoignages__piste { animation-play-state: paused; }
 
 /* La carte seule passe a l'encre, la section garde son papier : c'est ce
    qui separe cette mise en page d'un bandeau plein. */
 .temoignage {
-  margin: 0;
+  position: relative;
+  overflow: hidden;
+  break-inside: avoid;
+  margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
   --equerre: var(--lac-clair);
+  /* L'inclinaison alterne d'une carte a l'autre : le meme angle six
+     fois se lirait comme un defaut de mise en page. */
+  --angle: -0.9deg;
   background-color: var(--ink);
   color: var(--paper);
   padding: 1.5rem;
 }
+.temoignage:nth-child(even) { --angle: 0.9deg; }
+
+/* Le filet qui se trace, au bord gauche. */
+.temoignage::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--vert);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+.temoignage:hover::before,
+.temoignage:focus-within::before { transform: scaleY(1); }
+
+/* Le guillemet qui se leve, derriere le texte. */
+.temoignage::after {
+  content: "C";
+  position: absolute;
+  right: 0.6rem;
+  bottom: -2.4rem;
+  font-family: var(--display);
+  font-size: 7rem;
+  line-height: 1;
+  color: var(--vert);
+  opacity: 0.16;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) !important, opacity 0.35s ease !important;
+}
+.temoignage:hover::after,
+.temoignage:focus-within::after { transform: translateY(-4px); opacity: 0.3; }
+
+.temoignage blockquote,
+.temoignage figcaption { position: relative; z-index: 1; }
 .temoignage blockquote { margin: 0 0 1rem; font-size: var(--fs-small); }
 .temoignage blockquote p { margin-bottom: 0.75rem; }
 .temoignage figcaption {
@@ -1235,7 +1263,10 @@ p:last-child { margin-bottom: 0; }
   font-size: var(--fs-micro);
   font-weight: 600;
   color: var(--lac-clair);
+  transition: transform 0.35s ease !important, color 0.35s ease !important;
 }
+.temoignage:hover figcaption,
+.temoignage:focus-within figcaption { transform: translateX(6px); color: var(--vert); }
 
 /* ---------- Presse ----------
    La rangee defile toute seule, en boucle continue. Deux etats :
