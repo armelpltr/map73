@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr" data-anim="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Maquette — On parle de nous | MAP73</title>
+
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+
+<style>
+/* =========================================================
+   MAQUETTE — huit animations pour « On parle de nous »
+   Page de demonstration, hors site : rien ici ne touche style.css.
+
+   La section presse est la seule du site faite d'images : cinq
+   vignettes carrees, une citation, une source. C'est aussi la seule
+   ou une animation peut aider a lire — cinq parutions posees d'un
+   bloc se regardent comme un mur, pas comme une liste.
+
+   Regle tenue partout :
+   - tout est pilote par [data-anim] sur <html> ; au chargement, le
+     script le met sur « off » si le systeme demande moins de mouvement.
+   - on n'anime que transform, opacity, filter et les couleurs.
+   - les effets de survol sont doubles sur :focus-within, sinon ils
+     n'existent pas au clavier ni au doigt.
+   ========================================================= */
+
+/* ---------- Chassis ---------- */
+.demo-note {
+  background: var(--ambre);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-align: center;
+  padding: 0.5rem var(--gouttiere);
+}
+.demos { display: grid; gap: clamp(1.25rem, 2.5vw, 2rem); }
+/* Deux vignettes de front des qu'il y a la place : a pleine largeur, les
+   images carrees font 400 px de haut et la planche devient un escalier. */
+@media (min-width: 1080px) { .demos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Dans une scene, les parutions restent petites : on juge le mouvement,
+   pas la taille des images. */
+.scene .presse { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+.scene .presse__citation { font-size: var(--fs-micro); margin: 0.6rem 0 0.3rem; }
+.demo {
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  padding: clamp(1.1rem, 2.2vw, 1.6rem);
+}
+.demo__tete { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; }
+.demo__num { font-family: var(--display); font-weight: 800; font-size: 1.4rem; color: var(--lac); line-height: 1; }
+.demo__tete h2 { font-size: 1.15rem; margin: 0; }
+.demo__quoi { font-size: var(--fs-small); color: var(--ink-soft); margin: 0.6rem 0 1rem; }
+.demo__note {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  color: var(--ink-soft);
+  margin: 0.9rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--trait);
+}
+.demo__note b { color: var(--ink); }
+.demo__barre { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.demo__bouton {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--trait);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+}
+.demo__bouton:hover { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
+
+/* La scene reprend le fond craie de la vraie section. */
+.scene { background: var(--paper-2); border: 1px dashed var(--trait); padding: clamp(1rem, 2vw, 1.5rem); }
+.scene--defile {
+  height: 300px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.scene__consigne {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--lac);
+  margin: 0 0 0.85rem;
+}
+.scene__pousse { height: 220px; }
+
+/* ---------- 01. Cascade a l'apparition ---------- */
+@keyframes presse-surgit {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+[data-anim="on"] .cascade .presse__article { opacity: 0; }
+[data-anim="on"] .cascade.joue .presse__article {
+  animation: presse-surgit 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 110ms);
+}
+
+/* ---------- 02. Zoom doux au survol ----------
+   Le cadre ne bouge pas, l'image respire dedans : une vignette qui
+   grandit pousserait ses voisines. */
+.zoom .presse__lien { overflow: hidden; border-radius: var(--rayon); }
+[data-anim="on"] .zoom .presse__lien img { transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1); }
+[data-anim="on"] .zoom .presse__article:hover img,
+[data-anim="on"] .zoom .presse__article:focus-within img { transform: scale(1.06); }
+
+/* ---------- 03. Gris, puis couleur ----------
+   Les cinq parutions n'ont ni la meme palette ni la meme qualite de
+   scan ; en gris, le mur redevient homogene, et la couleur revient sur
+   celle qu'on regarde. */
+[data-anim="on"] .gris .presse__lien img {
+  filter: grayscale(1) contrast(1.05);
+  transition: filter 0.35s ease;
+}
+[data-anim="on"] .gris .presse__article:hover img,
+[data-anim="on"] .gris .presse__article:focus-within img { filter: none; }
+
+/* ---------- 04. La citation se decouvre ----------
+   La grille ne montre que l'image et la source ; la citation monte
+   par-dessus l'image au survol. Elle reste dans le document pour les
+   lecteurs d'ecran et pour l'impression. */
+/* Le voile est dans le modele commun : il ne s'affiche que sur la
+   vignette 04, sinon son texte se poserait sous chaque image. */
+.presse__voile { display: none; }
+.citation .presse__lien { position: relative; overflow: hidden; border-radius: var(--rayon); }
+.citation .presse__voile {
+  display: grid;
+  position: absolute;
+  inset: 0;
+  align-content: end;
+  gap: 0.35rem;
+  padding: 0.9rem;
+  background: linear-gradient(to top, rgba(20, 36, 59, 0.94) 35%, rgba(20, 36, 59, 0.4));
+  color: var(--paper);
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  opacity: 0;
+}
+[data-anim="on"] .citation .presse__voile {
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform: translateY(8px);
+}
+[data-anim="on"] .citation .presse__article:hover .presse__voile,
+[data-anim="on"] .citation .presse__article:focus-within .presse__voile { opacity: 1; transform: none; }
+.citation .presse__citation { display: none; }
+
+/* ---------- 05. Les voisines s'effacent ---------- */
+[data-anim="on"] .foyer .presse__article { transition: opacity 0.25s ease, transform 0.25s ease; }
+[data-anim="on"] .foyer:hover .presse__article,
+[data-anim="on"] .foyer:focus-within .presse__article { opacity: 0.45; }
+[data-anim="on"] .foyer .presse__article:hover,
+[data-anim="on"] .foyer .presse__article:focus-within { opacity: 1; transform: translateY(-3px); }
+
+/* ---------- 06. Ruban de sources ----------
+   Un defilement continu des noms de medias. Le ruban est double, et
+   l'animation s'arrete a mi-course : la seconde copie prend la place
+   de la premiere, la boucle ne se voit pas. */
+.ruban { overflow: hidden; mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); }
+.ruban__piste { display: flex; gap: 2.5rem; width: max-content; }
+[data-anim="on"] .ruban__piste { animation: ruban-defile 22s linear infinite; }
+.ruban:hover .ruban__piste,
+.ruban:focus-within .ruban__piste { animation-play-state: paused; }
+@keyframes ruban-defile { to { transform: translateX(-50%); } }
+.ruban__source {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.ruban__source::before {
+  content: "";
+  width: 7px; height: 7px;
+  background: var(--vert);
+  flex: none;
+}
+
+/* ---------- 07. Carrousel a accrochage ----------
+   Cinq parutions aujourd'hui, dix dans deux ans : la rangee devient un
+   rail qu'on fait glisser, avec accrochage sur chaque vignette. Les
+   bords s'estompent pour dire qu'il y a une suite. */
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(190px, 1fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.75rem;
+  scrollbar-width: thin;
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+.rail .presse__article { scroll-snap-align: start; }
+/* Entree et sortie liees au defilement horizontal, quand le navigateur
+   sait les faire ; sinon la rangee glisse simplement, sans effet. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    [data-anim="on"] .rail .presse__article {
+      animation: rail-entre auto linear both;
+      animation-timeline: view(inline);
+      animation-range: entry 0% entry 90%;
+    }
+  }
+}
+@keyframes rail-entre { from { opacity: 0.25; transform: scale(0.94); } }
+
+/* ---------- 08. Les equerres s'ouvrent ----------
+   Le repere de coupe est la signature du site ; ici il encadre la
+   vignette survolee et s'ecarte, plutot que d'ajouter une ombre
+   etrangere au dessin. */
+.equerres .presse__article {
+  --equerre: var(--equerre-neutre);
+  --equerre-taille: 14px;
+  --equerre-trait: 1.5px;
+  --equerre-marge: -6px;
+  padding: 6px;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--equerre) 0 0), linear-gradient(var(--equerre) 0 0),
+    linear-gradient(var(--equerre) 0 0), linear-gradient(var(--equerre) 0 0),
+    linear-gradient(var(--equerre) 0 0), linear-gradient(var(--equerre) 0 0),
+    linear-gradient(var(--equerre) 0 0), linear-gradient(var(--equerre) 0 0);
+  background-size:
+    var(--equerre-taille) var(--equerre-trait), var(--equerre-trait) var(--equerre-taille),
+    var(--equerre-taille) var(--equerre-trait), var(--equerre-trait) var(--equerre-taille),
+    var(--equerre-taille) var(--equerre-trait), var(--equerre-trait) var(--equerre-taille),
+    var(--equerre-taille) var(--equerre-trait), var(--equerre-trait) var(--equerre-taille);
+  background-position:
+    left 0 top 0, left 0 top 0,
+    right 0 top 0, right 0 top 0,
+    left 0 bottom 0, left 0 bottom 0,
+    right 0 bottom 0, right 0 bottom 0;
+}
+[data-anim="on"] .equerres .presse__article {
+  transition: background-size 0.25s ease;
+}
+[data-anim="on"] .equerres .presse__article:hover,
+[data-anim="on"] .equerres .presse__article:focus-within {
+  --equerre: var(--vert);
+  --equerre-taille: 24px;
+}
+/* La source se souligne en vert, du meme geste. */
+.equerres .presse__source { position: relative; display: inline-block; padding-bottom: 2px; }
+.equerres .presse__source::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: var(--vert);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+[data-anim="on"] .equerres .presse__source::after { transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1); }
+[data-anim="on"] .equerres .presse__article:hover .presse__source::after,
+[data-anim="on"] .equerres .presse__article:focus-within .presse__source::after { transform: scaleX(1); }
+
+/* ---------- Barre de reglages ---------- */
+.reglages {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: calc(100vw - 1.5rem);
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  padding: 0.45rem 0.55rem 0.45rem 1rem;
+  box-shadow: 0 6px 24px rgba(20, 36, 59, 0.18);
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+}
+.reglages__titre { font-weight: 600; color: var(--ink-soft); }
+.reglages button {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--trait);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+}
+.reglages button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
+@media (max-width: 760px) { .reglages__titre { display: none; } }
+</style>
+</head>
+
+<body>
+<p class="demo-note">Maquette de travail — huit animations proposées pour « On parle de nous ». Ce n'est pas le site en ligne.</p>
+
+<header class="entete" id="entete">
+  <div class="enveloppe entete__barre">
+    <a class="entete__logo" href="index.html" aria-label="MAP73, accueil">
+      <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="148px" width="240" height="104" alt="MAP Orientation">
+    </a>
+    <nav class="nav" id="navigation" aria-label="Navigation principale">
+      <ul class="nav__liste">
+        <li><a class="nav__lien" href="index.html">Retour au site</a></li>
+        <li><a class="nav__lien" href="mockup-animations.html">Maquette navbar</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="section section--serre">
+    <div class="enveloppe">
+      <div class="section-entete">
+        <h2>« On parle de nous », huit traitements</h2>
+        <p>Cinq parutions posées d'un bloc se regardent comme un mur. Chaque vignette ci-dessous propose une façon d'en faire une liste qu'on parcourt. Les vraies images du site sont utilisées.</p>
+      </div>
+
+      <div class="demos">
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">01</span><h2>Cascade à l'apparition</h2></div>
+          <p class="demo__quoi">Les parutions montent une par une, 110&nbsp;ms d'écart, quand la section entre dans le champ. L'œil les compte au lieu d'encaisser le mur.</p>
+          <div class="scene scene--defile">
+            <p class="scene__consigne">Faites défiler dans ce cadre.</p>
+            <div class="scene__pousse" aria-hidden="true"></div>
+            <div class="presse cascade" data-presse></div>
+          </div>
+          <div class="demo__barre"><button class="demo__bouton" type="button" data-rejouer>Rejouer</button></div>
+          <p class="demo__note"><b>Coût&nbsp;:</b> un <code>IntersectionObserver</code>, déclenché une seule fois. <b>Réserve&nbsp;:</b> au-delà de cinq vignettes, la dernière arrive trop tard — il faut alors plafonner le décalage.</p>
+        </section>
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">02</span><h2>Zoom doux au survol</h2></div>
+          <p class="demo__quoi">Le cadre ne bouge pas, l'image respire dedans. Une vignette qui grandirait pousserait ses voisines et ferait sauter la rangée.</p>
+          <div class="scene"><div class="presse zoom" data-presse></div></div>
+          <p class="demo__note"><b>Le plus sûr des huit.</b> Trois lignes de CSS, aucun script, et le geste dit « c'est cliquable » — ce que la rangée ne dit pas aujourd'hui.</p>
+        </section>
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">03</span><h2>Gris, puis couleur</h2></div>
+          <p class="demo__quoi">Les cinq parutions n'ont ni la même palette ni la même qualité de scan. En gris, le mur redevient homogène&nbsp;; la couleur revient sur celle qu'on regarde.</p>
+          <div class="scene"><div class="presse gris" data-presse></div></div>
+          <p class="demo__note"><b>Réserve&nbsp;:</b> le logo du Petit Reporter perd son identité en gris, et deux parutions sur cinq viennent de lui. À tester avec la cliente avant de trancher.</p>
+        </section>
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">04</span><h2>La citation se découvre</h2></div>
+          <p class="demo__quoi">La rangée ne montre que l'image et la source&nbsp;; la citation monte par-dessus l'image au survol. La section tient sur deux fois moins de hauteur.</p>
+          <div class="scene"><div class="presse citation" data-presse></div></div>
+          <p class="demo__note"><b>Réserve&nbsp;:</b> au doigt, il n'y a pas de survol — la citation ne se lit alors qu'en ouvrant l'article. C'est le seul des huit qui cache du texte, donc à ne prendre que si la section est jugée trop longue.</p>
+        </section>
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">05</span><h2>Les voisines s'effacent</h2></div>
+          <p class="demo__quoi">Survoler une parution estompe les quatre autres. La rangée se lit alors une par une, sans rien déplacer.</p>
+          <div class="scene"><div class="presse foyer" data-presse></div></div>
+          <p class="demo__note"><b>Réserve&nbsp;:</b> effet de vitrine. Il attire l'œil sur la section presse, qui n'est pas ce qu'on vend — à doser si on le combine avec 02.</p>
+        </section>
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">06</span><h2>Ruban de sources</h2></div>
+          <p class="demo__quoi">Les noms des médias défilent en continu, en complément ou en remplacement des vignettes. Arrêt au survol et au clavier.</p>
+          <div class="scene">
+            <div class="ruban" id="ruban">
+              <div class="ruban__piste" id="ruban-piste"></div>
+            </div>
+          </div>
+          <p class="demo__note"><b>Réserve&nbsp;:</b> un ruban qui bouge en permanence tire l'œil pendant toute la lecture de la page. À n'envisager que le jour où les parutions seront trop nombreuses pour tenir en rangée.</p>
+        </section>
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">07</span><h2>Rail à accrochage</h2></div>
+          <p class="demo__quoi">La rangée devient un rail qu'on fait glisser, chaque vignette s'accrochant en place. Les bords s'estompent pour dire qu'il y a une suite.</p>
+          <div class="scene">
+            <p class="scene__consigne">Faites glisser la rangée horizontalement.</p>
+            <div class="rail" data-presse data-rail></div>
+          </div>
+          <p class="demo__note"><b>La réponse au vrai problème&nbsp;:</b> cinq parutions aujourd'hui, dix dans deux ans. En grille, la section s'allonge&nbsp;; en rail, elle garde sa hauteur. <b>Support&nbsp;:</b> l'accrochage marche partout, l'effet d'entrée seulement sur Chrome, Edge et Safari récents.</p>
+        </section>
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">08</span><h2>Les équerres s'ouvrent</h2></div>
+          <p class="demo__quoi">Le repère de coupe, signature du site, encadre la vignette survolée et s'écarte en vert&nbsp;; la source se souligne du même geste. Aucune ombre, aucun effet étranger au dessin.</p>
+          <div class="scene"><div class="presse equerres" data-presse></div></div>
+          <p class="demo__note"><b>Le plus cohérent avec le reste du site.</b> Les équerres tiennent déjà les cartes de formules, de fondatrices et de témoignages&nbsp;: la presse rejoint la même famille.</p>
+        </section>
+
+      </div>
+
+      <div class="section-entete" style="margin-top:2.5rem">
+        <h2>Ce que je garderais</h2>
+        <p><b>02 + 08</b> ensemble&nbsp;: l'image respire, l'équerre verte marque la cible, la source se souligne — un seul geste, cohérent avec les cartes du reste du site, et rien à cacher. <b>01</b> en complément, discret. <b>07</b> le jour où les parutions dépasseront la rangée. <b>03, 04, 05, 06</b> sont des partis pris&nbsp;: ils demandent l'accord de la cliente, et 04 cache du texte au doigt.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Les trois parutions servant de démonstration, clonées dans chaque
+     vignette. Images et citations reprises du site. -->
+<template id="t-presse">
+  <figure class="presse__article" style="--i:0">
+    <a class="presse__lien" href="#">
+      <img src="assets/img/presse-hebdo-savoie-480.webp" width="480" height="471" loading="lazy" decoding="async"
+           alt="Article de L’Hebdo des Savoie sur l’atelier d’éducation aux médias">
+      <span class="presse__voile"><em>« L’éducation aux médias et techniques de production radiophonique. »</em><b>L’Hebdo des Savoie</b></span>
+    </a>
+    <figcaption>
+      <p class="presse__citation">« L’éducation aux médias et techniques de production radiophonique&nbsp;: rédaction de scripts, prise de parole, interviews. »</p>
+      <span class="presse__source">L’Hebdo des Savoie</span>
+    </figcaption>
+  </figure>
+  <figure class="presse__article" style="--i:1">
+    <a class="presse__lien" href="#">
+      <img src="assets/img/presse-place-aux-possibles-480.webp" width="480" height="471" loading="lazy" decoding="async"
+           alt="Visuel de l’émission Place aux Possibles sur Radio Grand Lac">
+      <span class="presse__voile"><em>« Rapprocher les jeunes de l’univers du travail. »</em><b>Radio Grand Lac</b></span>
+    </a>
+    <figcaption>
+      <p class="presse__citation">« Le concept de l’émission Place aux Possibles&nbsp;: rapprocher les jeunes de l’univers du travail, co-animée avec Camille et Julie. »</p>
+      <span class="presse__source">Radio Grand Lac</span>
+    </figcaption>
+  </figure>
+  <figure class="presse__article" style="--i:2">
+    <a class="presse__lien" href="#">
+      <img src="assets/img/presse-adie-480.webp" width="480" height="471" loading="lazy" decoding="async"
+           alt="Portrait de Camille et Julie publié par l’Adie">
+      <span class="presse__voile"><em>« Dédramatiser l’orientation scolaire et aider les jeunes à trouver leur voie. »</em><b>Adie</b></span>
+    </a>
+    <figcaption>
+      <p class="presse__citation">« Dédramatiser l’orientation scolaire et aider les jeunes à trouver leur voie&nbsp;: l’engagement de Julie et Camille. »</p>
+      <span class="presse__source">Adie</span>
+    </figcaption>
+  </figure>
+</template>
+
+<div class="reglages" role="group" aria-label="Réglages de la maquette">
+  <span class="reglages__titre">Animations&nbsp;:</span>
+  <button type="button" id="anim-on" aria-pressed="true">Activées</button>
+  <button type="button" id="anim-off" aria-pressed="false">Coupées</button>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const racine = document.documentElement;
+  const modele = document.getElementById("t-presse");
+
+  /* ---- Préférence de mouvement ----
+     En production c'est la media query prefers-reduced-motion qui coupe
+     les animations ; ici on la lit au chargement, en laissant un bouton
+     pour forcer, sinon la planche serait figée pour qui a réduit le
+     mouvement sur sa machine. */
+  const bOn = document.getElementById("anim-on");
+  const bOff = document.getElementById("anim-off");
+  const regler = (etat) => {
+    racine.dataset.anim = etat;
+    bOn.setAttribute("aria-pressed", String(etat === "on"));
+    bOff.setAttribute("aria-pressed", String(etat === "off"));
+  };
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) regler("off");
+  bOn.addEventListener("click", () => regler("on"));
+  bOff.addEventListener("click", () => regler("off"));
+
+  /* ---- Remplissage des vignettes ----
+     Le rail en reçoit deux jeux : trois parutions ne suffisent pas à
+     faire un rail qui glisse. */
+  for (const hote of document.querySelectorAll("[data-presse]")) {
+    hote.append(modele.content.cloneNode(true));
+    if (hote.hasAttribute("data-rail")) hote.append(modele.content.cloneNode(true));
+  }
+
+  /* ---- 06 · Ruban de sources ----
+     La piste est doublée et l'animation s'arrête à -50 % : la seconde
+     copie arrive exactement là où était la première, la boucle ne se
+     voit pas. */
+  const sources = ["L’Hebdo des Savoie", "Le Petit Reporter du 73", "Radio Grand Lac", "Adie", "Place aux Possibles"];
+  const piste = document.getElementById("ruban-piste");
+  for (let copie = 0; copie < 2; copie += 1) {
+    for (const nom of sources) {
+      const el = document.createElement("span");
+      el.className = "ruban__source";
+      el.textContent = nom;
+      if (copie === 1) el.setAttribute("aria-hidden", "true");
+      piste.append(el);
+    }
+  }
+
+  /* ---- 01 · Cascade ----
+     Déclenchée à l'entrée dans le champ du cadre, et rejouable. */
+  const cascade = document.querySelector(".cascade");
+  const rejouer = () => {
+    cascade.classList.remove("joue");
+    void cascade.offsetWidth;
+    cascade.classList.add("joue");
+  };
+  document.querySelector("[data-rejouer]").addEventListener("click", rejouer);
+
+  new IntersectionObserver((entrees, oeil) => {
+    for (const entree of entrees) {
+      if (!entree.isIntersecting) continue;
+      rejouer();
+      oeil.unobserve(entree.target);
+    }
+  }, { root: cascade.closest(".scene--defile"), threshold: 0.25 }).observe(cascade);
+})();
+</script>
+</body>
+</html>
