@@ -327,10 +327,25 @@ p:last-child { margin-bottom: 0; }
   inset: 0;
   width: 100%;
   height: 100%;
+  /* Explicitement sous le contenu : le dessin est pose avant lui dans le
+     document, mais on ne laisse pas l'ordre du DOM decider seul de ce qui
+     passe devant du texte. */
+  z-index: 0;
   /* Les courbes de niveau ouvrent la page : elles portent le lac, dilue
      dans le papier, plutot que le filet courant. */
   color: color-mix(in srgb, var(--lac) 34%, var(--paper));
   pointer-events: none;
+  /* Le trace est cadre en « slice » : sur une fenetre large et basse, il
+     se recadre vers le haut et les courbes viennent barrer la colonne des
+     preuves chiffrees, a droite. On les estompe avant qu'elles y arrivent,
+     et sous l'en-tete, plutot que de dependre du format de la fenetre.
+     Deux masques combines en intersection ; un navigateur qui ignore
+     mask-composite les additionne, ce qui attenue moins mais ne casse
+     rien. */
+  mask-image:
+    linear-gradient(to bottom, transparent 0, #000 46%),
+    linear-gradient(to left, transparent 0, #000 48%);
+  mask-composite: intersect;
 }
 /* Le titre est borne a 15ch et le chapo a 52ch : le hero laissait donc une
    colonne de blanc a droite, sous le bouton de l'en-tete. Les preuves
@@ -338,6 +353,7 @@ p:last-child { margin-bottom: 0; }
    partir de 900 px ; en dessous, tout retombe dans le flux. */
 .hero__contenu {
   position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(15rem, 23vw, 18.5rem);
   column-gap: clamp(2rem, 5vw, 4rem);
