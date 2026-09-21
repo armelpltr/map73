@@ -944,8 +944,6 @@ p:last-child { margin-bottom: 0; }
 .formule__pied .bouton { width: 100%; justify-content: center; }
 /* Le bouton contour est dessine pour le papier : sur l'aplat encre, son
    filet encre disparaissait. */
-.formule .bouton--contour { border-color: rgba(255, 253, 249, 0.45); color: var(--blanc); }
-.formule .bouton--contour:hover { background: var(--blanc); color: var(--ink); }
 
 .formule__details { margin: 0 0 1.25rem; font-size: var(--fs-small); }
 .formule__details summary {
@@ -1090,9 +1088,12 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
+  /* Aplat vert plein, texte a l'encre : le meme couple que le bouton et
+     que les tuiles des preuves chiffrees. La teinte lavee d'avant se
+     perdait sur le blanc de la fiche. */
   color: var(--ink);
-  background: color-mix(in srgb, var(--vert) 10%, var(--blanc));
-  border: 1px solid color-mix(in srgb, var(--vert) 45%, var(--blanc));
+  background: var(--vert);
+  border: 1px solid var(--vert);
   /* Angles droits : arrondie a fond, l'etiquette se lisait comme un bouton,
      et rien ne se passe quand on clique dessus. */
   border-radius: 0;
