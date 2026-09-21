@@ -27,6 +27,10 @@
   --trait: #d5d1c2;
   --blanc: #fffdf9;
 
+  /* Liens : la paire par defaut, sur papier. */
+  --lien: var(--lac);
+  --lien-survol: var(--ink);
+
   /* Typographie */
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --texte: "Newsreader", Georgia, "Times New Roman", serif;
@@ -75,8 +79,14 @@ body {
 
 img { max-width: 100%; height: auto; display: block; }
 
-a { color: var(--lac); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { color: var(--ink); }
+/* La couleur des liens passe par deux jetons plutot que par une valeur en
+   dur : sur les surfaces encre — cartes MAP news, cartes de formules, bloc
+   « Le concept » — le survol ramenait le lien a la couleur de son propre
+   fond, et le texte disparaissait sous le curseur. Chaque surface sombre
+   redefinit les deux jetons ; tout lien ajoute plus tard y sera lisible
+   sans qu'il faille y penser. */
+a { color: var(--lien); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--lien-survol); }
 
 :where(a, button, input, textarea, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--lac);
@@ -118,6 +128,14 @@ p:last-child { margin-bottom: 0; }
 .section { padding-block: var(--section-y); position: relative; }
 .section--serre { padding-block: calc(var(--section-y) * 0.6); }
 .section--encre { background: var(--ink); color: var(--paper); }
+/* Les trois surfaces encre du site : le lien y prend le lac eclairci, et
+   le survol le blanc, jamais l'encre. */
+.section--encre,
+.news__carte,
+.formule {
+  --lien: var(--lac-clair);
+  --lien-survol: var(--blanc);
+}
 .section--encre h2 { color: var(--blanc); }
 .section--craie { background: var(--paper-2); }
 
@@ -1426,18 +1444,25 @@ p:last-child { margin-bottom: 0; }
   }
 }
 
-@media (max-width: 780px) {
+/* ---------- En-tête : bascule en menu déroulant ----------
+   Sept intitulés plus un bouton d'appel ne tiennent pas sur une ligne en
+   dessous de 1180 px : ils passaient sur deux ou trois lignes et le bouton
+   d'appel enflait en pavé. Mesuré au rendu : la barre tient d'une pièce à
+   partir de 1120 px de conteneur, soit 1200 px de fenêtre ; elle déborde
+   dès 1100. Le seuil est celui de l'en-tête seul, pas celui du reste de la
+   mise en page, qui bascule plus bas. */
+@media (max-width: 1180px) {
   body { padding-top: 4.75rem; }
   .entete__bascule { display: block; }
   .entete__barre { min-height: 4.75rem; }
   .entete[data-defile="oui"] .entete__barre { min-height: 4rem; }
   .entete__logo img { width: 122px; height: 53px; }
   .entete[data-defile="oui"] .entete__logo img { width: 100px; height: 43px; }
-  /* Le menu mobile est une colonne : un filet qui glisse d'une ligne a
+  /* Le menu déroulant est une colonne : un filet qui glisse d'une ligne à
      l'autre n'y veut rien dire. Seul aria-current reste. */
   .nav__curseur { display: none; }
-  /* Le menu deroulant prolonge le bandeau : meme encre, filets clairs.
-     En papier, il retombait en blanc sous une barre bleue. */
+  /* Il prolonge le bandeau : même encre, filets clairs. En papier, il
+     retombait en blanc sous une barre bleue. */
   .nav {
     display: none;
     position: absolute;
@@ -1453,7 +1478,9 @@ p:last-child { margin-bottom: 0; }
   .nav__lien { display: block; padding: 0.85rem 0; border-bottom: 1px solid rgba(255, 253, 249, 0.18); }
   .nav__lien:hover { border-bottom-color: var(--vert); }
   .nav .bouton { margin-top: 1rem; width: 100%; justify-content: center; }
+}
 
+@media (max-width: 780px) {
   .itineraire__etapes { grid-template-columns: 1fr; gap: 0; }
   .itineraire__etapes::before {
     top: 12px;
