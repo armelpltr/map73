@@ -156,7 +156,10 @@
     // 6 secondes par parution : le ruban garde la meme allure qu'il en
     // compte cinq ou douze.
     const parutions = piste.children.length / 2;
-    piste.style.animationDuration = parutions * 6 + "s";
+    // En !important : le bloc « moins de mouvement » de la feuille ecrase
+    // toutes les durees d'animation, y compris celle-ci. Les deux rubans
+    // sont les seuls mouvements que le site conserve dans tous les cas.
+    piste.style.setProperty("animation-duration", parutions * 6 + "s", "important");
 
     pause.hidden = false;
     pause.addEventListener("click", () => {
@@ -168,78 +171,35 @@
     });
   }
 
-  /* ---- Témoignages : la rangée qui glisse en continu ----
-     Le rail avance tout seul, d'un mouvement continu plutot que par
-     sauts : sur un texte, un a-coup toutes les cinq secondes se voit
-     plus que la lecture.
+  /* ---- Témoignages : le ruban qui défile ----
+     Meme mecanique que « On parle de nous » : la serie est doublee, la
+     copie marquee aria-hidden et sortie du parcours de tabulation, et
+     le CSS anime la piste jusqu'a -50 % pour que la boucle ne se voie
+     pas. Sans script, la rangee reste un simple scroller horizontal.
 
-     La serie est doublee et la position ramenee a mi-course des qu'on
-     y arrive : la copie se presente exactement la ou etait
-     l'originale, donc la boucle ne se voit pas. La copie est masquee
-     aux lecteurs d'ecran et sortie du parcours de tabulation.
-
-     Le mouvement s'arrete au survol, au clavier, et pendant que le
-     visiteur fait glisser la rangee lui-meme ; il reprend deux
-     secondes apres son dernier geste. C'est ce qui remplace le bouton
-     d'arret : sans lui, il faut au moins que poser le doigt suffise a
-     figer le texte qu'on lit. */
+     La duree est proportionnelle au nombre de temoignages — quinze
+     secondes chacun, un texte demande plus de temps qu'une vignette de
+     presse — et posee en !important pour survivre au bloc « moins de
+     mouvement » de la feuille. */
   const rail = document.getElementById("temoignages-liste");
-  const moinsDeMouvement = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  if (rail && rail.children.length > 1) {
-    for (const carte of [...rail.children]) {
-      const copie = carte.cloneNode(true);
-      copie.setAttribute("aria-hidden", "true");
-      for (const cible of copie.querySelectorAll("a, button")) cible.tabIndex = -1;
-      rail.append(copie);
+  if (rail && rail.children.length > 2) {
+    const piste = document.createElement("div");
+    piste.className = "temoignages__piste";
+    piste.append(...rail.children);
+
+    const copie = piste.cloneNode(true);
+    for (const carte of copie.children) {
+      carte.setAttribute("aria-hidden", "true");
+      for (const cible of carte.querySelectorAll("a, button")) cible.tabIndex = -1;
     }
+    piste.append(...copie.children);
 
-    const VITESSE = 0.03; // pixels par milliseconde, soit 30 px/s : un
-                          // temoignage passe en une dizaine de secondes
-    let arrets = 0;       // survol, focus, geste en cours
-    let reprise = null;
-    let visible = false;
-    let precedent = null;
+    rail.append(piste);
+    rail.dataset.ruban = "oui";
 
-    const pas = (maintenant) => {
-      if (precedent === null) precedent = maintenant;
-      const delta = Math.min(maintenant - precedent, 50);
-      precedent = maintenant;
-
-      if (visible && arrets === 0 && !moinsDeMouvement.matches) {
-        const moitie = rail.scrollWidth / 2;
-        // Le retour a mi-course se fait sur la position, pas sur zero :
-        // remettre a zero ferait un saut d'une serie entiere.
-        if (rail.scrollLeft >= moitie) rail.scrollLeft -= moitie;
-        rail.scrollLeft += VITESSE * delta;
-      }
-      requestAnimationFrame(pas);
-    };
-    requestAnimationFrame(pas);
-
-    const suspendre = () => { arrets += 1; };
-    const relacher = () => { arrets = Math.max(0, arrets - 1); };
-
-    rail.addEventListener("mouseenter", suspendre);
-    rail.addEventListener("mouseleave", relacher);
-    rail.addEventListener("focusin", suspendre);
-    rail.addEventListener("focusout", relacher);
-
-    // Molette, doigt, clavier : on rend la main le temps du geste, puis
-    // deux secondes de repit avant de reprendre.
-    const geste = () => {
-      if (reprise === null) suspendre();
-      else clearTimeout(reprise);
-      reprise = setTimeout(() => { reprise = null; relacher(); }, 2000);
-    };
-    for (const evenement of ["pointerdown", "wheel", "keydown", "touchmove"]) {
-      rail.addEventListener(evenement, geste, { passive: true });
-    }
-
-    // Rien ne tourne tant que la section n'est pas a l'ecran.
-    new IntersectionObserver((entrees) => {
-      for (const entree of entrees) visible = entree.isIntersecting;
-    }, { threshold: 0.2 }).observe(rail);
+    const temoins = piste.children.length / 2;
+    piste.style.setProperty("animation-duration", temoins * 15 + "s", "important");
   }
 
   /* ---- Visionneuse d'images ----

@@ -1177,28 +1177,48 @@ p:last-child { margin-bottom: 0; }
 }
 
 /* ---------- Témoignages ----------
-   Rangee qui glisse plutot que colonnes empilees : six temoignages en
-   trois colonnes faisaient la section la plus haute de la page, et la
-   moitie n'etait jamais lue. En rail, la section garde une hauteur
-   fixe et avance seule d'un temoignage toutes les cinq secondes.
+   Meme mecanique que « On parle de nous » : la rangee defile en
+   continu. Deux etats :
 
-   Le rail reste un vrai defilement : molette, doigt et clavier
-   fonctionnent. L'avance automatique s'efface au premier geste du
-   visiteur et ne reprend pas. */
+   - sans script, une rangee qu'on fait glisser a la main. Rien ne
+     bouge, rien ne manque.
+   - avec script, main.js double la serie, marque la copie en
+     aria-hidden et pose data-ruban. Le CSS bascule alors en piste et
+     l'anime jusqu'a -50 % : la copie arrive exactement la ou etait
+     l'originale, la boucle ne se voit pas.
+
+   Le mouvement s'arrete au survol et au clavier. */
 .temoignages {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(270px, 1fr);
   gap: clamp(1.25rem, 2.5vw, 2rem);
   overflow-x: auto;
-  /* Pas d'accrochage : la rangee avance en continu, et un point
-     d'accrochage la ramenerait en arriere a chaque pixel parcouru. */
   overscroll-behavior-x: contain;
   padding-bottom: 0.9rem;
   scrollbar-width: thin;
+}
+.temoignages[data-ruban="oui"] {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0;
   /* Les bords s'estompent : c'est ce qui dit qu'il y a une suite. */
   mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
 }
+.temoignages__piste {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  width: max-content;
+}
+.temoignages__piste > .temoignage { width: 300px; flex: none; }
+.temoignages[data-ruban="oui"] .temoignages__piste {
+  animation: temoignages-ruban 90s linear infinite;
+}
+@keyframes temoignages-ruban { to { transform: translateX(-50%); } }
+.temoignages[data-ruban="oui"]:hover .temoignages__piste,
+.temoignages[data-ruban="oui"]:focus-within .temoignages__piste { animation-play-state: paused; }
+
 /* La carte seule passe a l'encre, la section garde son papier : c'est ce
    qui separe cette mise en page d'un bandeau plein. */
 .temoignage {
@@ -1290,10 +1310,11 @@ p:last-child { margin-bottom: 0; }
 }
 .presse__piste > .presse__article { width: 210px; flex: none; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .presse[data-ruban="oui"] .presse__piste {
-    animation: presse-ruban 60s linear infinite;
-  }
+/* Sans garde de mouvement, a la demande de la cliente : les deux
+   rubans defilent pour tout le monde. Ils s'arretent au survol, au
+   clavier, et le ruban de presse porte un bouton d'arret. */
+.presse[data-ruban="oui"] .presse__piste {
+  animation: presse-ruban 60s linear infinite;
 }
 @keyframes presse-ruban { to { transform: translateX(-50%); } }
 
