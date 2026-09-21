@@ -270,6 +270,29 @@
 [data-anim="on"] .equerres .presse__article:hover .presse__source::after,
 [data-anim="on"] .equerres .presse__article:focus-within .presse__source::after { transform: scaleX(1); }
 
+/* ---------- 09. Defilement automatique continu ----------
+   Un ruban de vignettes qui avance tout seul. La piste porte deux jeux
+   identiques et l'animation s'arrete a -50 % : le second jeu arrive
+   exactement la ou etait le premier, la boucle ne se voit pas. Arret au
+   survol et au clavier, sinon on ne peut pas viser un lien qui bouge. */
+.auto { overflow: hidden; mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); }
+.auto__piste {
+  display: flex;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  width: max-content;
+}
+.auto__piste > .presse__article { width: 180px; flex: none; }
+[data-anim="on"] .auto__piste { animation: presse-defile 34s linear infinite; }
+.auto:hover .auto__piste,
+.auto:focus-within .auto__piste { animation-play-state: paused; }
+@keyframes presse-defile { to { transform: translateX(-50%); } }
+
+/* ---------- 10. Rail auto, repris a la main ----------
+   Meme rail qu'en 07, mais il avance seul d'une vignette toutes les
+   quatre secondes. Des que le visiteur touche a la rangee — molette,
+   doigt, clavier, survol — il rend la main et ne la reprend plus. */
+.rail-auto { scroll-behavior: smooth; }
+
 /* ---------- Barre de reglages ---------- */
 .reglages {
   position: fixed;
@@ -402,6 +425,28 @@
           <p class="demo__note"><b>Le plus cohérent avec le reste du site.</b> Les équerres tiennent déjà les cartes de formules, de fondatrices et de témoignages&nbsp;: la presse rejoint la même famille.</p>
         </section>
 
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">09</span><h2>Défilement automatique</h2></div>
+          <p class="demo__quoi">Les parutions avancent toutes seules, en boucle continue. La rangée tient sur une ligne quel que soit le nombre de parutions, et le mouvement dit qu'il y en a d'autres derrière. Arrêt au survol et au clavier.</p>
+          <div class="scene">
+            <div class="auto">
+              <div class="auto__piste" data-presse data-double></div>
+            </div>
+          </div>
+          <p class="demo__note"><b>Coût&nbsp;:</b> nul, une image-clé CSS, aucun script. <b>Réserve&nbsp;:</b> c'est le seul effet de la planche qui bouge en permanence&nbsp;; il tire l'œil pendant toute la lecture de la page, et un lien qui se déplace est plus difficile à viser — d'où l'arrêt au survol, indispensable.</p>
+        </section>
+
+        <section class="demo">
+          <div class="demo__tete"><span class="demo__num">10</span><h2>Défilement auto, repris à la main</h2></div>
+          <p class="demo__quoi">Le rail de la vignette 07, mais il avance seul d'une parution toutes les quatre secondes. Dès qu'on y touche — molette, doigt, clavier, survol — il rend la main et ne la reprend plus.</p>
+          <div class="scene">
+            <p class="scene__consigne">Laissez faire, puis faites glisser&nbsp;: il s'arrête.</p>
+            <div class="rail rail-auto" data-presse data-rail data-auto></div>
+          </div>
+          <div class="demo__barre"><button class="demo__bouton" type="button" id="relancer-auto">Relancer</button></div>
+          <p class="demo__note"><b>Le compromis que je recommande si vous voulez du mouvement automatique&nbsp;:</b> on garde un vrai défilement, donc la molette, le doigt et le clavier marchent, et l'automatisme s'efface dès que le visiteur prend la main. <b>Coût&nbsp;:</b> une vingtaine de lignes de script.</p>
+        </section>
+
       </div>
 
       <div class="section-entete" style="margin-top:2.5rem">
@@ -483,8 +528,62 @@
      faire un rail qui glisse. */
   for (const hote of document.querySelectorAll("[data-presse]")) {
     hote.append(modele.content.cloneNode(true));
+    // Les rails ont besoin de plus de matière pour qu'il y ait quelque
+    // chose à faire glisser ; la piste du ruban automatique, elle, porte
+    // deux jeux identiques, dont le second est un doublon décoratif.
     if (hote.hasAttribute("data-rail")) hote.append(modele.content.cloneNode(true));
+    if (hote.hasAttribute("data-double")) {
+      const copie = modele.content.cloneNode(true);
+      for (const el of copie.querySelectorAll(".presse__article")) {
+        el.setAttribute("aria-hidden", "true");
+        for (const lien of el.querySelectorAll("a")) lien.tabIndex = -1;
+      }
+      hote.append(copie);
+    }
   }
+
+  /* ---- 10 · Rail qui avance seul ----
+     Un pas toutes les quatre secondes, et la main rendue au premier
+     geste du visiteur. On ne reprend pas la main ensuite : un carrousel
+     qui repart pendant qu'on lit est le défaut classique du genre. */
+  const railAuto = document.querySelector("[data-auto]");
+  let minuterie = null;
+
+  const arreter = () => {
+    clearInterval(minuterie);
+    minuterie = null;
+  };
+
+  const avancer = () => {
+    if (racine.dataset.anim !== "on") return;
+    const vignette = railAuto.querySelector(".presse__article");
+    if (!vignette) return;
+    const pas = vignette.offsetWidth + parseFloat(getComputedStyle(railAuto).columnGap || 0);
+    const fin = railAuto.scrollWidth - railAuto.clientWidth - 2;
+    railAuto.scrollTo({
+      left: railAuto.scrollLeft >= fin ? 0 : railAuto.scrollLeft + pas,
+      behavior: "smooth"
+    });
+  };
+
+  const lancer = () => {
+    arreter();
+    minuterie = setInterval(avancer, 4000);
+  };
+
+  for (const evenement of ["pointerdown", "wheel", "keydown", "mouseenter", "focusin"]) {
+    railAuto.addEventListener(evenement, arreter, { passive: true });
+  }
+  document.getElementById("relancer-auto").addEventListener("click", lancer);
+
+  // On n'anime que si la vignette est a l'ecran : un carrousel qui tourne
+  // dans le vide consomme pour rien et fausse la demonstration.
+  new IntersectionObserver((entrees) => {
+    for (const entree of entrees) {
+      if (entree.isIntersecting && !minuterie) lancer();
+      else if (!entree.isIntersecting) arreter();
+    }
+  }, { threshold: 0.4 }).observe(railAuto);
 
   /* ---- 06 · Ruban de sources ----
      La piste est doublée et l'animation s'arrête à -50 % : la seconde
