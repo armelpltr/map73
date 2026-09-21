@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="fr" data-anim="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Maquette — dix animations | MAP73</title>
+
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+
+<style>
+/* =========================================================
+   MAQUETTE — dix animations candidates pour MAP73
+   Page de demonstration, hors site : rien ici ne touche style.css.
+   Chaque vignette montre une animation sur un element reel du site.
+
+   Regle tenue partout :
+   - tout est pilote par [data-anim="on"] sur <html>. Au chargement, le
+     script met "off" si le systeme demande moins de mouvement
+     (prefers-reduced-motion). En production, c'est la media query qui
+     fait ce travail ; ici on garde un bouton pour pouvoir forcer.
+   - on n'anime que transform, opacity, clip-path et couleurs : ce sont
+     les proprietes que le compositeur sait traiter sans reflow.
+   - les animations liees au defilement (timelines CSS) sont derriere
+     un @supports et doublees d'un repli IntersectionObserver, parce
+     que Firefox ne les connait pas encore.
+   ========================================================= */
+
+/* ---------- Chassis de la page de demo ---------- */
+.demo-note {
+  background: var(--ambre);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-align: center;
+  padding: 0.5rem var(--gouttiere);
+}
+
+.demos { display: grid; gap: clamp(1.25rem, 2.5vw, 2rem); }
+
+.demo {
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  padding: clamp(1.1rem, 2.2vw, 1.75rem);
+}
+.demo__tete { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+.demo__num {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--lac);
+  line-height: 1;
+}
+.demo__tete h2 { font-size: 1.25rem; margin: 0; }
+.demo__ou {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin: 0;
+  border: 1px solid var(--trait);
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+.demo__quoi { font-size: var(--fs-small); color: var(--ink-soft); margin: 0.75rem 0 1rem; }
+.demo__note {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  color: var(--ink-soft);
+  margin: 0.9rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--trait);
+}
+.demo__note b { color: var(--ink); }
+.demo__barre { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.demo__bouton {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--trait);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+}
+.demo__bouton:hover { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
+
+/* Scene : le bac a sable de chaque vignette. */
+.scene {
+  background: var(--paper);
+  border: 1px dashed var(--trait);
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+/* Scene a defilement interne : l'animation se declenche en faisant
+   rouler la molette DANS la vignette, sans bouger la page. */
+.scene--defile {
+  height: 260px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.scene__consigne {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--lac);
+  margin: 0 0 0.75rem;
+}
+.faux-texte { color: var(--ink-soft); font-size: var(--fs-small); }
+.faux-bloc {
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.85rem;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: var(--fs-small);
+}
+
+/* ---------- 01. Barre de lecture ---------- */
+/* Le ruban colle en haut du scroller et se remplit a mesure qu'on
+   descend l'article. Pilote par la position de defilement, donc il
+   suit le doigt exactement, sans script. */
+.lecture__ruban {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 4px;
+  background: var(--vert);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  margin: -1rem -1rem 1rem;
+}
+@supports (animation-timeline: scroll()) {
+  [data-anim="on"] .lecture__ruban {
+    animation: ruban-croit auto linear;
+    animation-timeline: scroll(nearest);
+  }
+}
+@keyframes ruban-croit {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ---------- 02. Apparition des sections ---------- */
+/* Chaque bloc monte de 18 px et s'opacifie pendant qu'il entre dans
+   le champ. Version native : timeline de vue. Version de repli :
+   IntersectionObserver, qui pose la classe .vu (voir le script). */
+@keyframes surgit {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+[data-anim="on"] .surgir { opacity: 0; }
+@supports ((animation-timeline: view()) and (animation-range: entry)) {
+  [data-anim="on"] .surgir {
+    opacity: 1;
+    animation: surgit auto linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 38%;
+  }
+}
+[data-anim="on"] .surgir.vu { animation: surgit 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+[data-anim="off"] .surgir { opacity: 1; }
+
+/* ---------- 03. Formules en cascade ---------- */
+/* Les trois cartes arrivent l'une apres l'autre, 90 ms d'ecart. Le
+   decalage passe par une variable --i posee sur chaque carte. */
+.cascade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+.cascade .formule { padding: 1rem; }
+.cascade .formule h3 { font-size: 1rem; margin-bottom: 0.35rem; }
+[data-anim="on"] .cascade .formule { opacity: 0; }
+[data-anim="on"] .cascade.joue .formule {
+  animation: surgit 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 90ms);
+}
+[data-anim="off"] .cascade .formule { opacity: 1; }
+
+/* ---------- 04. Compteurs ---------- */
+.compteurs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+.compteur {
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  padding: 0.9rem;
+  text-align: center;
+}
+.compteur__valeur {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  display: block;
+}
+.compteur__quoi { font-size: var(--fs-micro); color: var(--ink-soft); }
+
+/* ---------- 05. Itinéraire qui se trace ---------- */
+/* La ligne 3e -> terminale se dessine, puis les quatre points
+   apparaissent dans l'ordre. C'est le seul dessin du site qui raconte
+   une progression : il gagne a etre trace plutot que pose. */
+.trace { width: 100%; height: 110px; color: var(--lac); }
+.trace__ligne {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.trace__point { fill: var(--vert); transform-box: fill-box; transform-origin: center; }
+.trace__texte { font-family: var(--display); font-size: 11px; font-weight: 700; fill: var(--ink); }
+[data-anim="on"] .trace.joue .trace__ligne { animation: tracer 1.1s ease-out both; }
+[data-anim="on"] .trace.joue .trace__point { animation: pointe 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both; animation-delay: calc(0.35s + var(--i) * 0.2s); }
+[data-anim="on"] .trace.joue .trace__texte { animation: surgit 0.35s ease-out both; animation-delay: calc(0.45s + var(--i) * 0.2s); }
+@keyframes tracer { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes pointe { from { scale: 0; } to { scale: 1; } }
+
+/* ---------- 06. Cartes au survol ---------- */
+/* La carte se souleve de 3 px et ses equerres s'ecartent : le repere
+   de coupe s'ouvre, comme une planche qu'on degage. */
+.survol .formule {
+  transition: transform 0.25s ease, background-size 0.25s ease, box-shadow 0.25s ease;
+}
+[data-anim="on"] .survol .formule:hover,
+[data-anim="on"] .survol .formule:focus-within {
+  transform: translateY(-3px);
+  --equerre-taille: 26px;
+  box-shadow: 0 10px 28px rgba(20, 36, 59, 0.22);
+}
+.survol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.survol .formule { padding: 1rem; }
+.survol .formule h3 { font-size: 1rem; margin-bottom: 0.3rem; }
+
+/* ---------- 07. Bouton d'appel ---------- */
+/* La fleche avance de 4 px et un halo vert s'ouvre derriere le bouton.
+   Rien ne bouge en largeur : le texte ne doit pas sauter. */
+.cta__essai { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+.bouton--anime { position: relative; overflow: hidden; }
+.bouton--anime svg { transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1); }
+[data-anim="on"] .bouton--anime:hover svg { transform: translateX(4px); }
+.bouton--anime::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120px 60px at var(--x, 50%) 50%, rgba(255, 255, 255, 0.55), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+[data-anim="on"] .bouton--anime:hover::after { opacity: 1; }
+[data-anim="on"] .bouton--anime:active { transform: translateY(1px); }
+
+/* ---------- 08. Menu mobile ---------- */
+/* Ouverture sans saut : le panneau passe de display:none a block, et
+   @starting-style donne un etat de depart a la transition. Sans lui,
+   un element qui apparait ne transite pas. */
+.menu__cadre { max-width: 320px; margin-inline: auto; position: relative; }
+.menu__barre {
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.8rem;
+}
+.menu__barre img { width: 96px; height: 42px; object-fit: contain; }
+.menu__declencheur {
+  background: none;
+  border: 1.5px solid rgba(255, 253, 249, 0.35);
+  border-radius: var(--rayon);
+  color: var(--paper);
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+}
+.menu__panneau {
+  display: none;
+  background: var(--ink);
+  border-top: 1px solid rgba(255, 253, 249, 0.18);
+  padding: 0.5rem 0.8rem 0.9rem;
+  list-style: none;
+  margin: 0;
+}
+.menu__panneau li { padding: 0.55rem 0; border-bottom: 1px solid rgba(255, 253, 249, 0.18); }
+.menu__panneau a { color: var(--paper); text-decoration: none; font-family: var(--display); font-size: var(--fs-small); }
+.menu__panneau[data-ouvert="oui"] { display: block; }
+[data-anim="on"] .menu__panneau {
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.22, 0.61, 0.36, 1),
+    display 0.22s allow-discrete;
+  opacity: 0;
+  transform: translateY(-8px);
+}
+[data-anim="on"] .menu__panneau[data-ouvert="oui"] { opacity: 1; transform: none; }
+@starting-style {
+  [data-anim="on"] .menu__panneau[data-ouvert="oui"] { opacity: 0; transform: translateY(-8px); }
+}
+
+/* ---------- 09. Dépliants des formules ----------
+   Le contenu d'un <details> ferme n'est pas rendu du tout : ni une
+   hauteur, ni une grille 0fr->1fr posees sur un div interieur ne
+   peuvent l'animer. Le seul levier propre est ::details-content, le
+   pseudo-element qui represente ce contenu, avec :
+   - interpolate-size: allow-keywords, pour que 0 -> auto s'interpole ;
+   - content-visibility en allow-discrete, parce que le pseudo bascule
+     en content-visibility: hidden a la fermeture.
+   Chrome, Edge et Safari recents animent ; Firefox ouvre d'un coup,
+   sans rien casser. Effet decoratif, donc pas de repli script. */
+:root { interpolate-size: allow-keywords; }
+.depliant { background: var(--ink); color: var(--paper); padding: 1rem; }
+[data-anim="on"] .depliant::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    content-visibility 0.28s allow-discrete;
+}
+[data-anim="on"] .depliant[open]::details-content { block-size: auto; }
+.depliant summary {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: var(--fs-small);
+  cursor: pointer;
+  color: var(--lac-clair);
+  list-style: none;
+}
+.depliant summary::-webkit-details-marker { display: none; }
+.depliant summary::before {
+  content: "";
+  display: inline-block;
+  width: 7px; height: 7px;
+  margin-right: 0.6rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.25s ease;
+}
+[data-anim="on"] .depliant[open] summary::before { transform: translateY(1px) rotate(-135deg); }
+.depliant ul { margin: 0.75rem 0 0; padding-left: 1.1rem; font-size: var(--fs-small); }
+
+/* ---------- 10. Passage d'une page à l'autre ---------- */
+.pages { display: grid; gap: 0.75rem; }
+.page-faux {
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  padding: 1rem;
+  min-height: 132px;
+  view-transition-name: page-demo;
+}
+.page-faux h4 { font-family: var(--display); margin: 0 0 0.4rem; font-size: 1rem; }
+.page-faux p { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
+::view-transition-old(page-demo) { animation: fondu-sortie 0.28s ease both; }
+::view-transition-new(page-demo) { animation: fondu-entree 0.28s ease both; }
+@keyframes fondu-sortie { to { opacity: 0; transform: translateX(-12px); } }
+@keyframes fondu-entree { from { opacity: 0; transform: translateX(12px); } }
+
+/* ---------- Barre de réglages ---------- */
+.reglages {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: calc(100vw - 1.5rem);
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  padding: 0.45rem 0.55rem 0.45rem 1rem;
+  box-shadow: 0 6px 24px rgba(20, 36, 59, 0.18);
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+}
+.reglages__titre { font-weight: 600; color: var(--ink-soft); }
+.reglages button {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--trait);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+}
+.reglages button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
+
+@media (max-width: 760px) {
+  .cascade, .compteurs, .survol { grid-template-columns: 1fr; }
+  .reglages__titre { display: none; }
+}
+</style>
+</head>
+
+<body>
+<p class="demo-note">Maquette de travail — dix animations proposées pour MAP73. Ce n'est pas le site en ligne.</p>
+
+<header class="entete" id="entete">
+  <div class="enveloppe entete__barre">
+    <a class="entete__logo" href="index.html" aria-label="MAP73, accueil">
+      <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="148px" width="240" height="104" alt="MAP Orientation">
+    </a>
+    <nav class="nav" id="navigation" aria-label="Navigation principale">
+      <ul class="nav__liste">
+        <li><a class="nav__lien" href="index.html">Retour au site</a></li>
+        <li><a class="nav__lien" href="mockup-bandeau-bleu.html">Maquette bandeau</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="section section--serre">
+    <div class="enveloppe">
+      <div class="section-entete">
+        <h2>Dix animations, une par usage</h2>
+        <p>Chaque vignette montre l'effet sur un élément réel du site, dit où il s'appliquerait et ce qu'il coûte. Rien n'est en production : c'est une planche d'essai, à trier.</p>
+      </div>
+
+      <div class="demos">
+
+        <!-- 01 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">01</span>
+            <h2>Barre de lecture</h2>
+            <p class="demo__ou">Articles du blog</p>
+          </div>
+          <p class="demo__quoi">Un ruban vert se remplit sous l'en-tête à mesure qu'on descend l'article. Il répond à une seule question, celle que se pose un parent devant un texte long&nbsp;: combien il en reste.</p>
+          <div class="scene scene--defile">
+            <div class="lecture__ruban" aria-hidden="true"></div>
+            <p class="scene__consigne">Faites défiler dans ce cadre.</p>
+            <p class="faux-texte">Choisir ses spécialités en seconde n'est pas un choix de matières, c'est un choix de portes. Trois enseignements retenus en fin de seconde, deux gardés en terminale&nbsp;: la combinaison décide de ce qui reste ouvert sur Parcoursup.</p>
+            <p class="faux-texte">La première erreur est de raisonner par goût immédiat. La seconde, de raisonner par moyenne. Une spécialité tenue à 12 avec appétit vaut mieux qu'une spécialité tenue à 15 par habitude.</p>
+            <p class="faux-texte">La troisième erreur est d'attendre le conseil de classe du troisième trimestre. À ce moment-là, les intentions sont déjà saisies et l'équipe a déjà donné son avis.</p>
+            <p class="faux-texte">Reste la méthode&nbsp;: partir des études visées, remonter aux attendus, et seulement ensuite regarder les bulletins. C'est ce que nous faisons en trois séances.</p>
+          </div>
+          <p class="demo__note"><b>Coût&nbsp;:</b> nul, une animation CSS liée au défilement, aucun script sur les navigateurs récents. <b>Repli&nbsp;:</b> Firefox ne connaît pas encore ces timelines, un écouteur de défilement de six lignes prend le relais.</p>
+        </section>
+
+        <!-- 02 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">02</span>
+            <h2>Apparition des sections</h2>
+            <p class="demo__ou">Toute la page d'accueil</p>
+          </div>
+          <p class="demo__quoi">Chaque bloc monte de 18&nbsp;px et s'opacifie en entrant dans le champ. C'est l'animation la plus discrète et la plus rentable&nbsp;: elle donne du rythme à une page longue sans jamais retarder la lecture.</p>
+          <div class="scene scene--defile">
+            <p class="scene__consigne">Faites défiler dans ce cadre.</p>
+            <div class="faux-bloc surgir">Repères — la légende de la carte</div>
+            <div class="faux-bloc surgir">MAP news</div>
+            <div class="faux-bloc surgir">L'ADN</div>
+            <div class="faux-bloc surgir">À propos</div>
+            <div class="faux-bloc surgir">Le concept</div>
+            <div class="faux-bloc surgir">Nos formules</div>
+          </div>
+          <p class="demo__note"><b>Attention&nbsp;:</b> à ne jamais poser sur le titre du hero ni sur le premier paragraphe. Le texte d'accueil doit être lisible à la milliseconde zéro, y compris si le script tombe.</p>
+        </section>
+
+        <!-- 03 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">03</span>
+            <h2>Formules en cascade</h2>
+            <p class="demo__ou">Section « Nos formules »</p>
+          </div>
+          <p class="demo__quoi">Les cartes arrivent l'une après l'autre, 90&nbsp;ms d'écart. L'œil les lit dans l'ordre 3<sup>e</sup>&nbsp;→&nbsp;terminale au lieu d'encaisser un mur de quatre cartes d'un coup.</p>
+          <div class="scene">
+            <div class="cascade joue" id="cascade">
+              <article class="formule" style="--i:0"><p class="formule__cible">Élèves de 3<sup>e</sup></p><h3>MAP Troisième</h3><p class="formule__objectif">Quelle voie après le collège.</p></article>
+              <article class="formule" style="--i:1"><p class="formule__cible">Élèves de 2<sup>de</sup></p><h3>MAP Seconde</h3><p class="formule__objectif">Choix des spécialités.</p></article>
+              <article class="formule" style="--i:2"><p class="formule__cible">Terminale</p><h3>MAP Parcoursup</h3><p class="formule__objectif">Stratégie de vœux.</p></article>
+            </div>
+          </div>
+          <div class="demo__barre"><button class="demo__bouton" type="button" data-rejouer="cascade">Rejouer</button></div>
+          <p class="demo__note"><b>Limite&nbsp;:</b> au-delà de 120&nbsp;ms d'écart, la cascade se voit et devient un effet. En dessous de 60, elle ne sert à rien.</p>
+        </section>
+
+        <!-- 04 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">04</span>
+            <h2>Compteurs des preuves</h2>
+            <p class="demo__ou">Hero — 100&nbsp;%, +500, 100&nbsp;%</p>
+          </div>
+          <p class="demo__quoi">Les trois chiffres montent de zéro à leur valeur en 900&nbsp;ms, une seule fois, au premier passage. Ce sont les seuls chiffres que le site avance&nbsp;: les animer, c'est les désigner.</p>
+          <div class="scene">
+            <div class="compteurs" id="compteurs">
+              <div class="compteur"><span class="compteur__valeur" data-vers="100" data-suffixe="&nbsp;%">0&nbsp;%</span><span class="compteur__quoi">de parents satisfaits</span></div>
+              <div class="compteur"><span class="compteur__valeur" data-vers="500" data-prefixe="+">+0</span><span class="compteur__quoi">ados orientés</span></div>
+              <div class="compteur"><span class="compteur__valeur" data-vers="100" data-suffixe="&nbsp;%">0&nbsp;%</span><span class="compteur__quoi">d'admission Parcoursup</span></div>
+            </div>
+          </div>
+          <div class="demo__barre"><button class="demo__bouton" type="button" id="rejouer-compteurs">Rejouer</button></div>
+          <p class="demo__note"><b>Règle&nbsp;:</b> la valeur finale est écrite dans le HTML et restituée immédiatement si le script ne tourne pas. Un chiffre qui reste bloqué à zéro coûte plus cher que pas d'animation du tout.</p>
+        </section>
+
+        <!-- 05 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">05</span>
+            <h2>L'itinéraire se trace</h2>
+            <p class="demo__ou">Hero — « votre enfant est en quelle classe&nbsp;? »</p>
+          </div>
+          <p class="demo__quoi">La ligne se dessine de la 3<sup>e</sup> à la terminale, puis les quatre points se posent dans l'ordre. C'est le seul dessin du site qui raconte une progression&nbsp;: il gagne à être tracé plutôt que posé.</p>
+          <div class="scene">
+            <svg class="trace joue" id="trace" viewBox="0 0 600 110" aria-hidden="true" focusable="false">
+              <path class="trace__ligne" pathLength="1" d="M40 78C160 78 180 44 300 44S440 20 560 20"/>
+              <g>
+                <circle class="trace__point" style="--i:0" cx="40" cy="78" r="7"/>
+                <circle class="trace__point" style="--i:1" cx="210" cy="60" r="7"/>
+                <circle class="trace__point" style="--i:2" cx="380" cy="36" r="7"/>
+                <circle class="trace__point" style="--i:3" cx="560" cy="20" r="7"/>
+              </g>
+              <g>
+                <text class="trace__texte" style="--i:0" x="40" y="100" text-anchor="middle">3e</text>
+                <text class="trace__texte" style="--i:1" x="210" y="82" text-anchor="middle">2de</text>
+                <text class="trace__texte" style="--i:2" x="380" y="58" text-anchor="middle">1re</text>
+                <text class="trace__texte" style="--i:3" x="560" y="42" text-anchor="middle">Term.</text>
+              </g>
+            </svg>
+          </div>
+          <div class="demo__barre"><button class="demo__bouton" type="button" data-rejouer="trace">Rejouer</button></div>
+          <p class="demo__note"><b>Coût&nbsp;:</b> nul, un tracé SVG et deux images-clés. À déclencher une fois, à l'entrée dans le champ, jamais en boucle.</p>
+        </section>
+
+        <!-- 06 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">06</span>
+            <h2>Cartes au survol</h2>
+            <p class="demo__ou">Formules, fondatrices, témoignages</p>
+          </div>
+          <p class="demo__quoi">La carte se soulève de 3&nbsp;px et ses équerres s'écartent&nbsp;: le repère de coupe s'ouvre. L'effet dit « cliquable » sans ajouter ni bordure ni couleur.</p>
+          <div class="scene">
+            <div class="survol">
+              <article class="formule"><h3>MAP Seconde</h3><p class="formule__objectif">Survolez la carte.</p></article>
+              <article class="formule"><h3>MAP Première</h3><p class="formule__objectif">Survolez la carte.</p></article>
+            </div>
+          </div>
+          <p class="demo__note"><b>Tactile&nbsp;:</b> sans souris, rien ne se déclenche — c'est voulu. Le doigt n'a pas de survol, et l'effet est doublé sur <code>:focus-within</code> pour le clavier.</p>
+        </section>
+
+        <!-- 07 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">07</span>
+            <h2>Bouton d'appel</h2>
+            <p class="demo__ou">« Appel découverte offert »</p>
+          </div>
+          <p class="demo__quoi">La flèche avance de 4&nbsp;px, un halo clair s'ouvre derrière, l'appui enfonce le bouton d'un pixel. Aucune largeur ne bouge&nbsp;: le texte ne saute pas.</p>
+          <div class="scene">
+            <div class="cta__essai">
+              <a class="bouton bouton--plein bouton--anime" href="#a7">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                Appel découverte offert
+              </a>
+              <a class="bouton bouton--contour bouton--anime" href="#a7">
+                Voir les formules
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+          </div>
+          <p class="demo__note"><b>Le seul effet à garder si on n'en garde qu'un.</b> Il porte le geste qui rapporte&nbsp;: la prise de rendez-vous.</p>
+        </section>
+
+        <!-- 08 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">08</span>
+            <h2>Menu mobile</h2>
+            <p class="demo__ou">En-tête, sous 780&nbsp;px</p>
+          </div>
+          <p class="demo__quoi">Le panneau descend de 8&nbsp;px en s'opacifiant au lieu d'apparaître d'un bloc. Aujourd'hui il surgit sec&nbsp;: sur un petit écran, c'est le moment où le site paraît le plus brut.</p>
+          <div class="scene">
+            <div class="menu__cadre">
+              <div class="menu__barre">
+                <img src="assets/img/logo-blanc-240.webp" width="240" height="104" alt="">
+                <button class="menu__declencheur" type="button" id="menu-demo-bouton" aria-expanded="false" aria-controls="menu-demo-panneau">
+                  <svg width="20" height="14" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M0 1h22M0 8h22M0 15h22"/></svg>
+                  <span class="visuellement-cache">Menu</span>
+                </button>
+              </div>
+              <ul class="menu__panneau" id="menu-demo-panneau">
+                <li><a href="#a8">MAP news</a></li>
+                <li><a href="#a8">À propos</a></li>
+                <li><a href="#a8">Le concept</a></li>
+                <li><a href="#a8">Formules</a></li>
+              </ul>
+            </div>
+          </div>
+          <p class="demo__note"><b>Détail technique&nbsp;:</b> un élément qui passe de <code>display:none</code> à visible ne transite pas, sauf à lui donner un état de départ. C'est ce que fait <code>@starting-style</code>, avec <code>transition-behavior: allow-discrete</code>.</p>
+        </section>
+
+        <!-- 09 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">09</span>
+            <h2>Dépliants des formules</h2>
+            <p class="demo__ou">« Ce que contient la formule »</p>
+          </div>
+          <p class="demo__quoi">Le contenu se déroule au lieu de se téléporter. Sur une carte de formule, c'est ce qui permet de comprendre que le texte sort du bloc et n'a pas remplacé la page.</p>
+          <div class="scene">
+            <details class="depliant">
+              <summary>Ce que contient MAP Seconde</summary>
+              <ul>
+                <li>Trois séances individuelles de 1&nbsp;h&nbsp;30</li>
+                <li>Tests de personnalité et d'intérêts professionnels</li>
+                <li>Exploration des spécialités et de leurs débouchés</li>
+                <li>Compte rendu écrit remis aux parents</li>
+              </ul>
+            </details>
+          </div>
+          <p class="demo__note"><b>Détail technique&nbsp;:</b> le contenu d'un <code>&lt;details&gt;</code> fermé n'existe pas dans le rendu, donc aucune hauteur à animer. On passe par <code>::details-content</code> et <code>interpolate-size</code>. <b>Support&nbsp;:</b> Chrome, Edge et Safari récents déroulent&nbsp;; Firefox ouvre d'un coup, comme aujourd'hui.</p>
+        </section>
+
+        <!-- 10 -->
+        <section class="demo">
+          <div class="demo__tete">
+            <span class="demo__num">10</span>
+            <h2>Passage d'une page à l'autre</h2>
+            <p class="demo__ou">Accueil ↔ blog ↔ article</p>
+          </div>
+          <p class="demo__quoi">Le contenu glisse et se fond au lieu du flash blanc habituel. Le site reste un site statique&nbsp;: c'est le navigateur qui fait la transition, deux lignes de CSS par page.</p>
+          <div class="scene">
+            <div class="pages">
+              <div class="page-faux" id="page-faux">
+                <h4>Le blog</h4>
+                <p>Trois articles pour comprendre les spécialités, Parcoursup et le calendrier de l'orientation.</p>
+              </div>
+              <div class="demo__barre"><button class="demo__bouton" type="button" id="changer-page">Ouvrir l'article</button></div>
+            </div>
+          </div>
+          <p class="demo__note"><b>Support&nbsp;:</b> Chrome, Edge et Safari font la transition&nbsp;; Firefox charge la page normalement, sans rien casser. C'est le cas d'école de l'amélioration progressive.</p>
+        </section>
+
+      </div>
+
+      <div class="section-entete" style="margin-top:2.5rem">
+        <h2>Ce que je garderais</h2>
+        <p><b>02, 04, 05 et 07</b>&nbsp;: elles servent la lecture ou le rendez-vous. <b>08 et 09</b> corrigent deux endroits où le site paraît brut. <b>01 et 10</b> sont du confort, à faire après. <b>03 et 06</b> sont les plus décoratives&nbsp;: à ne prendre que si le reste est en place.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="reglages" role="group" aria-label="Réglages de la maquette">
+  <span class="reglages__titre">Animations&nbsp;:</span>
+  <button type="button" id="anim-on" aria-pressed="true">Activées</button>
+  <button type="button" id="anim-off" aria-pressed="false">Coupées</button>
+  <button type="button" id="tout-rejouer">Tout rejouer</button>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const racine = document.documentElement;
+
+  /* ---- Préférence de mouvement ----
+     En production, c'est la media query prefers-reduced-motion qui coupe
+     les animations. Ici on la lit au chargement pour partir dans le bon
+     état, tout en laissant la possibilité de forcer, sinon la maquette
+     serait vide pour qui a réduit le mouvement sur sa machine. */
+  const moinsDeMouvement = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const bOn = document.getElementById("anim-on");
+  const bOff = document.getElementById("anim-off");
+
+  const regler = (etat) => {
+    racine.dataset.anim = etat;
+    bOn.setAttribute("aria-pressed", String(etat === "on"));
+    bOff.setAttribute("aria-pressed", String(etat === "off"));
+  };
+  if (moinsDeMouvement.matches) regler("off");
+  bOn.addEventListener("click", () => { regler("on"); toutRejouer(); });
+  bOff.addEventListener("click", () => regler("off"));
+
+  /* ---- Rejouer une animation ----
+     On retire la classe, on force un recalcul, on la remet : sans le
+     reflow intermédiaire, le navigateur ne voit aucun changement. */
+  const rejouer = (el) => {
+    if (!el) return;
+    el.classList.remove("joue");
+    void el.offsetWidth;
+    el.classList.add("joue");
+  };
+  document.querySelectorAll("[data-rejouer]").forEach((b) => {
+    b.addEventListener("click", () => rejouer(document.getElementById(b.dataset.rejouer)));
+  });
+
+  /* ---- 01 · Barre de lecture, repli ----
+     Firefox n'a pas les timelines de défilement : on remplace par un
+     écouteur sur le scroller de la vignette. */
+  if (!CSS.supports("animation-timeline", "scroll()")) {
+    document.querySelectorAll(".scene--defile").forEach((scroller) => {
+      const ruban = scroller.querySelector(".lecture__ruban");
+      if (!ruban) return;
+      const suivre = () => {
+        const course = scroller.scrollHeight - scroller.clientHeight;
+        const part = course > 0 ? scroller.scrollTop / course : 0;
+        ruban.style.transform = `scaleX(${racine.dataset.anim === "on" ? part : 0})`;
+      };
+      scroller.addEventListener("scroll", suivre, { passive: true });
+      suivre();
+    });
+  }
+
+  /* ---- 02 · Apparition des sections, repli ----
+     Même logique : si les timelines de vue manquent, un
+     IntersectionObserver pose la classe .vu une seule fois. */
+  if (!CSS.supports("(animation-timeline: view()) and (animation-range: entry)")) {
+    const oeil = new IntersectionObserver((entrees) => {
+      for (const entree of entrees) {
+        if (!entree.isIntersecting) continue;
+        entree.target.classList.add("vu");
+        oeil.unobserve(entree.target);
+      }
+    }, { threshold: 0.2 });
+    document.querySelectorAll(".surgir").forEach((el) => oeil.observe(el));
+  }
+
+  /* ---- 04 · Compteurs ---- */
+  const formater = (n, el) =>
+    (el.dataset.prefixe || "") + n.toLocaleString("fr-FR") + (el.dataset.suffixe || "");
+
+  const compter = (el) => {
+    const cible = Number(el.dataset.vers);
+    if (racine.dataset.anim !== "on") { el.textContent = formater(cible, el); return; }
+    const duree = 900;
+    const depart = performance.now();
+    const pas = (maintenant) => {
+      const t = Math.min(1, (maintenant - depart) / duree);
+      const adouci = 1 - Math.pow(1 - t, 3);
+      el.textContent = formater(Math.round(cible * adouci), el);
+      if (t < 1) requestAnimationFrame(pas);
+    };
+    requestAnimationFrame(pas);
+  };
+  const compteurs = () => document.querySelectorAll(".compteur__valeur");
+  const lancerCompteurs = () => compteurs().forEach(compter);
+  document.getElementById("rejouer-compteurs").addEventListener("click", lancerCompteurs);
+
+  const oeilCompteurs = new IntersectionObserver((entrees) => {
+    for (const entree of entrees) {
+      if (!entree.isIntersecting) continue;
+      lancerCompteurs();
+      oeilCompteurs.disconnect();
+    }
+  }, { threshold: 0.4 });
+  oeilCompteurs.observe(document.getElementById("compteurs"));
+
+  /* ---- 08 · Menu de démonstration ---- */
+  const mBouton = document.getElementById("menu-demo-bouton");
+  const mPanneau = document.getElementById("menu-demo-panneau");
+  mBouton.addEventListener("click", () => {
+    const ouvert = mPanneau.getAttribute("data-ouvert") === "oui";
+    if (ouvert) mPanneau.removeAttribute("data-ouvert");
+    else mPanneau.setAttribute("data-ouvert", "oui");
+    mBouton.setAttribute("aria-expanded", String(!ouvert));
+  });
+
+  /* ---- 10 · Transition de vue ----
+     Ici en même-document, pour la démonstration. Sur le vrai site, la
+     même chose s'obtient d'une page à l'autre avec la règle
+     @view-transition { navigation: auto; } posée sur chaque page. */
+  const pages = [
+    { titre: "Le blog", texte: "Trois articles pour comprendre les spécialités, Parcoursup et le calendrier de l'orientation." },
+    { titre: "Choisir ses spécialités en seconde", texte: "Trois enseignements retenus en fin de seconde, deux gardés en terminale : la combinaison décide de ce qui reste ouvert." }
+  ];
+  let indexPage = 0;
+  const bloc = document.getElementById("page-faux");
+  const bPage = document.getElementById("changer-page");
+
+  const peindrePage = () => {
+    const p = pages[indexPage];
+    bloc.querySelector("h4").textContent = p.titre;
+    bloc.querySelector("p").textContent = p.texte;
+    bPage.textContent = indexPage === 0 ? "Ouvrir l'article" : "Revenir au blog";
+  };
+  bPage.addEventListener("click", () => {
+    indexPage = (indexPage + 1) % pages.length;
+    if (racine.dataset.anim !== "on" || !document.startViewTransition) { peindrePage(); return; }
+    document.startViewTransition(peindrePage);
+  });
+
+  /* ---- Tout rejouer ---- */
+  function toutRejouer() {
+    document.querySelectorAll("[data-rejouer]").forEach((b) => rejouer(document.getElementById(b.dataset.rejouer)));
+    lancerCompteurs();
+  }
+  document.getElementById("tout-rejouer").addEventListener("click", toutRejouer);
+})();
+</script>
+</body>
+</html>
