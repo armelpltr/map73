@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
-<link rel="stylesheet" href="assets/css/style.css?v=20260921-2150">
+<link rel="stylesheet" href="assets/css/style.css?v=20260921-2215">
 </head>
 
 <body>
@@ -777,6 +777,45 @@
     </svg>
   </div>
 
+  <!-- ============ Blog ============
+       Les trois derniers billets, repris de blog/index.html. Pour en
+       ajouter un : dupliquer un <li> ici et la-bas, et creer le dossier
+       a partir de blog/_modele-article.html. Si la liste est videe, le
+       bloc « Pas encore d'article » prend sa place tout seul. -->
+  <section class="section section--serre" id="blog" aria-labelledby="blog-titre">
+    <div class="enveloppe">
+      <div class="section-entete">
+        <h2 id="blog-titre">Le blog de l’orientation</h2>
+        <p>Ce qu’on répète le plus souvent en séance, mis par écrit&nbsp;: les échéances à ne pas manquer et les idées reçues qui coûtent cher.</p>
+      </div>
+
+      <ul class="blog__liste">
+        <li class="billet">
+          <p class="billet__meta"><time datetime="2026-09-13">13 septembre 2026</time> · 4 min</p>
+          <h3 class="billet__titre"><a href="blog/edito-parcoursup-camille-dorel/">Parcoursup, expliqué par Camille Dorel</a></h3>
+          <p class="billet__chapo">Du dossier aux propositions d’admission&nbsp;: ce que la plateforme demande vraiment, et pourquoi une bonne stratégie se prépare dès la première.</p>
+          <p class="billet__lire">Lire l’édito</p>
+        </li>
+        <li class="billet">
+          <p class="billet__meta"><time datetime="2026-09-13">13 septembre 2026</time> · 6 min</p>
+          <h3 class="billet__titre"><a href="blog/choisir-ses-specialites-en-seconde/">Seconde&nbsp;: choisir ses spécialités sans se fermer de portes</a></h3>
+          <p class="billet__chapo">Trois spécialités à choisir au deuxième trimestre, pour un métier qu’on ne connaît pas encore. Comment décider sans se tromper.</p>
+          <p class="billet__lire">Lire l’article</p>
+        </li>
+      </ul>
+
+      <!-- Etat vide : le CSS le masque des que la liste ci-dessus contient
+           un billet. Rien a commenter ni a decommenter a la main. -->
+      <div class="blog__vide">
+        <h3>Pas encore d’article</h3>
+        <p>Les premiers sont en cours d’écriture. En attendant, la réponse la plus rapide reste un appel de vingt minutes, offert et sans engagement.</p>
+        <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Appel découverte offert</a>
+      </div>
+
+      <p class="blog__tous"><a href="blog/">Tous les articles</a></p>
+    </div>
+  </section>
+
   <!-- ============ Questions fréquentes ============ -->
   <section class="section" id="questions">
     <div class="enveloppe">
@@ -972,7 +1011,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20260921-2150" defer></script>
+<script src="assets/js/main.js?v=20260921-2215" defer></script>
 
 <script type="application/ld+json">
 {

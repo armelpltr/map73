@@ -1306,7 +1306,8 @@ p:last-child { margin-bottom: 0; }
   padding: clamp(1.5rem, 4vw, 2.5rem);
   max-width: 54ch;
 }
-.blog__vide h2 {
+.blog__vide h2,
+.blog__vide h3 {
   font-size: var(--fs-h3);
   margin-bottom: 0.5rem;
 }
@@ -1317,6 +1318,14 @@ p:last-child { margin-bottom: 0; }
 }
 .blog__vide .bouton + .bouton { margin-left: 0.5rem; }
 .blog__liste:has(> li) + .blog__vide { display: none; }
+
+/* Renvoi vers le blog complet, sous la liste de la page d'accueil. */
+.blog__tous {
+  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+  font-family: var(--display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
 
 .billet {
   --equerre: var(--lac-clair);
