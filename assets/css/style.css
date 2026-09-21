@@ -1239,16 +1239,16 @@ p:last-child { margin-bottom: 0; }
 
 /* Le guillemet qui se leve, derriere le texte. */
 .temoignage::after {
-  /* Le chevron ouvrant, dans la serif du corps de texte : c'est le
-     guillemet que les temoignages portent deja dans leur texte. Le
-     double apostrophe du display, a cette taille, se lisait comme un
-     grand C. */
-  content: "«";
+  /* Le guillemet anglais ouvrant, dans la serif du corps de texte. Il
+     s'affichait en grand C : l'echappement CSS s'etait ecrit en
+     caractere de controle suivi d'un « C ». Le caractere est donc pose
+     en clair. */
+  content: "“";
   position: absolute;
-  right: 0.7rem;
-  bottom: -1.6rem;
+  right: 0.9rem;
+  bottom: -2.6rem;
   font-family: var(--texte);
-  font-size: 6.5rem;
+  font-size: 8rem;
   line-height: 1;
   color: var(--vert);
   opacity: 0.16;
