@@ -1296,6 +1296,28 @@ p:last-child { margin-bottom: 0; }
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: clamp(1rem, 2vw, 1.5rem);
 }
+/* Etat vide du blog : le message n'est pas pose a la main, il est masque
+   des que la liste contient un billet. Vider la liste suffit donc a le
+   faire apparaitre, et publier un article a le faire disparaitre — rien
+   a synchroniser entre le HTML et ce qui est affiche. */
+.blog__vide {
+  background: var(--paper-2);
+  border: 1px dashed var(--trait);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  max-width: 54ch;
+}
+.blog__vide h2 {
+  font-size: var(--fs-h3);
+  margin-bottom: 0.5rem;
+}
+.blog__vide p {
+  color: var(--ink-soft);
+  font-size: var(--fs-small);
+  margin-bottom: 1.25rem;
+}
+.blog__vide .bouton + .bouton { margin-left: 0.5rem; }
+.blog__liste:has(> li) + .blog__vide { display: none; }
+
 .billet {
   --equerre: var(--lac-clair);
   --equerre-marge: 8px;
