@@ -163,9 +163,79 @@
       const arrete = presse.dataset.anime === "non";
       presse.dataset.anime = arrete ? "oui" : "non";
       pause.setAttribute("aria-pressed", String(!arrete));
-      pause.querySelector(".presse__pause-mot").textContent =
+      pause.querySelector(".bouton-pause__mot").textContent =
         arrete ? "Arrêter le défilement" : "Reprendre le défilement";
     });
+  }
+
+  /* ---- Témoignages : le rail qui avance seul ----
+     Un temoignage toutes les cinq secondes, et la main rendue au
+     premier geste du visiteur — molette, doigt, clavier, survol. On ne
+     reprend pas la main ensuite : un carrousel qui repart pendant
+     qu'on lit est le defaut classique du genre. Le rail reste un vrai
+     scroller : sans script, il se fait glisser a la main et rien ne
+     manque. */
+  const rail = document.getElementById("temoignages-liste");
+  const railPause = document.getElementById("temoignages-pause");
+
+  if (rail && railPause && rail.children.length > 1) {
+    let minuterie = null;
+    let rendu = false;
+
+    const arreter = () => {
+      clearInterval(minuterie);
+      minuterie = null;
+    };
+
+    const avancer = () => {
+      const carte = rail.querySelector(".temoignage");
+      if (!carte) return;
+      const pas = carte.offsetWidth + parseFloat(getComputedStyle(rail).columnGap || 0);
+      const fin = rail.scrollWidth - rail.clientWidth - 2;
+      rail.scrollTo({
+        left: rail.scrollLeft >= fin ? 0 : rail.scrollLeft + pas,
+        behavior: "smooth"
+      });
+    };
+
+    const lancer = () => {
+      if (rendu) return;
+      arreter();
+      minuterie = setInterval(avancer, 5000);
+    };
+
+    // La main rendue pour de bon : le bouton reste, pour le cas ou le
+    // visiteur voudrait relancer.
+    const rendreLaMain = () => {
+      rendu = true;
+      arreter();
+      railPause.setAttribute("aria-pressed", "true");
+      railPause.querySelector(".bouton-pause__mot").textContent = "Reprendre le défilement";
+    };
+
+    for (const evenement of ["pointerdown", "wheel", "keydown", "mouseenter", "focusin"]) {
+      rail.addEventListener(evenement, rendreLaMain, { passive: true });
+    }
+
+    railPause.hidden = false;
+    railPause.addEventListener("click", () => {
+      if (rendu) {
+        rendu = false;
+        railPause.setAttribute("aria-pressed", "false");
+        railPause.querySelector(".bouton-pause__mot").textContent = "Arrêter le défilement";
+        lancer();
+      } else {
+        rendreLaMain();
+      }
+    });
+
+    // Le rail ne tourne que lorsqu'il est a l'ecran.
+    new IntersectionObserver((entrees) => {
+      for (const entree of entrees) {
+        if (entree.isIntersecting) lancer();
+        else arreter();
+      }
+    }, { threshold: 0.35 }).observe(rail);
   }
 
   /* ---- Visionneuse d'images ----

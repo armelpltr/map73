@@ -1176,13 +1176,34 @@ p:last-child { margin-bottom: 0; }
   .fondatrice__pastilles { margin: 0; align-self: end; }
 }
 
-/* ---------- Témoignages ---------- */
-.temoignages { columns: 3 260px; column-gap: clamp(1.25rem, 2.5vw, 2rem); }
+/* ---------- Témoignages ----------
+   Rangee qui glisse plutot que colonnes empilees : six temoignages en
+   trois colonnes faisaient la section la plus haute de la page, et la
+   moitie n'etait jamais lue. En rail, la section garde une hauteur
+   fixe et avance seule d'un temoignage toutes les cinq secondes.
+
+   Le rail reste un vrai defilement : molette, doigt et clavier
+   fonctionnent. L'avance automatique s'efface au premier geste du
+   visiteur et ne reprend pas. */
+.temoignages {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(270px, 1fr);
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  padding-bottom: 0.9rem;
+  scrollbar-width: thin;
+  /* Les bords s'estompent : c'est ce qui dit qu'il y a une suite. */
+  mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+}
 /* La carte seule passe a l'encre, la section garde son papier : c'est ce
    qui separe cette mise en page d'un bandeau plein. */
 .temoignage {
-  break-inside: avoid;
-  margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
+  scroll-snap-align: start;
+  margin: 0;
   --equerre: var(--lac-clair);
   background-color: var(--ink);
   color: var(--paper);
@@ -1218,7 +1239,7 @@ p:last-child { margin-bottom: 0; }
 }
 .presse__article { display: flex; flex-direction: column; margin: 0; }
 
-.presse__entete {
+.section-entete--action {
   max-width: none;
   display: flex;
   align-items: flex-start;
@@ -1226,8 +1247,8 @@ p:last-child { margin-bottom: 0; }
   gap: 1rem;
   flex-wrap: wrap;
 }
-.presse__entete > div { max-width: 46ch; }
-.presse__pause {
+.section-entete--action > div { max-width: 46ch; }
+.bouton-pause {
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
@@ -1242,16 +1263,16 @@ p:last-child { margin-bottom: 0; }
   gap: 0.5rem;
   flex: none;
 }
-.presse__pause:hover { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
+.bouton-pause:hover { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
 /* Deux barres pour « en marche », un triangle pour « arrete ». */
-.presse__pause-signe {
+.bouton-pause__signe {
   width: 9px;
   height: 11px;
   background: currentColor;
   clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 0 0, 65% 0, 100% 0, 100% 100%, 65% 100%, 65% 0);
   flex: none;
 }
-.presse__pause[aria-pressed="true"] .presse__pause-signe {
+.bouton-pause[aria-pressed="true"] .bouton-pause__signe {
   clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
 
@@ -1304,12 +1325,12 @@ p:last-child { margin-bottom: 0; }
    et le filet des vignettes prennent les valeurs claires de la famille. */
 .section--encre .presse__source { color: #b9c3d4; }
 .section--encre .presse__lien img { border-color: rgba(255, 253, 249, 0.28); }
-.section--encre .presse__pause {
+.section--encre .bouton-pause {
   background: transparent;
   color: var(--paper);
   border-color: rgba(255, 253, 249, 0.35);
 }
-.section--encre .presse__pause:hover { background: var(--blanc); border-color: var(--blanc); color: var(--ink); }
+.section--encre .bouton-pause:hover { background: var(--blanc); border-color: var(--blanc); color: var(--ink); }
 
 /* ---------- Contact ---------- */
 .contact {
