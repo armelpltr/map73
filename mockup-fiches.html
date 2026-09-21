@@ -53,9 +53,35 @@
 .scene { background: var(--ink); padding: clamp(1.25rem, 2.5vw, 2rem); }
 .paire { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: clamp(1rem, 2vw, 1.5rem); align-items: start; }
 
-/* Le bas de fiche est seul a changer : on neutralise la regle du site,
-   chaque variante repose la sienne. */
-.scene .fondatrice__faits { border-top: 0; padding-top: 0; gap: 0; }
+/* Le bas de fiche est seul a changer : on remet a zero ce que la
+   feuille du site lui impose — depuis que la variante 08 est passee en
+   production, elle y pose une grille deux par deux, des cartouches en
+   creux et une derniere ligne verte pleine largeur, qui se melangeaient
+   aux regles des neuf autres vignettes. Chaque variante repose ensuite
+   les siennes. */
+.scene .fondatrice__faits {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: 0;
+  padding-top: 0;
+}
+/* Remise a zero volontairement peu specifique : les regles des
+   variantes, ecrites plus bas avec le meme poids, doivent pouvoir la
+   reprendre. La derniere ligne demande un cran de plus, parce que la
+   feuille du site la vise elle aussi par :last-child. */
+.scene .fondatrice__ligne {
+  display: grid;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  gap: 0.2rem;
+}
+.scene .fondatrice__ligne:last-child {
+  grid-column: auto;
+  background: transparent;
+  border: 0;
+}
 
 /* ---------- 01. Notice a deux colonnes ---------- */
 .v1 .fondatrice__ligne {
