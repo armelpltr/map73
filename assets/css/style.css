@@ -995,6 +995,11 @@ p:last-child { margin-bottom: 0; }
 .fondatrice {
   --equerre: var(--vert);
   background-color: var(--blanc);
+  /* La section est passee a l'aplat encre : sans cette couleur, le nom et
+     les valeurs des fiches heritaient du papier et disparaissaient sur le
+     fond blanc de la carte. Seuls les intitules, qui portent leur propre
+     couleur, restaient lisibles. */
+  color: var(--ink);
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   display: grid;
   gap: 1.25rem;
