@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
-<link rel="stylesheet" href="assets/css/style.css?v=20260921-2215">
+<link rel="stylesheet" href="assets/css/style.css?v=20260921-2240">
 </head>
 
 <body>
@@ -689,9 +689,17 @@
   <!-- ============ Presse ============ -->
   <section class="section section--craie" id="actualites">
     <div class="enveloppe">
-      <div class="section-entete">
-        <h2>On parle de nous</h2>
-        <p>Presse locale, radio et réseau d’entrepreneurs.</p>
+      <div class="section-entete presse__entete">
+        <div>
+          <h2>On parle de nous</h2>
+          <p>Presse locale, radio et réseau d’entrepreneurs.</p>
+        </div>
+        <!-- Le bouton n'apparaît que si le script a monté le ruban : sans
+             script, la rangée ne bouge pas et il n'y a rien à arrêter. -->
+        <button class="presse__pause" type="button" id="presse-pause" aria-pressed="false" hidden>
+          <span class="presse__pause-signe" aria-hidden="true"></span>
+          <span class="presse__pause-mot">Arrêter le défilement</span>
+        </button>
       </div>
 
       <div class="presse" id="presse-liste">
@@ -1011,7 +1019,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20260921-2215" defer></script>
+<script src="assets/js/main.js?v=20260921-2240" defer></script>
 
 <script type="application/ld+json">
 {

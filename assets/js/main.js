@@ -124,6 +124,50 @@
     }
   }
 
+  /* ---- Presse : le ruban qui defile ----
+     La grille du HTML est transformee en piste horizontale, doublee, et
+     animee par le CSS. Trois points de vigilance :
+     - la copie est marquee aria-hidden et ses liens sortent du parcours
+       de tabulation, sinon chaque parution est annoncee et atteinte deux
+       fois ;
+     - le bouton d'arret n'existe que si le ruban est monte : sans
+       script, la rangee reste une grille immobile ;
+     - la duree est proportionnelle au nombre de parutions, sinon
+       ajouter une coupure de presse accelererait tout le ruban. */
+  const presse = document.getElementById("presse-liste");
+  const pause = document.getElementById("presse-pause");
+
+  if (presse && pause && presse.children.length > 2) {
+    const piste = document.createElement("div");
+    piste.className = "presse__piste";
+    piste.append(...presse.children);
+
+    const copie = piste.cloneNode(true);
+    for (const article of copie.children) {
+      article.setAttribute("aria-hidden", "true");
+      for (const lien of article.querySelectorAll("a")) lien.tabIndex = -1;
+    }
+    piste.append(...copie.children);
+
+    presse.append(piste);
+    presse.dataset.ruban = "oui";
+    presse.dataset.anime = "oui";
+
+    // 6 secondes par parution : le ruban garde la meme allure qu'il en
+    // compte cinq ou douze.
+    const parutions = piste.children.length / 2;
+    piste.style.animationDuration = parutions * 6 + "s";
+
+    pause.hidden = false;
+    pause.addEventListener("click", () => {
+      const arrete = presse.dataset.anime === "non";
+      presse.dataset.anime = arrete ? "oui" : "non";
+      pause.setAttribute("aria-pressed", String(!arrete));
+      pause.querySelector(".presse__pause-mot").textContent =
+        arrete ? "Arrêter le défilement" : "Reprendre le défilement";
+    });
+  }
+
   /* ---- Visionneuse d'images ----
      Le declencheur est un lien vers l'image : sans script, le clic ouvre le
      fichier, ce qui reste utilisable. Avec script, on ouvre le dialogue

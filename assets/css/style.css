@@ -1102,13 +1102,89 @@ p:last-child { margin-bottom: 0; }
   color: var(--lac-clair);
 }
 
-/* ---------- Presse ---------- */
+/* ---------- Presse ----------
+   La rangee defile toute seule, en boucle continue. Deux etats :
+
+   - sans script, c'est la grille d'avant, cinq parutions posees. Rien
+     ne bouge, rien ne manque.
+   - avec script, main.js double la serie, marque la copie en
+     aria-hidden et pose data-ruban sur le conteneur. Le CSS bascule
+     alors en piste horizontale et l'anime jusqu'a -50 % : la copie
+     arrive exactement la ou etait l'originale, la boucle ne se voit
+     pas.
+
+   Le mouvement s'arrete au survol, au clavier, et par le bouton — un
+   contenu qui bouge plus de cinq secondes doit pouvoir etre arrete
+   autrement qu'en le survolant, ce que le doigt ne sait pas faire. */
 .presse {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: clamp(1rem, 2vw, 1.75rem);
 }
 .presse__article { display: flex; flex-direction: column; margin: 0; }
+
+.presse__entete {
+  max-width: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.presse__entete > div { max-width: 46ch; }
+.presse__pause {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+.presse__pause:hover { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
+/* Deux barres pour « en marche », un triangle pour « arrete ». */
+.presse__pause-signe {
+  width: 9px;
+  height: 11px;
+  background: currentColor;
+  clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 0 0, 65% 0, 100% 0, 100% 100%, 65% 100%, 65% 0);
+  flex: none;
+}
+.presse__pause[aria-pressed="true"] .presse__pause-signe {
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+/* Ruban : monte par le script uniquement. */
+.presse[data-ruban="oui"] {
+  display: block;
+  overflow: hidden;
+  /* Les deux bords s'effacent : sans cela, les vignettes apparaissent et
+     disparaissent d'un coup contre le bord de la section. */
+  mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+}
+.presse__piste {
+  display: flex;
+  gap: clamp(1rem, 2vw, 1.75rem);
+  width: max-content;
+}
+.presse__piste > .presse__article { width: 210px; flex: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .presse[data-ruban="oui"] .presse__piste {
+    animation: presse-ruban 60s linear infinite;
+  }
+}
+@keyframes presse-ruban { to { transform: translateX(-50%); } }
+
+.presse[data-ruban="oui"]:hover .presse__piste,
+.presse[data-ruban="oui"]:focus-within .presse__piste,
+.presse[data-anime="non"] .presse__piste { animation-play-state: paused; }
 .presse__lien { text-decoration: none; color: inherit; display: block; }
 .presse__lien img {
   border-radius: var(--rayon);
@@ -1569,6 +1645,7 @@ p:last-child { margin-bottom: 0; }
   }
   .hero__actions .bouton { width: 100%; justify-content: center; }
   .formule { padding: 1.35rem; }
+  .presse__piste > .presse__article { width: 160px; }
   .legende__item { padding: 0.9rem 1rem; }
 }
 
