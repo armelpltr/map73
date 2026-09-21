@@ -1195,6 +1195,9 @@ p:last-child { margin-bottom: 0; }
 .presse__lien img {
   border-radius: var(--rayon);
   border: 1px solid var(--trait);
+  /* La section est passee a l'aplat encre : le filet beige y dessinait un
+     cadre plus clair que la coupure de presse elle-meme. */
+  background: var(--blanc);
   aspect-ratio: 1 / 1;
   object-fit: cover;
   width: 100%;
@@ -1208,6 +1211,16 @@ p:last-child { margin-bottom: 0; }
   font-weight: 600;
   color: var(--ink-soft);
 }
+/* Sur l'aplat encre, l'encre adoucie tombe a 1,9 de contraste : la source
+   et le filet des vignettes prennent les valeurs claires de la famille. */
+.section--encre .presse__source { color: #b9c3d4; }
+.section--encre .presse__lien img { border-color: rgba(255, 253, 249, 0.28); }
+.section--encre .presse__pause {
+  background: transparent;
+  color: var(--paper);
+  border-color: rgba(255, 253, 249, 0.35);
+}
+.section--encre .presse__pause:hover { background: var(--blanc); border-color: var(--blanc); color: var(--ink); }
 
 /* ---------- Contact ---------- */
 .contact {
