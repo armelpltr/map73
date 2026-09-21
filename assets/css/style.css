@@ -686,7 +686,14 @@ p:last-child { margin-bottom: 0; }
    intitule et du texte — la bande respire, et l'adage porte la section a lui
    seul. C'est le seul italique du site, et le seul endroit ou une phrase est
    citee pour elle-meme. */
-.adn { border-bottom: 1px solid var(--trait); }
+/* Le filet de pied disparait : la section est passee a l'aplat encre, et
+   c'est la couture qui marque desormais sa limite. */
+.adn { border-bottom: 0; }
+/* Sur l'encre, l'adage prend le lac eclairci et le texte la valeur claire
+   de la famille : le lac sombre tombait a 3,1 de contraste, l'encre
+   adoucie a 1,9. */
+.section--encre .adn__adage { color: var(--lac-clair); }
+.section--encre .adn__texte { color: #b9c3d4; }
 .adn__liste {
   list-style: none;
   margin: 0;
