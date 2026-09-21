@@ -56,10 +56,15 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 6.5rem; }
+/* L'en-tete se compacte des le premier defilement : une ancre atteinte
+   s'arrete donc sous une barre de 4,25rem, pas de 5,75rem. */
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
 
 body {
   margin: 0;
+  /* Place de l'en-tete fixe, hauteur deployee. Constante : c'est ce qui
+     empeche le compactage de decaler la page. */
+  padding-top: 5.75rem;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--texte);
@@ -214,8 +219,13 @@ p:last-child { margin-bottom: 0; }
    couleur des la premiere ligne, la ou l'ancien site posait du noir.
    Le bandeau est opaque : translucide, le papier du hero le delavait et
    le logo blanc perdait son fond. */
+/* Fixe, et non collant : l'en-tete change de hauteur au defilement, et
+   un element collant qui maigrit remonte tout le contenu d'un coup de
+   24 px. Fixe, il sort du flux ; la hauteur deployee est rendue par le
+   retrait haut du body, qui lui ne bouge jamais. */
 .entete {
-  position: sticky;
+  position: fixed;
+  inset-inline: 0;
   top: 0;
   z-index: 50;
   background: var(--ink);
@@ -226,21 +236,55 @@ p:last-child { margin-bottom: 0; }
   border-bottom-color: rgba(255, 253, 249, 0.22);
   box-shadow: 0 1px 12px rgba(20, 36, 59, 0.28);
 }
+/* Le bandeau se compacte des qu'on quitte le haut de page : 18 px de
+   hauteur rendus a la lecture, et le logo suit. C'est la seule mesure
+   animee du site ; elle ne porte que sur l'en-tete, jamais sur le
+   contenu, pour que le recalcul reste borne a une barre. */
 .entete__barre {
   display: flex;
   align-items: center;
   gap: 1.5rem;
   min-height: 5.75rem;
   position: relative;
+  transition: min-height 0.25s ease;
 }
+.entete[data-defile="oui"] .entete__barre { min-height: 4.25rem; }
+
 .entete__logo { flex: none; line-height: 0; }
 /* Version blanche du logo, detouree : sur le bandeau, le bleu passe entre
    les lettres. Le pied de page, lui, garde le logo encre sur son papier.
    Ce dessin est plus large et plus bas que l'ancien (rapport 2,3 contre
    1,66), d'ou les dimensions propres. */
-.entete__logo img { width: 148px; height: 64px; object-fit: contain; }
+.entete__logo img {
+  width: 148px;
+  height: 64px;
+  object-fit: contain;
+  transition: width 0.25s ease, height 0.25s ease;
+}
+.entete[data-defile="oui"] .entete__logo img { width: 116px; height: 50px; }
 
-.nav { margin-left: auto; }
+/* Le filet du lien courant se deplace d'un intitule a l'autre : la barre
+   cesse d'etre une liste de liens et devient un repere de position. Il
+   est pose par le script, qui mesure le lien actif et ecrit sa largeur
+   et son deplacement ; le CSS ne fait que l'animer. Decoratif, donc
+   absent du flux de lecture des lecteurs d'ecran. */
+.nav { margin-left: auto; position: relative; }
+.nav__curseur {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 2px;
+  width: 0;
+  background: var(--vert);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    width 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    top 0.25s ease,
+    opacity 0.2s ease;
+}
+.nav__lien[aria-current="true"] { color: var(--blanc); }
 .nav__liste {
   display: flex;
   align-items: center;
@@ -1367,9 +1411,15 @@ p:last-child { margin-bottom: 0; }
 }
 
 @media (max-width: 780px) {
+  body { padding-top: 4.75rem; }
   .entete__bascule { display: block; }
   .entete__barre { min-height: 4.75rem; }
+  .entete[data-defile="oui"] .entete__barre { min-height: 4rem; }
   .entete__logo img { width: 122px; height: 53px; }
+  .entete[data-defile="oui"] .entete__logo img { width: 100px; height: 43px; }
+  /* Le menu mobile est une colonne : un filet qui glisse d'une ligne a
+     l'autre n'y veut rien dire. Seul aria-current reste. */
+  .nav__curseur { display: none; }
   /* Le menu deroulant prolonge le bandeau : meme encre, filets clairs.
      En papier, il retombait en blanc sous une barre bleue. */
   .nav {
@@ -1461,6 +1511,8 @@ p:last-child { margin-bottom: 0; }
 
 @media print {
   .entete, .nav, .hero__fond, .formulaire, .couture { display: none; }
+  /* Sans l'en-tete, son retrait n'a plus lieu d'etre. */
+  body { padding-top: 0; }
   /* Les navigateurs n'impriment pas les images de fond : sans cadre, les
      cartes n'auraient plus aucune limite sur le papier. */
   .formule, .fondatrice, .legende__item, .temoignage, .billet { border: 1px solid #999; }
