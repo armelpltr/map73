@@ -242,49 +242,25 @@
       }
 
       const donnees = new FormData(formulaire);
-      const action = formulaire.getAttribute("action") || "";
 
-      // Tant qu'aucun service d'envoi n'est configuré, on bascule sur le client mail.
-      if (action.includes("REMPLACER")) {
-        const corps = [
-          `Prénom : ${donnees.get("prenom")}`,
-          `Nom : ${donnees.get("nom")}`,
-          `E-mail : ${donnees.get("email")}`,
-          `Téléphone : ${donnees.get("telephone") || "non communiqué"}`,
-          `Classe : ${donnees.get("niveau") || "non précisée"}`,
-          "",
-          String(donnees.get("message") || "")
-        ].join("\n");
+      // Aucun service d'envoi tiers : le message part par le client mail.
+      const corps = [
+        `Prénom : ${donnees.get("prenom")}`,
+        `Nom : ${donnees.get("nom")}`,
+        `E-mail : ${donnees.get("email")}`,
+        `Téléphone : ${donnees.get("telephone") || "non communiqué"}`,
+        `Classe : ${donnees.get("niveau") || "non précisée"}`,
+        "",
+        String(donnees.get("message") || "")
+      ].join("\n");
 
-        window.location.href =
-          "mailto:contacts@map73.fr?subject=" +
-          encodeURIComponent("Demande depuis le site MAP73") +
-          "&body=" +
-          encodeURIComponent(corps);
+      window.location.href =
+        "mailto:contacts@map73.fr?subject=" +
+        encodeURIComponent("Demande depuis le site MAP73") +
+        "&body=" +
+        encodeURIComponent(corps);
 
-        afficher("Votre messagerie s’ouvre avec le message pré-rempli. Vous pouvez aussi nous écrire directement à contacts@map73.fr.");
-        return;
-      }
-
-      const bouton = formulaire.querySelector("button[type=submit]");
-      if (bouton) bouton.disabled = true;
-
-      try {
-        const reponse = await fetch(action, {
-          method: "POST",
-          body: donnees,
-          headers: { Accept: "application/json" }
-        });
-
-        if (!reponse.ok) throw new Error(String(reponse.status));
-
-        formulaire.reset();
-        afficher("Message envoyé. Nous vous répondons sous 48 heures ouvrées.");
-      } catch {
-        afficher("L’envoi a échoué. Écrivez-nous à contacts@map73.fr ou appelez le 06 78 36 90 06.");
-      } finally {
-        if (bouton) bouton.disabled = false;
-      }
+      afficher("Votre messagerie s’ouvre avec le message pré-rempli. Vous pouvez aussi nous écrire directement à contacts@map73.fr.");
     });
   }
 })();
