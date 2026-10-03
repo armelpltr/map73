@@ -2507,6 +2507,15 @@ p:last-child { margin-bottom: 0; }
 }
 @media (min-width: 900px) {
   .adn__liste--arc { grid-template-columns: repeat(4, 1fr); padding-top: 150px; }
+  /* Ces 150 px degagent l'arc : les tiges partent exactement ou le retrait
+     s'arrete, et les bouts de la courbe tombent dedans. Le retrait n'est
+     donc pas negociable — mais il s'ajoutait a la marge qui separe le chapo
+     de la scene, et les deux ensemble faisaient 206 px de vide avant la
+     premiere tige. On resserre la marge, pas le retrait, et seulement ici :
+     sous 900 px l'arc n'existe pas, les piliers s'empilent, et l'ecart d'une
+     entete de section a son contenu doit rester celui du reste du site. */
+  .adn--arc .section-entete { margin-bottom: 1rem; }
+  .adn--arc .adn__scene { margin-top: 1rem; }
   /* Les deux piliers du milieu sont plus hauts sur l'arc : on les remonte
      pour que chaque titre reste sous son point. */
   .adn__liste--arc > :nth-child(2),
