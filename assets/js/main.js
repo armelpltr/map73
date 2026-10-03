@@ -86,6 +86,175 @@
     });
   }
 
+  /* ---- Tenue claire / sombre ----
+     La tenue initiale est posee par le petit script du <head>, avant le
+     premier rendu. Ici on ne gere que la bascule et sa memorisation. Sans
+     choix enregistre, la feuille suit prefers-color-scheme ; des le premier
+     clic, le choix du visiteur l'emporte. */
+  const basculeTheme = document.getElementById("bascule-theme");
+
+  if (basculeTheme) {
+    const racine = document.documentElement;
+    const libelle = document.getElementById("bascule-theme-libelle");
+    const systemeSombre = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const estSombre = () =>
+      racine.dataset.theme ? racine.dataset.theme === "dark" : systemeSombre.matches;
+
+    const refleter = () => {
+      const sombre = estSombre();
+      basculeTheme.setAttribute("aria-pressed", String(sombre));
+      if (libelle) libelle.textContent = sombre ? "Passer en tenue claire" : "Passer en tenue sombre";
+    };
+
+    basculeTheme.addEventListener("click", () => {
+      racine.dataset.theme = estSombre() ? "light" : "dark";
+      try {
+        localStorage.setItem("map73-theme", racine.dataset.theme);
+      } catch (e) {
+        /* Navigation privee ou stockage refuse : la tenue tient pour la
+           visite en cours, elle ne survit simplement pas au rechargement. */
+      }
+      refleter();
+    });
+
+    /* Tant que le visiteur n'a pas choisi, on suit le systeme en direct. */
+    systemeSombre.addEventListener("change", () => {
+      if (!racine.dataset.theme) refleter();
+    });
+
+    refleter();
+  }
+
+  /* ---- Formules : le selecteur de niveau ----
+     Les onglets sont caches dans le HTML et reveles ici : sans script, les
+     sept formules restent affichees a la suite, ce qui vaut mieux qu'une
+     rangee de boutons inertes. */
+  const onglets = document.getElementById("formules-onglets");
+  const formules = document.querySelectorAll(".formule[data-niveau]");
+
+  /* Le libelle du bouton du hero n'est repris que sur un choix explicite :
+     mis a jour au chargement, il aurait annonce « Troisieme » a un visiteur
+     qui n'a rien demande, alors que ce niveau n'est qu'un etat de depart. */
+  const nomDuNiveau = {
+    troisieme: "Troisième",
+    seconde: "Seconde",
+    premiere: "Première",
+    terminale: "Terminale"
+  };
+
+  const choisirNiveau = (niveau, options) => {
+    if (!onglets) return;
+    const reglages = options || {};
+
+    onglets.querySelectorAll(".onglet-niveau").forEach((onglet) => {
+      const actif = onglet.dataset.niveau === niveau;
+      onglet.setAttribute("aria-selected", String(actif));
+      onglet.tabIndex = actif ? 0 : -1;
+      if (actif && reglages.focus) onglet.focus();
+    });
+
+    formules.forEach((formule) => {
+      formule.hidden = formule.dataset.niveau !== niveau;
+    });
+
+    const etiquette = document.getElementById("classe-choisie");
+    if (etiquette && reglages.nommer && nomDuNiveau[niveau]) {
+      etiquette.textContent = nomDuNiveau[niveau];
+    }
+  };
+
+  if (onglets && formules.length) {
+    onglets.hidden = false;
+    const conteneurFormules = document.getElementById("formules-liste");
+    if (conteneurFormules) conteneurFormules.classList.add("formules--filtre");
+
+    /* Chaque formule devient le panneau de son onglet : sans ce lien, un
+       lecteur d'ecran annonce des onglets qui ne commandent rien. */
+    formules.forEach((formule) => {
+      const onglet = onglets.querySelector('[data-niveau="' + formule.dataset.niveau + '"]');
+      if (!onglet) return;
+      if (!onglet.id) onglet.id = "onglet-" + formule.dataset.niveau;
+      formule.setAttribute("role", "tabpanel");
+      formule.setAttribute("aria-labelledby", onglet.id);
+      onglet.setAttribute("aria-controls", formule.id);
+    });
+
+    onglets.addEventListener("click", (e) => {
+      const onglet = e.target.closest(".onglet-niveau");
+      if (onglet) choisirNiveau(onglet.dataset.niveau, { nommer: true });
+    });
+
+    /* Fleches, Origine et Fin : le parcours clavier attendu d'un tablist. */
+    onglets.addEventListener("keydown", (e) => {
+      const liste = [...onglets.querySelectorAll(".onglet-niveau")];
+      const courant = liste.indexOf(document.activeElement);
+      if (courant < 0) return;
+
+      const pas = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      let cible = null;
+
+      if (pas) cible = (courant + pas + liste.length) % liste.length;
+      else if (e.key === "Home") cible = 0;
+      else if (e.key === "End") cible = liste.length - 1;
+      else return;
+
+      e.preventDefault();
+      choisirNiveau(liste[cible].dataset.niveau, { focus: true, nommer: true });
+    });
+
+    /* Un lien profond vers une formule doit ouvrir le bon onglet, sinon il
+       mene a une carte masquee. Vaut au chargement et sur changement de
+       fragment. */
+    const suivreFragment = () => {
+      let vise = null;
+      try {
+        /* Un fragment qui n'est pas un selecteur valide (#1abc) ferait lever
+           querySelector : on retombe sur le niveau par defaut. */
+        vise = document.querySelector('.formule[data-niveau]' + (location.hash || "#aucun"));
+      } catch (e) {}
+      choisirNiveau(vise ? vise.dataset.niveau : "troisieme", { nommer: Boolean(vise) });
+    };
+
+    window.addEventListener("hashchange", suivreFragment);
+    suivreFragment();
+  }
+
+  /* ---- Le dialogue « en quelle classe est votre enfant ? » ----
+     Le declencheur est un lien vers les formules : sans script, le clic y
+     mene et les sept formules sont la. Avec script, il ouvre le dialogue. */
+  const modaleClasse = document.getElementById("modale-classe");
+  const ouvrirClasses = document.getElementById("ouvrir-classes");
+
+  if (modaleClasse && ouvrirClasses && typeof modaleClasse.showModal === "function") {
+    ouvrirClasses.addEventListener("click", (e) => {
+      e.preventDefault();
+      modaleClasse.showModal();
+    });
+
+    const fermer = document.getElementById("fermer-classes");
+    if (fermer) fermer.addEventListener("click", () => modaleClasse.close());
+
+    /* Le dialogue occupe tout l'ecran : la cible du clic n'est le dialogue
+       lui-meme que dans la marge, hors du panneau. */
+    modaleClasse.addEventListener("click", (e) => {
+      if (e.target === modaleClasse) modaleClasse.close();
+    });
+
+    modaleClasse.addEventListener("click", (e) => {
+      const choix = e.target.closest(".classe-choix");
+      if (!choix) return;
+
+      modaleClasse.close();
+      choisirNiveau(choix.dataset.niveau, { nommer: true });
+
+      /* On amene le visiteur sur la formule qu'il vient de demander : la
+           laisser sous le pli reviendrait a ne rien afficher. */
+      const cible = document.getElementById("formules");
+      if (cible) cible.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   /* ---- Année du copyright ---- */
   const annee = document.getElementById("annee");
   if (annee) annee.textContent = String(new Date().getFullYear());

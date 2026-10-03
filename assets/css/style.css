@@ -4,6 +4,22 @@
    ========================================================= */
 
 /* ---------- Jetons ---------- */
+/* Le site a deux tenues. La claire est celle d'origine : papier creme, encre
+   bleu nuit, vert olive du logo. La sombre repond a la demande de Camille :
+   bleu nuit et vert fluo, esprit futuriste.
+
+   Les deux se disent avec les memes jetons, et c'est ce qui rend la bascule
+   tenable : la feuille entiere consomme --paper, --ink, --vert, --trait, et
+   il suffit de les redefinir sous [data-theme="dark"] pour retourner le site.
+   Deux jetons meritent une lecture particuliere, parce qu'ils ne nomment pas
+   une couleur mais un role :
+     --ink    sert d'encre du texte ET de fond des panneaux inverses. En clair
+              c'est un bleu nuit sur creme, en sombre un voile clair sur nuit.
+              Les sections --encre alternent donc dans les deux tenues, ce qui
+              donne gratuitement la page blanche que Camille veut intercaler.
+     --blanc  est le texte pose sur ces panneaux inverses : creme en clair,
+              presque noir en sombre. Le fond des cartes, lui, a son propre
+              jeton, --surface, parce que les deux divergent en sombre. */
 :root {
   color-scheme: light;
 
@@ -11,12 +27,29 @@
   --paper: #f7f6f1;
   --paper-2: #efece2;
   --ink: #14243b;
-  --ink-soft: #4a5872;
+  /* La valeur du fond de page, gardee a part : les panneaux inverses
+     retournent --ink-soft pour leur aplat, et une carte qui repose son propre
+     fond a l'interieur d'un panneau doit pouvoir revenir ici. */
+  --ink-soft-page: #4a5872;
+  --ink-soft: var(--ink-soft-page);
   /* Le vert du logo, mesure sur assets/img/logo-480.webp : #94C412, une teinte
      olive a 76 deg. C'est le seul vert du site. Vert clair (1,91 sur le
      papier), il ne porte que l'aplat, le trait et le dessin ; tout ce qui est
      texte sur fond clair prend l'encre ou le lac, sinon ca ne se lit plus. */
   --vert: #94c412;
+  /* Le meme vert, et rien d'autre : #55700a est #94c412 dont on n'a baisse
+     que la clarte. Teinte 76 deg et saturation 0,83 dans les deux cas ; seule
+     la clarte passe de 0,42 a 0,24. Il ne sert que la ou le vert doit porter
+     du texte sur un fond pale, ou le vert du logo ne tient que 1,91. Il doit
+     passer AA a 15 px aux deux endroits ou il ecrit : sur le papier nu (5,2)
+     et sur l'aplat vert a 12 % des onglets, qui eclaircit le fond et rogne le
+     contraste (4,8). Sur la nuit, c'est le vert du logo qui ecrit, a 9,7. */
+  --vert-texte-page: #55700a;
+  --vert-texte: var(--vert-texte-page);
+  /* Ce qui s'ecrit SUR un aplat de vert. Le vert du logo est une couleur
+     moyenne : elle ne porte ni le creme ni le voile clair, dans aucune des
+     deux tenues. L'encre y tient 7,5, et c'est la meme des deux cotes. */
+  --sur-vert: #14243b;
   --lac: #2b759d; /* assombri : le bleu d'origine tombait a 4,48 sur blanc,
                      sous le seuil AA des petits textes qui l'utilisent. */
   /* Le meme lac, eclairci pour l'aplat encre : sur #14243b, le lac courant
@@ -26,6 +59,23 @@
   --ambre: #e8a33d;
   --trait: #d5d1c2;
   --blanc: #fffdf9;
+  --surface: #fffdf9;
+  /* Le fond des panneaux inverses. Il reprenait --ink, qui sert aussi d'encre
+     du texte courant : les deux ne peuvent plus etre la meme valeur des lors
+     que le panneau de la tenue sombre n'est plus un simple blanc. */
+  --panneau: #14243b;
+  /* Le texte pose sur un panneau. Identique dans les deux tenues, puisque le
+     panneau y est sombre des deux cotes. */
+  --sur-panneau: #f7f6f1;
+  --sur-panneau-doux: #b9c3d4;
+
+  /* Lueur : nulle en tenue claire. Le halo vert des maquettes ne marche que
+     sur la nuit ; sur le papier il ne produirait qu'une salissure. Les memes
+     regles servent les deux tenues, elles lisent juste une lueur a zero. */
+  --lueur: 0 0 0 rgba(0, 0, 0, 0);
+  --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
+  --voile: rgba(20, 36, 59, 0.06);
+  --grille: rgba(20, 36, 59, 0.05);
 
   /* Typographie */
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
@@ -49,6 +99,83 @@
   /* Couleur des equerres quand la carte n'appartient a aucune famille
      coloree : le filet courant est trop pale pour se lire en repere. */
   --equerre-neutre: color-mix(in srgb, var(--trait) 62%, var(--ink));
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Bleu nuit du fond, puis deux crans plus clairs pour les aplats. */
+  --paper: #050b16;
+  /* Le second ton de l'alternance. Il rejoint --panneau : en tenue sombre la
+     page ne joue que deux tons, qui se relaient d'une section a l'autre. */
+  --paper-2: #12213c;
+  /* L'encre du texte courant, 15,8 sur la nuit. Elle ne sert plus de fond aux
+     panneaux inverses : celui-ci a son propre jeton, --panneau. */
+  --ink: #e8f0fb;
+  --ink-soft-page: #bac9de;
+  --ink-soft: var(--ink-soft-page);
+  /* Le vert du logo, inchange. Sur la nuit il tient 9,7 : il porte enfin du
+     texte, ce qu'il ne pouvait pas faire sur le papier. */
+  --vert: #94c412;
+  --vert-texte-page: #94c412;
+  --vert-texte: var(--vert-texte-page);
+  --sur-vert: #14243b;
+  --lac: #74c6ea;
+  /* Ces deux-la ne servent que sur les panneaux, qui sont sombres dans les
+     deux tenues : ils reprennent donc les memes valeurs claires qu'en tenue
+     claire. */
+  --lac-clair: #79b8d8;
+  --ambre: #e8a33d;
+  --trait: #1b2c47;
+  /* Le titre pose sur un panneau : clair des deux cotes, maintenant que le
+     panneau ne s'inverse plus. */
+  --blanc: #fffdf9;
+  --surface: #0d1929;
+  /* La tenue sombre n'inverse pas ses panneaux : aucune section claire dans
+     la page. Un cran au-dessus du fond et de la craie, juste assez pour que
+     les trois familles de sections restent distinctes. */
+  --panneau: #12213c;
+  --sur-panneau: #f7f6f1;
+  --sur-panneau-doux: #b9c3d4;
+
+  /* Halo discret : a 0,28 sur un fluo, il mangeait le texte autour. */
+  --lueur: 0 0 14px rgba(148, 196, 18, 0.20);
+  --lueur-forte: 0 0 26px rgba(148, 196, 18, 0.30);
+  --voile: rgba(232, 240, 251, 0.05);
+  --grille: rgba(148, 196, 18, 0.07);
+
+  --equerre-neutre: color-mix(in srgb, var(--trait) 62%, var(--ink));
+}
+
+/* Sans choix enregistre, on suit le systeme. L'attribut pose par le script
+   l'emporte, d'ou le :not() : un visiteur en clair sur une machine en sombre
+   garde le clair. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #050b16;
+    --paper-2: #12213c;
+    --ink: #e8f0fb;
+    --ink-soft-page: #bac9de;
+    --ink-soft: var(--ink-soft-page);
+    --vert: #94c412;
+    --vert-texte-page: #94c412;
+    --vert-texte: var(--vert-texte-page);
+    --sur-vert: #14243b;
+    --lac: #74c6ea;
+    --lac-clair: #79b8d8;
+    --ambre: #e8a33d;
+    --trait: #1b2c47;
+    --blanc: #fffdf9;
+    --surface: #0d1929;
+    --panneau: #12213c;
+    --sur-panneau: #f7f6f1;
+    --sur-panneau-doux: #b9c3d4;
+    --lueur: 0 0 14px rgba(148, 196, 18, 0.20);
+    --lueur-forte: 0 0 26px rgba(148, 196, 18, 0.30);
+    --voile: rgba(232, 240, 251, 0.05);
+    --grille: rgba(148, 196, 18, 0.07);
+  }
 }
 
 /* ---------- Base ---------- */
@@ -93,11 +220,14 @@ p:last-child { margin-bottom: 0; }
 
 ::selection { background: var(--ambre); color: var(--ink); }
 
+/* Le lien d'evitement, visible seulement quand on l'atteint au clavier. Il
+   prend --panneau comme les autres aplats inverses : sur --ink, il restait le
+   dernier fond quasi blanc de la tenue sombre. */
 .saut-contenu {
   position: absolute;
   left: -9999px;
   top: 0;
-  background: var(--ink);
+  background: var(--panneau);
   color: var(--blanc);
   padding: 0.75rem 1.25rem;
   z-index: 100;
@@ -112,14 +242,14 @@ p:last-child { margin-bottom: 0; }
 
 .section { padding-block: var(--section-y); position: relative; }
 .section--serre { padding-block: calc(var(--section-y) * 0.6); }
-.section--encre { background: var(--ink); color: var(--paper); }
+.section--encre { background: var(--panneau); color: var(--sur-panneau); }
 .section--encre h2 { color: var(--blanc); }
 .section--craie { background: var(--paper-2); }
 
 .section-entete { max-width: 46ch; margin-bottom: clamp(2rem, 4vw, 3.25rem); }
 .section-entete h2 { font-size: var(--fs-h2); margin-bottom: 0.5rem; }
 .section-entete p { color: var(--ink-soft); font-size: 1.125rem; margin: 0; }
-.section--encre .section-entete p { color: #b9c3d4; }
+.section--encre .section-entete p { color: var(--ink-soft); }
 
 /* ---------- Boutons ---------- */
 .bouton {
@@ -137,11 +267,13 @@ p:last-child { margin-bottom: 0; }
   cursor: pointer;
   transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
-.bouton--plein { background: var(--vert); color: var(--ink); }
+/* L'encre fixe, et non --ink : en tenue sombre --ink est un voile clair, qui
+   ne tient que 1,8 sur le vert du logo. */
+.bouton--plein { background: var(--vert); color: var(--sur-vert); }
 .bouton--plein:hover { background: var(--ink); color: var(--blanc); }
 .bouton--contour { border-color: var(--ink); color: var(--ink); }
 .bouton--contour:hover { background: var(--ink); color: var(--paper); }
-.bouton--clair { border-color: rgba(255, 253, 249, 0.45); color: var(--blanc); }
+.bouton--clair { border-color: color-mix(in srgb, var(--blanc) 45%, transparent); color: var(--blanc); }
 .bouton--clair:hover { background: var(--blanc); color: var(--ink); }
 .bouton svg { flex: none; }
 
@@ -460,8 +592,8 @@ p:last-child { margin-bottom: 0; }
   display: grid;
   gap: 0.65rem;
   align-content: start;
-  background-color: var(--ink);
-  color: var(--paper);
+  background-color: var(--panneau);
+  color: var(--sur-panneau);
   padding: clamp(1.15rem, 2vw, 1.35rem);
 }
 /* Les reperes disent ce que couvre l'accompagnement scolaire : ils appartiennent
@@ -502,8 +634,8 @@ p:last-child { margin-bottom: 0; }
   display: grid;
   gap: 0.5rem;
   align-content: start;
-  background-color: var(--ink);
-  color: var(--paper);
+  background-color: var(--panneau);
+  color: var(--sur-panneau);
   padding: clamp(1.15rem, 2vw, 1.35rem);
 }
 /* Le portrait n'apparait que sur les cartes qui en portent un — un edito
@@ -512,7 +644,7 @@ p:last-child { margin-bottom: 0; }
   width: 52px;
   height: 52px;
   object-fit: cover;
-  border: 1px solid rgba(255, 253, 249, 0.28);
+  border: 1px solid color-mix(in srgb, var(--blanc) 28%, transparent);
   justify-self: start;
 }
 .news__date {
@@ -521,11 +653,11 @@ p:last-child { margin-bottom: 0; }
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--vert);
+  color: var(--vert-texte);
   margin: 0;
 }
 .news__intitule { font-size: 1.2rem; line-height: 1.2; color: var(--blanc); margin: 0; }
-.news__texte { font-size: var(--fs-small); color: #b9c3d4; margin: 0; }
+.news__texte { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
 .news__lien {
   font-family: var(--display);
   font-size: var(--fs-small);
@@ -556,22 +688,24 @@ p:last-child { margin-bottom: 0; }
 /* Une couture sur deux est retournee : la meme vague huit fois de suite se
    verrait comme un motif. */
 .couture--miroir svg { transform: scaleX(-1); }
-.couture--fine { height: 30px; }
+/* Les deux tons de la page ont le meme ecart partout : les douze
+   jointures portent donc la meme vague, a la meme amplitude. */
+.couture--fine { height: 54px; }
 
 .couture--clair-encre {
   --couture-sortant: var(--paper);
-  --couture-entrant: var(--ink);
-  --couture-niveau: var(--trait);
+  --couture-entrant: var(--panneau);
+  --couture-niveau: color-mix(in srgb, var(--ink) 22%, transparent);
 }
 .couture--encre-clair {
-  --couture-sortant: var(--ink);
+  --couture-sortant: var(--panneau);
   --couture-entrant: var(--paper);
-  --couture-niveau: color-mix(in srgb, var(--ink) 62%, var(--paper));
+  --couture-niveau: color-mix(in srgb, var(--sur-panneau) 24%, transparent);
 }
 .couture--encre-craie {
-  --couture-sortant: var(--ink);
+  --couture-sortant: var(--panneau);
   --couture-entrant: var(--paper-2);
-  --couture-niveau: color-mix(in srgb, var(--ink) 62%, var(--paper));
+  --couture-niveau: color-mix(in srgb, var(--sur-panneau) 24%, transparent);
 }
 /* Entre le papier et la craie, l'ecart de valeur est de deux pour cent : le
    remplissage seul ne se verrait pas. Ce sont les niveaux qui dessinent la
@@ -579,12 +713,12 @@ p:last-child { margin-bottom: 0; }
 .couture--clair-craie {
   --couture-sortant: var(--paper);
   --couture-entrant: var(--paper-2);
-  --couture-niveau: color-mix(in srgb, var(--trait) 74%, var(--ink));
+  --couture-niveau: color-mix(in srgb, var(--ink) 22%, transparent);
 }
 .couture--craie-clair {
   --couture-sortant: var(--paper-2);
   --couture-entrant: var(--paper);
-  --couture-niveau: color-mix(in srgb, var(--trait) 74%, var(--ink));
+  --couture-niveau: color-mix(in srgb, var(--ink) 22%, transparent);
 }
 
 /* ---------- L'ADN ---------- */
@@ -640,9 +774,13 @@ p:last-child { margin-bottom: 0; }
   list-style: none;
 }
 .propos__acronyme li { font-family: var(--display); font-size: 1.05rem; padding: 0.35rem 0; }
+/* Les initiales M, A, P. Elles portent du texte sur le fond de page, donc le
+   vert du logo n'y suffit pas : il n'y tenait que 1,91, et les mots se
+   lisaient « aitriser », « venir », « arcours ». C'est la nuance assombrie du
+   meme vert qui ecrit, comme partout ailleurs sur un fond pale. */
 .propos__acronyme b {
   font-weight: 800;
-  color: var(--vert);
+  color: var(--vert-texte);
   font-size: 1.35em;
 }
 .propos__media img { width: 100%; }
@@ -726,10 +864,10 @@ p:last-child { margin-bottom: 0; }
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1px;
-  background: rgba(255, 253, 249, 0.16);
-  border: 1px solid rgba(255, 253, 249, 0.16);
+  background: color-mix(in srgb, var(--blanc) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--blanc) 16%, transparent);
 }
-.pilier { background: var(--ink); padding: clamp(1.75rem, 3vw, 2.5rem); }
+.pilier { background: var(--panneau); padding: clamp(1.75rem, 3vw, 2.5rem); }
 /* Le rang reprend le jalon de l'itineraire du hero, au lieu du grand chiffre
    detoure : la page raconte deja un parcours, elle n'a pas besoin d'un second
    vocabulaire pour le dire, et le chiffre redevient lisible. */
@@ -738,13 +876,13 @@ p:last-child { margin-bottom: 0; }
   font-size: var(--fs-micro);
   font-weight: 700;
   line-height: 1;
-  color: var(--vert);
+  color: var(--vert-texte);
   font-variant-numeric: tabular-nums;
   display: inline-grid;
   place-items: center;
   width: 26px;
   height: 26px;
-  border: 2px solid var(--vert);
+  border: 2px solid var(--vert-texte);
   border-radius: 50%;
   margin-bottom: 1rem;
 }
@@ -757,7 +895,7 @@ p:last-child { margin-bottom: 0; }
   display: block;
   margin-bottom: 0.4rem;
 }
-.pilier p { color: #c3cbd9; font-size: var(--fs-small); }
+.pilier p { color: var(--ink-soft); font-size: var(--fs-small); }
 
 /* ---------- Formules ---------- */
 .formules {
@@ -776,8 +914,8 @@ p:last-child { margin-bottom: 0; }
 .formule {
   --equerre: var(--lac-clair);
   --equerre-marge: 8px;
-  background-color: var(--ink);
-  color: var(--paper);
+  background-color: var(--panneau);
+  color: var(--sur-panneau);
   padding: clamp(1.5rem, 2.5vw, 2rem);
   display: flex;
   flex-direction: column;
@@ -812,14 +950,14 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--vert);
+  color: var(--vert-texte);
 }
 .formule__intitule--seul { display: block; margin: 0 0 0.4rem; }
 
 .formule__objectif { font-size: var(--fs-small); margin-bottom: 0.85rem; }
 .formule__contenu { font-size: var(--fs-small); margin-bottom: 1.25rem; }
 .formule__liste { list-style: none; margin: 0 0 1rem; padding: 0; font-size: var(--fs-small); }
-.formule__liste li { padding: 0.5rem 0; border-top: 1px solid rgba(255, 253, 249, 0.18); }
+.formule__liste li { padding: 0.5rem 0; border-top: 1px solid color-mix(in srgb, var(--blanc) 18%, transparent); }
 /* Le depliant, le prix et le bouton forment le bloc du bas, et c'est leur
    alignement d'une carte a l'autre qui fait tenir la grille. L'espace
    libre revient donc au dernier element de la partie haute : le contenu
@@ -838,14 +976,14 @@ p:last-child { margin-bottom: 0; }
 }
 .formule__prix-note {
   font-size: var(--fs-micro);
-  color: #b9c3d4;
+  color: var(--ink-soft);
   display: block;
   margin-bottom: 1rem;
 }
 .formule__pied .bouton { width: 100%; justify-content: center; }
 /* Le bouton contour est dessine pour le papier : sur l'aplat encre, son
    filet encre disparaissait. */
-.formule .bouton--contour { border-color: rgba(255, 253, 249, 0.45); color: var(--blanc); }
+.formule .bouton--contour { border-color: color-mix(in srgb, var(--blanc) 45%, transparent); color: var(--blanc); }
 .formule .bouton--contour:hover { background: var(--blanc); color: var(--ink); }
 
 .formule__details { margin: 0 0 1.25rem; font-size: var(--fs-small); }
@@ -902,7 +1040,7 @@ p:last-child { margin-bottom: 0; }
 
 .fondatrice {
   --equerre: var(--vert);
-  background-color: var(--blanc);
+  background-color: var(--surface);
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   display: grid;
   gap: 1.25rem;
@@ -987,8 +1125,8 @@ p:last-child { margin-bottom: 0; }
   font-size: var(--fs-micro);
   font-weight: 600;
   color: var(--ink);
-  background: color-mix(in srgb, var(--vert) 10%, var(--blanc));
-  border: 1px solid color-mix(in srgb, var(--vert) 45%, var(--blanc));
+  background: color-mix(in srgb, var(--vert) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--vert) 45%, var(--surface));
   /* Angles droits : arrondie a fond, l'etiquette se lisait comme un bouton,
      et rien ne se passe quand on clique dessus. */
   border-radius: 0;
@@ -1003,8 +1141,8 @@ p:last-child { margin-bottom: 0; }
   break-inside: avoid;
   margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
   --equerre: var(--lac-clair);
-  background-color: var(--ink);
-  color: var(--paper);
+  background-color: var(--panneau);
+  color: var(--sur-panneau);
   padding: 1.5rem;
 }
 .temoignage blockquote { margin: 0 0 1rem; font-size: var(--fs-small); }
@@ -1052,11 +1190,11 @@ p:last-child { margin-bottom: 0; }
 .coordonnees h3 { font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--blanc); }
 .coordonnees__bloc { margin-bottom: 1.75rem; }
 .coordonnees__bloc p { margin-bottom: 0.35rem; }
-.coordonnees a { color: var(--paper); }
+.coordonnees a { color: var(--sur-panneau); }
 .coordonnees a:hover { color: var(--ambre); }
 
 .formulaire {
-  background: var(--blanc);
+  background: var(--surface);
   border-radius: var(--rayon-l);
   padding: clamp(1.5rem, 3vw, 2.25rem);
   color: var(--ink);
@@ -1098,13 +1236,13 @@ p:last-child { margin-bottom: 0; }
   margin-top: 1rem;
   padding: 0.75rem 1rem;
   border-radius: var(--rayon);
-  background: color-mix(in srgb, var(--vert) 12%, var(--blanc));
+  background: color-mix(in srgb, var(--vert) 12%, var(--surface));
   border: 1px solid var(--vert);
 }
 
 /* ---------- Pied de page ---------- */
 .pied {
-  background: var(--paper-2);
+  background: var(--paper);
   border-top: 1px solid var(--trait);
   padding-block: clamp(2.5rem, 5vw, 4rem) 1.5rem;
   font-size: var(--fs-small);
@@ -1213,8 +1351,8 @@ p:last-child { margin-bottom: 0; }
 .billet {
   --equerre: var(--lac-clair);
   --equerre-marge: 8px;
-  background-color: var(--ink);
-  color: var(--paper);
+  background-color: var(--panneau);
+  color: var(--sur-panneau);
   padding: clamp(1.5rem, 2.5vw, 2rem);
   display: flex;
   flex-direction: column;
@@ -1240,7 +1378,7 @@ p:last-child { margin-bottom: 0; }
 .billet { position: relative; }
 .billet:hover { background-color: color-mix(in srgb, var(--ink) 92%, var(--lac)); }
 .billet__titre a:focus-visible { outline: 2px solid var(--lac-clair); outline-offset: 4px; }
-.billet__chapo { font-size: var(--fs-small); color: #b9c3d4; margin: 0; }
+.billet__chapo { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
 .billet__lire {
   font-family: var(--display);
   font-size: var(--fs-small);
@@ -1279,7 +1417,7 @@ p:last-child { margin-bottom: 0; }
    que par un aplat, pour ne pas concurrencer les cartes du site. */
 .article__encadre {
   border-left: 3px solid var(--lac);
-  background: var(--blanc);
+  background: var(--surface);
   padding: 1.1rem 1.25rem;
   margin: 0 0 1.4rem;
   font-size: var(--fs-small);
@@ -1456,3 +1594,736 @@ p:last-child { margin-bottom: 0; }
   .formule, .fondatrice, .legende__item, .temoignage, .billet { border: 1px solid #999; }
   body { background: #fff; color: #000; }
 }
+
+/* =========================================================
+   Refonte 2026 — demandes du document « modif site »
+   ========================================================= */
+
+/* ---------- Bascule clair / sombre ---------- */
+/* Un seul bouton pour les deux etats, avec aria-pressed : deux boutons
+   auraient double la barre sans rien ajouter. Les deux dessins sont dans le
+   bouton, le CSS n'en montre qu'un selon la tenue. */
+.bascule-theme {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--trait);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+.bascule-theme:hover {
+  color: var(--vert-texte);
+  border-color: var(--vert);
+  box-shadow: var(--lueur);
+}
+.bascule-theme svg { grid-area: 1 / 1; }
+.bascule-theme__nuit { display: none; }
+
+[data-theme="dark"] .bascule-theme__jour { display: none; }
+[data-theme="dark"] .bascule-theme__nuit { display: block; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .bascule-theme__jour { display: none; }
+  :root:not([data-theme="light"]) .bascule-theme__nuit { display: block; }
+}
+
+/* ---------- Hero ---------- */
+/* Le fond futuriste des maquettes : un degrade de nuit, une trame de points,
+   et les courbes du trace d'origine qui deviennent des filets lumineux. Rien
+   n'est en WebGL — les sites cites par Camille le sont, mais le meme effet
+   tient en SVG et en degrades, et il reste lisible sur un telephone. */
+.hero { position: relative; isolation: isolate; overflow: hidden; }
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(60% 55% at 78% 18%, color-mix(in srgb, var(--vert) 12%, transparent), transparent 70%),
+    radial-gradient(70% 60% at 12% 85%, color-mix(in srgb, var(--lac) 14%, transparent), transparent 72%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+[data-theme="dark"] .hero::before { opacity: 1; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero::before { opacity: 1; }
+}
+
+/* La trame de points. Discrete sur le papier, elle porte la lueur en nuit. */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: radial-gradient(circle, var(--grille) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(75% 65% at 50% 40%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(75% 65% at 50% 40%, #000 30%, transparent 100%);
+  pointer-events: none;
+}
+
+.hero__fond { color: var(--trait); }
+[data-theme="dark"] .hero__fond {
+  color: color-mix(in srgb, var(--vert) 32%, transparent);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--vert) 45%, transparent));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero__fond {
+    color: color-mix(in srgb, var(--vert) 32%, transparent);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--vert) 45%, transparent));
+  }
+}
+
+/* Les points lumineux poses sur les courbes. Purement decoratifs, donc hors
+   du flux et hors du lecteur d'ecran. En tenue claire ils disparaissent :
+   des pastilles vertes sur du creme n'evoquent rien. */
+.hero__lucioles {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+[data-theme="dark"] .hero__lucioles { opacity: 1; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero__lucioles { opacity: 1; }
+}
+
+.luciole {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--vert);
+  box-shadow: var(--lueur-forte);
+  animation: luciole 5.5s ease-in-out infinite;
+}
+@keyframes luciole {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50%      { opacity: 1;    transform: scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .luciole { animation: none; opacity: 0.75; }
+}
+
+/* Le titre : « un avenir. » passe au vert, comme sur la maquette. La classe
+   est posee dans le HTML sur le dernier segment. */
+.hero__accent { color: var(--vert-texte); }
+[data-theme="dark"] .hero__accent { text-shadow: var(--lueur); }
+
+/* Le trait court au-dessus du titre, repris des maquettes. */
+.hero__filet {
+  display: block;
+  width: 68px;
+  height: 3px;
+  background: var(--vert);
+  margin-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+  box-shadow: var(--lueur);
+}
+
+/* Le hero passe en deux colonnes : le discours a gauche, le selecteur de
+   classe a droite, comme sur la maquette. */
+.hero__grille {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+@media (min-width: 901px) {
+  .hero__grille { grid-template-columns: 1.35fr 1fr; }
+}
+
+/* ---------- Le selecteur de classe, dans le hero ---------- */
+/* Camille le veut a droite du titre, puis en grand au clic. C'est donc un
+   bouton, pas un <select> : il ouvre un dialogue. Le <select> reste dans le
+   formulaire de contact, ou il n'a pas ce role. */
+.hero__classe {
+  border-left: 1px solid var(--trait);
+  padding-left: clamp(1.25rem, 3vw, 2.25rem);
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+@media (max-width: 900px) {
+  .hero__classe {
+    border-left: 0;
+    border-top: 1px solid var(--trait);
+    padding-left: 0;
+    padding-top: 1.75rem;
+  }
+}
+
+.hero__classe-entete { display: flex; align-items: center; gap: 1rem; }
+
+.hero__classe-rond {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  flex: none;
+  border: 2px solid var(--vert);
+  border-radius: 50%;
+  color: var(--vert-texte);
+  box-shadow: var(--lueur);
+}
+
+.hero__classe-titre {
+  font-family: var(--display);
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.hero__classe-titre em { font-style: normal; color: var(--vert-texte); display: block; }
+
+.hero__classe-bouton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--voile);
+  border: 1px solid var(--vert);
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow 0.18s, background 0.18s;
+}
+.hero__classe-bouton:hover {
+  box-shadow: var(--lueur-forte);
+  background: color-mix(in srgb, var(--vert) 10%, transparent);
+}
+.hero__classe-bouton svg { flex: none; color: var(--vert-texte); }
+
+/* ---------- Le dialogue « en quelle classe ? » ---------- */
+/* <dialog> natif : il gere le piege de tabulation, Echap et le retour du
+   focus, trois choses qu'une surcouche maison rate presque toujours. Le flou
+   demande par Camille est sur ::backdrop. */
+.modale-classe {
+  width: min(100% - 2rem, 30rem);
+  padding: 0;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+}
+[data-theme="dark"] .modale-classe { border-color: color-mix(in srgb, var(--vert) 35%, transparent); }
+
+.modale-classe::backdrop {
+  background: color-mix(in srgb, #050b16 72%, transparent);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.modale-classe[open] { animation: modale-entree 0.22s ease-out; }
+@keyframes modale-entree {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .modale-classe[open] { animation: none; }
+}
+
+.modale-classe__entete {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem 1.5rem 0.25rem;
+}
+.modale-classe__titre {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.modale-classe__titre em { font-style: normal; color: var(--vert-texte); }
+
+.modale-classe__fermer {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--trait);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.modale-classe__fermer:hover { color: var(--ink); border-color: var(--ink-soft); }
+
+.modale-classe__liste {
+  list-style: none;
+  margin: 0;
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.classe-choix {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+}
+.classe-choix:hover {
+  border-color: var(--vert);
+  box-shadow: var(--lueur);
+  transform: translateX(3px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .classe-choix:hover { transform: none; }
+}
+
+.classe-choix__rond {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: 2px solid var(--vert);
+  border-radius: 50%;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--vert-texte);
+}
+.classe-choix:hover .classe-choix__rond { box-shadow: var(--lueur); }
+
+.classe-choix__texte { display: grid; gap: 0.1rem; }
+.classe-choix__nom { font-family: var(--display); font-weight: 700; font-size: 1rem; }
+.classe-choix__quoi { font-size: var(--fs-small); color: var(--ink-soft); }
+
+.classe-choix__fleche {
+  margin-left: auto;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--vert);
+  border-radius: 50%;
+  color: var(--vert-texte);
+}
+
+/* ---------- Deuxieme page : l'accompagnement ---------- */
+/* Les trois chiffres viennent du hero, ou ils encombraient la premiere vue.
+   Camille ne garde que ces pictos-la : les trois lignes du haut passent en
+   texte simple, sans vignette. */
+.accompagnement__grille {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+@media (min-width: 880px) {
+  .accompagnement__grille { grid-template-columns: 1.05fr 1fr; }
+}
+
+.accompagnement__surtitre {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 1rem;
+}
+.accompagnement__surtitre::before {
+  content: "";
+  width: 34px;
+  height: 2px;
+  background: var(--vert-texte);
+}
+
+.accompagnement__titre { font-size: var(--fs-h2); margin-bottom: 1.25rem; }
+.accompagnement__titre em { font-style: normal; color: var(--vert-texte); }
+
+.accompagnement__faits { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; }
+.accompagnement__fait { border-left: 2px solid var(--trait); padding-left: 1rem; }
+.accompagnement__fait strong { display: block; font-family: var(--display); font-size: 1.05rem; }
+.accompagnement__fait span { color: var(--ink-soft); font-size: var(--fs-small); }
+
+/* Les trois chiffres. Separes par un filet plutot qu'enfermes dans des
+   cartes : trois cadres de plus auraient refait la serie de tuiles que
+   Camille trouve deja trop nombreuse. */
+.chiffres {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+}
+@media (max-width: 560px) {
+  .chiffres { grid-template-columns: 1fr; text-align: left; }
+  .chiffre { display: flex; align-items: center; gap: 1rem; }
+  .chiffre + .chiffre { border-top: 1px solid var(--trait); padding-top: 1.25rem; }
+}
+@media (min-width: 561px) {
+  .chiffre + .chiffre { border-left: 1px solid var(--trait); }
+}
+
+.chiffre__rond {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.85rem;
+  flex: none;
+  border: 2px solid var(--vert-texte);
+  border-radius: 50%;
+  color: var(--vert-texte);
+  box-shadow: var(--lueur);
+}
+@media (max-width: 560px) {
+  .chiffre__rond { margin: 0; width: 52px; height: 52px; }
+}
+
+.chiffre__valeur {
+  display: block;
+  font-family: var(--display);
+  font-size: clamp(2rem, 4.5vw, 2.9rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--vert-texte);
+}
+.chiffre__quoi { display: block; margin-top: 0.35rem; font-size: var(--fs-small); color: var(--ink-soft); }
+
+/* ---------- Troisieme page : l'ADN sur l'arc ---------- */
+.adn--arc { position: relative; overflow: hidden; }
+.adn--arc .section-entete { max-width: none; text-align: center; margin-inline: auto; }
+.adn--arc .section-entete h2 em { font-style: normal; color: var(--vert-texte); display: block; }
+.adn__chapo { max-width: 62ch; margin-inline: auto; text-align: center; color: var(--ink-soft); }
+
+.adn__scene { position: relative; margin-top: clamp(2rem, 5vw, 3.5rem); }
+
+/* L'arc lui-meme. Il n'existe qu'a partir de 900px : en dessous, les quatre
+   piliers s'empilent et une courbe qui les traverserait ne relierait plus
+   rien. */
+.adn__arc { display: none; }
+@media (min-width: 900px) {
+  .adn__arc {
+    display: block;
+    position: absolute;
+    inset: 0 0 auto;
+    width: 100%;
+    height: 180px;
+    overflow: visible;
+    color: var(--trait);
+  }
+  [data-theme="dark"] .adn__arc {
+    color: color-mix(in srgb, var(--vert) 45%, transparent);
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--vert) 40%, transparent));
+  }
+}
+
+.adn__liste--arc {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(1.75rem, 3vw, 2.5rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .adn__liste--arc { grid-template-columns: repeat(4, 1fr); padding-top: 150px; }
+  /* Les deux piliers du milieu sont plus hauts sur l'arc : on les remonte
+     pour que chaque titre reste sous son point. */
+  .adn__liste--arc > :nth-child(2),
+  .adn__liste--arc > :nth-child(3) { margin-top: -48px; }
+}
+
+.adn__pilier { text-align: center; position: relative; }
+@media (max-width: 899px) {
+  .adn__pilier { text-align: left; border-left: 2px solid var(--vert); padding-left: 1.25rem; }
+}
+
+.adn__tige {
+  display: none;
+  position: relative;
+  width: 1px;
+  height: 26px;
+  margin: 0 auto 0.9rem;
+  background: linear-gradient(var(--vert), transparent);
+}
+/* Le point pose sur l'arc. En CSS plutot que dans le SVG : il tombe ainsi
+   pile au centre de la colonne, quelle que soit la gouttiere de la grille. */
+.adn__tige::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border-radius: 50%;
+  background: var(--vert);
+  box-shadow: var(--lueur-forte);
+}
+@media (min-width: 900px) { .adn__tige { display: block; } }
+
+.adn__filet {
+  display: block;
+  width: 36px;
+  height: 2px;
+  background: var(--vert);
+  margin: 0 auto 0.9rem;
+  box-shadow: var(--lueur);
+}
+@media (max-width: 899px) { .adn__filet { display: none; } }
+
+/* Le filet vert de l'arc remplace la borne que .adn__nom porte en bordure
+   haute dans la mise en page d'origine : la garder tracerait une seconde
+   ligne, large de toute la colonne, juste sous la premiere. */
+.adn__pilier .adn__nom {
+  font-size: var(--fs-h3);
+  margin-bottom: 0.6rem;
+  padding-top: 0;
+  border-top: 0;
+  justify-self: stretch;
+  padding-right: 0;
+}
+.adn__pilier .adn__adage {
+  font-style: italic;
+  color: var(--vert-texte);
+  font-size: var(--fs-small);
+  margin-bottom: 0.7rem;
+}
+.adn__pilier .adn__texte { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; max-width: none; }
+
+/* ---------- Formules : le selecteur remplace les six cartes ---------- */
+.formules__onglets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.onglet-niveau {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1.15rem;
+  font-family: var(--display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+.onglet-niveau:hover { color: var(--ink); border-color: var(--ink-soft); }
+
+.onglet-niveau[aria-selected="true"] {
+  color: var(--vert-texte);
+  border-color: var(--vert);
+  background: color-mix(in srgb, var(--vert) 12%, transparent);
+  box-shadow: var(--lueur);
+}
+
+.onglet-niveau__puce {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.72rem;
+}
+
+/* Le filtrage se fait sur l'attribut hidden : le panneau garde toutes les
+   formules dans le HTML, ce qui laisse les liens profonds fonctionner, et
+   n'en montre qu'une famille a la fois. */
+.formule[hidden] { display: none; }
+
+/* Les formules qui ne se rangent pas dans une classe : mises a part, sous un
+   filet, plutot que noyees dans le selecteur. */
+/* Le bloc longue duree. Il est mis a part dans la section plutot que promu en
+   section a lui : la page alterne un ton sur deux, et une section de plus
+   inverserait toutes celles qui suivent. L'encadre et le surtitre suffisent a
+   le detacher. */
+.formules__hors {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding: clamp(1.75rem, 3.5vw, 2.75rem);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--voile);
+}
+.formules__hors-surtitre {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 0.6rem;
+}
+.formules__hors-surtitre::before { content: ""; width: 34px; height: 2px; background: var(--vert); }
+.formules__hors-titre {
+  font-family: var(--display);
+  font-size: var(--fs-h2);
+  margin-bottom: 0.4rem;
+}
+.formules__hors-note { color: var(--ink-soft); font-size: var(--fs-small); margin-bottom: 1.75rem; max-width: 62ch; }
+
+/* Les deux forfaits, cote a cote et a egalite : c'est la paire que le bloc
+   annonce. Bornes a 420 px pour qu'ils ne s'etirent pas sur toute la page. */
+.formules--duo { grid-template-columns: repeat(auto-fit, minmax(260px, 420px)); }
+
+/* La seance a l'unite : sous les deux forfaits, separee par un filet, et sur
+   une seule colonne — elle n'est pas de la meme nature qu'eux. */
+.formules__unite {
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  padding-top: clamp(1.5rem, 2.5vw, 2rem);
+  border-top: 1px solid var(--trait);
+}
+.formules__unite-intro {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin: 0 0 1.1rem;
+}
+.formule--unite { max-width: 420px; }
+.formule--unite h4 {
+  font-family: var(--display);
+  font-size: 1.2rem;
+  line-height: 1.15;
+  color: var(--blanc);
+  margin: 0 0 0.85rem;
+}
+
+/* ---------- Jetons du panneau inverse ---------- */
+/* .section--encre peint un aplat --ink et ecrit en --paper : en tenue claire
+   c'est creme sur bleu nuit, en tenue sombre clair sur nuit. Deux jetons ne
+   suivent pas tout seuls et doivent repasser de l'autre cote :
+     --ink-soft   sert au texte doux, qui serait sinon du bleu nuit sur bleu
+                  nuit. On le reconstruit en melangeant le fond de page a
+                  l'encre : le melange penche toujours du bon cote.
+     --vert-texte est calibre pour le fond de page, pas pour ce panneau. En
+                  clair, le vert du logo tient 7,5 sur l'encre et suffit ; en
+                  sombre, le panneau devient clair et le fluo n'y tient que
+                  1,6, d'ou un vert franchement assombri, a 5,0. */
+/* ---------- Jetons du panneau ---------- */
+/* Un panneau est sombre dans les deux tenues : ce qui s'y pose ne depend donc
+   plus de la tenue, et un seul bloc suffit. Le texte doux et le vert y sont
+   ceux qui se lisent sur un aplat sombre — c'est-a-dire l'inverse de ceux du
+   fond de page en tenue claire, et les memes qu'en tenue sombre. */
+.section--encre,
+.formule,
+.pilier,
+.news__carte,
+.temoignage,
+.billet {
+  --ink-soft: var(--sur-panneau-doux);
+  --vert-texte: var(--vert);
+}
+
+/* Les onglets restent caches tant que le script n'a pas pris la main : sans
+   lui, les sept formules sont affichees a la suite et une rangee de boutons
+   inertes ne ferait qu'egarer. L'attribut seul ne suffit pas contre le
+   display: flex de la regle. */
+.formules__onglets[hidden] { display: none; }
+
+/* ---------- Le logo, une image par tenue ---------- */
+/* Le fichier d'origine est un MAP bleu nuit : sur la nuit il disparait. Un
+   filtre CSS le blanchirait, mais il blanchirait aussi la fleche — un filtre
+   ne sait pas garder deux couleurs. D'ou un second fichier, ou seul le bleu
+   a ete remplace par du blanc : la fleche et le trait restent verts.
+   Les deux images sont dans la page et le CSS n'en montre qu'une, pour que
+   la bascule soit instantanee et suive l'attribut de tenue. */
+.logo--sombre { display: none; }
+
+[data-theme="dark"] .logo--clair { display: none; }
+[data-theme="dark"] .logo--sombre { display: block; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo--clair { display: none; }
+  :root:not([data-theme="light"]) .logo--sombre { display: block; }
+}
+
+/* La grille du hero remplace l'ancienne mise en page a trois rangees, qui
+   calait le chapo et les boutons en premiere colonne pour laisser la place
+   aux preuves chiffrees. Ces preuves sont parties dans l'accompagnement :
+   sans cette remise a plat, le bloc « en quelle classe » heriterait de leur
+   emplacement. */
+.hero__grille .hero__chapo,
+.hero__grille .hero__actions { grid-column: auto; }
+
+/* Sous le selecteur, une seule formule est visible a la fois. Sans borne,
+   elle occuperait les 1180 px de la page et redeviendrait l'enorme carte que
+   le selecteur devait supprimer. La classe est posee par le script : sans
+   lui, les quatre formules restent affichees et gardent leurs colonnes. */
+.formules--filtre { grid-template-columns: minmax(0, 620px); }
+
+/* ---------- Une carte posee dans un panneau inverse ---------- */
+/* Le formulaire de contact repose son propre fond, --surface, au milieu de la
+   section encre. Son aplat n'est donc pas retourne, alors que les jetons du
+   panneau, eux, le sont : sans ce retour, sa mention legale prenait le texte
+   doux calibre pour le panneau et tombait a 2,0 de contraste. */
+.formulaire,
+.formulaire__etat {
+  --ink-soft: var(--ink-soft-page);
+  --vert-texte: var(--vert-texte-page);
+}
+
+/* ---------- Le sous-titre de l'ADN ---------- */
+/* La maquette pose une ligne entre le titre et le paragraphe : elle annonce
+   la promesse, le paragraphe l'explique. */
+.adn__sous-titre {
+  font-family: var(--display);
+  font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  max-width: none;
+  margin: -0.2rem 0 0.9rem;
+}
+
+/* ---------- Les reseaux dans le hero ---------- */
+/* Ils remplissent le vide laisse sous le selecteur de classe. La liste est la
+   meme qu'au pied de page ; elle n'y est pas dupliquee par hasard, le hero
+   est le seul endroit ou elle se voit sans defiler. */
+/* Poses bas dans la colonne, dans le vide laisse sous le selecteur, plutot
+   que colles dessous : c'est cet espace-la qui restait inoccupe. */
+.hero__reseaux { margin: clamp(1.5rem, 6vw, 4.5rem) 0 0; list-style: none; }
+.hero__reseaux a { border-color: color-mix(in srgb, var(--ink) 28%, transparent); }
+.hero__reseaux a:hover { background: var(--vert); color: var(--sur-vert); border-color: var(--vert); }
+@media (max-width: 900px) { .hero__reseaux { margin-top: 0.25rem; } }
