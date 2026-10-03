@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr" data-anim="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Maquette — les témoignages en mouvement | MAP73</title>
+
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+
+<style>
+/* =========================================================
+   MAQUETTE — dix mouvements pour « Témoignages des familles »
+   Page de demonstration, hors site : rien ici ne touche style.css.
+
+   Six temoignages, ceux du site, mot pour mot. Seul change ce qui
+   bouge. La carte garde son aplat encre et ses equerres.
+
+   Regle tenue partout :
+   - tout est pilote par [data-anim] sur <html> ; au chargement, le
+     script le met sur « off » si le systeme demande moins de
+     mouvement, et un bouton permet de forcer.
+   - on n'anime que transform et opacity : pas de reflow.
+   - ce qui bouge tout seul s'arrete au survol et au clavier, et les
+     deux vignettes qui defilent en continu portent un bouton d'arret,
+     seul moyen d'arreter au doigt.
+   ========================================================= */
+
+.demo-note {
+  background: var(--ambre);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-align: center;
+  padding: 0.5rem var(--gouttiere);
+}
+.demos { display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); }
+.demo { border: 1px solid var(--trait); background: var(--blanc); }
+.demo__tete { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; padding: clamp(1rem, 2vw, 1.4rem) clamp(1rem, 2vw, 1.4rem) 0; }
+.demo__num { font-family: var(--display); font-weight: 800; font-size: 1.4rem; color: var(--lac); line-height: 1; }
+.demo__tete h2 { font-size: 1.15rem; margin: 0; }
+.demo__quoi { font-size: var(--fs-small); color: var(--ink-soft); margin: 0.5rem clamp(1rem, 2vw, 1.4rem) 1rem; max-width: 72ch; }
+.demo__barre { display: flex; gap: 0.5rem; flex-wrap: wrap; padding: 0 clamp(1rem, 2vw, 1.4rem) 0.9rem; }
+.demo__bouton {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--trait);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+}
+.demo__bouton:hover { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
+.demo__note {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  color: var(--ink-soft);
+  margin: 0;
+  padding: 0.75rem clamp(1rem, 2vw, 1.4rem) clamp(1rem, 2vw, 1.4rem);
+  border-top: 1px solid var(--trait);
+}
+.demo__note b { color: var(--ink); }
+
+/* La scene reprend le papier de la vraie section. */
+.scene { background: var(--paper); padding: clamp(1.25rem, 2.5vw, 1.75rem); }
+.scene--defile { height: 330px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.scene__consigne {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--lac);
+  margin: 0 0 0.8rem;
+}
+.scene__pousse { height: 240px; }
+/* Dans une vignette, trois colonnes de temoignages seraient illisibles. */
+.scene .temoignages { columns: 2 280px; }
+
+/* =========================================================
+   01. Cascade a l'apparition
+   ========================================================= */
+@keyframes temoin-surgit {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+[data-anim="on"] .v1 .temoignage { opacity: 0; }
+[data-anim="on"] .v1 .temoignages.joue .temoignage {
+  animation: temoin-surgit 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 90ms);
+}
+
+/* =========================================================
+   02. Survol : la carte se souleve, les equerres s'ecartent
+   ========================================================= */
+[data-anim="on"] .v2 .temoignage {
+  transition: transform 0.25s ease, background-size 0.25s ease, box-shadow 0.25s ease;
+}
+[data-anim="on"] .v2 .temoignage:hover,
+[data-anim="on"] .v2 .temoignage:focus-within {
+  transform: translateY(-4px);
+  --equerre-taille: 26px;
+  box-shadow: 0 12px 30px rgba(20, 36, 59, 0.22);
+}
+
+/* =========================================================
+   03. Le guillemet se leve
+   Un guillemet ouvrant, en vert, monte derriere le texte au survol.
+   C'est le seul ornement possible ici : la carte n'a ni image ni
+   bouton.
+   ========================================================= */
+.v3 .temoignage { position: relative; overflow: hidden; }
+.v3 .temoignage blockquote { position: relative; z-index: 1; }
+.v3 .temoignage figcaption { position: relative; z-index: 1; }
+.v3 .temoignage::after {
+  content: "\201C";
+  position: absolute;
+  right: 0.6rem;
+  bottom: -2.2rem;
+  font-family: var(--display);
+  font-size: 7rem;
+  line-height: 1;
+  color: var(--vert);
+  opacity: 0.16;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+[data-anim="on"] .v3 .temoignage::after { transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.35s ease; }
+[data-anim="on"] .v3 .temoignage:hover::after,
+[data-anim="on"] .v3 .temoignage:focus-within::after { transform: translateY(-4px); opacity: 0.3; }
+
+/* =========================================================
+   04. Deux colonnes qui defilent en sens contraire
+   ========================================================= */
+.colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; height: 320px; overflow: hidden; mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent); }
+.colonne__piste { display: grid; gap: 1rem; align-content: start; }
+[data-anim="on"] .colonnes[data-anime="oui"] .colonne__piste { animation: monte 26s linear infinite; }
+[data-anim="on"] .colonnes[data-anime="oui"] .colonne:last-child .colonne__piste { animation-name: descend; }
+.colonnes:hover .colonne__piste,
+.colonnes:focus-within .colonne__piste { animation-play-state: paused; }
+@keyframes monte { to { transform: translateY(-50%); } }
+@keyframes descend { from { transform: translateY(-50%); } to { transform: none; } }
+@media (max-width: 620px) { .colonnes { grid-template-columns: 1fr; } .colonnes .colonne:last-child { display: none; } }
+
+/* =========================================================
+   05. Rail horizontal a accrochage
+   ========================================================= */
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(260px, 1fr);
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  padding-bottom: 0.75rem;
+  scrollbar-width: thin;
+  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+}
+.rail .temoignage { scroll-snap-align: start; margin: 0; }
+
+/* =========================================================
+   06. Le temoignage se deplie
+   Trois lignes, puis tout le texte a la demande. La section perd la
+   moitie de sa hauteur.
+   ========================================================= */
+.v6 .temoignage blockquote p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+.v6 .temoignage[data-ouvert="oui"] blockquote p { -webkit-line-clamp: unset; overflow: visible; }
+.v6 .plus {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--lac-clair);
+  background: none;
+  border: 0;
+  padding: 0 0 0.6rem;
+  cursor: pointer;
+}
+.v6 .plus:hover { color: var(--blanc); }
+
+/* =========================================================
+   07. Un temoignage a la fois
+   ========================================================= */
+.tourne { display: grid; }
+.tourne .temoignage { grid-area: 1 / 1; opacity: 0; visibility: hidden; }
+.tourne .temoignage[data-actif="oui"] { opacity: 1; visibility: visible; }
+[data-anim="on"] .tourne .temoignage { transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0.45s; transform: translateY(10px); }
+[data-anim="on"] .tourne .temoignage[data-actif="oui"] { transform: none; }
+.puces { display: flex; gap: 0.4rem; justify-content: center; margin-top: 1rem; }
+.puce { width: 9px; height: 9px; border: 1px solid var(--ink-soft); background: none; padding: 0; cursor: pointer; }
+.puce[aria-current="true"] { background: var(--vert); border-color: var(--vert); }
+
+/* =========================================================
+   08. Parallaxe des colonnes
+   Les deux colonnes ne montent pas a la meme vitesse au defilement.
+   Lie a la position de defilement, donc sans script sur les
+   navigateurs recents.
+   ========================================================= */
+.parallaxe { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+.parallaxe .colonne { display: grid; gap: 1rem; }
+@supports (animation-timeline: scroll()) {
+  [data-anim="on"] .parallaxe .colonne:first-child {
+    animation: glisse auto linear;
+    animation-timeline: scroll(nearest);
+  }
+  [data-anim="on"] .parallaxe .colonne:last-child {
+    animation: glisse-inverse auto linear;
+    animation-timeline: scroll(nearest);
+  }
+}
+@keyframes glisse { to { transform: translateY(-28px); } }
+@keyframes glisse-inverse { to { transform: translateY(28px); } }
+@media (max-width: 620px) { .parallaxe { grid-template-columns: 1fr; } }
+
+/* =========================================================
+   09. Le filet se trace
+   Un trait vert descend le long du bord gauche au survol, et la
+   signature glisse de quelques pixels.
+   ========================================================= */
+.v9 .temoignage { position: relative; }
+.v9 .temoignage::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--vert);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+}
+[data-anim="on"] .v9 .temoignage::before { transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1); }
+[data-anim="on"] .v9 .temoignage:hover::before,
+[data-anim="on"] .v9 .temoignage:focus-within::before { transform: scaleY(1); }
+[data-anim="on"] .v9 .temoignage figcaption { transition: transform 0.35s ease, color 0.35s ease; }
+[data-anim="on"] .v9 .temoignage:hover figcaption,
+[data-anim="on"] .v9 .temoignage:focus-within figcaption { transform: translateX(6px); color: var(--vert); }
+
+/* =========================================================
+   10. La carte se pose
+   A l'entree dans le champ, chaque carte arrive legerement inclinee
+   et se redresse : une pile de fiches qu'on pose sur la table.
+   ========================================================= */
+@keyframes temoin-pose {
+  from { opacity: 0; transform: translateY(26px) rotate(var(--angle)) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+[data-anim="on"] .v10 .temoignage { opacity: 0; }
+[data-anim="on"] .v10 .temoignages.joue .temoignage {
+  animation: temoin-pose 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 80ms);
+}
+
+/* ---------- Barre de reglages ---------- */
+.reglages {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: calc(100vw - 1.5rem);
+  background: var(--blanc);
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  padding: 0.45rem 0.55rem 0.45rem 1rem;
+  box-shadow: 0 6px 24px rgba(20, 36, 59, 0.18);
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+}
+.reglages__titre { font-weight: 600; color: var(--ink-soft); }
+.reglages button {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--trait);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+}
+.reglages button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--blanc); }
+@media (max-width: 760px) { .reglages__titre { display: none; } }
+</style>
+</head>
+
+<body>
+<p class="demo-note">Maquette de travail — dix mouvements pour les témoignages. Ce n'est pas le site en ligne.</p>
+
+<header class="entete" id="entete">
+  <div class="enveloppe entete__barre">
+    <a class="entete__logo" href="index.html" aria-label="MAP73, accueil">
+      <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="156px" width="240" height="98" alt="MAP Orientation">
+    </a>
+    <nav class="nav" id="navigation" aria-label="Navigation principale">
+      <ul class="nav__liste">
+        <li><a class="nav__lien" href="index.html">Retour au site</a></li>
+        <li><a class="nav__lien" href="mockup-fiches.html">Maquette fiches</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="section section--serre">
+    <div class="enveloppe">
+      <div class="section-entete">
+        <h2>Les témoignages en mouvement, dix façons</h2>
+        <p>Six témoignages, ceux du site, mot pour mot. Seul change ce qui bouge&nbsp;: la carte garde son aplat encre et ses équerres. Deux vignettes demandent de faire défiler dans le cadre.</p>
+      </div>
+      <div class="demos" id="demos"></div>
+    </div>
+  </section>
+</main>
+
+<div class="reglages" role="group" aria-label="Réglages de la maquette">
+  <span class="reglages__titre">Animations&nbsp;:</span>
+  <button type="button" id="anim-on" aria-pressed="true">Activées</button>
+  <button type="button" id="anim-off" aria-pressed="false">Coupées</button>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const racine = document.documentElement;
+
+  const temoins = [
+    { texte: "Merci à Camille et Julie pour leur gentillesse et leur savoir-faire. Camille a accompagné ma fille pour ses vœux sur Parcoursup, la rédaction de ses lettres, les attentes des personnes en charge de la sélection, le choix de ses vœux. Aujourd’hui nous avons le plaisir de découvrir que ma fille est acceptée à tous ses vœux d’office.", qui: "Maman d’Angélique, terminale STMG" },
+    { texte: "Camille et Julie forment un tandem de choc aussi sympathique qu’efficace. Elles mettent les ados à l’aise, les aident à une auto-analyse pertinente et cohérente. Je ne peux que recommander cette structure sans hésitation.", qui: "Maman de Clémence, première générale" },
+    { texte: "En 2022, les séances d’orientation de Camille m’ont permis de trouver et d’intégrer une super école qui me plaît beaucoup, pourtant on partait de loin.", qui: "Caroline, terminale STL" },
+    { texte: "Les conseils de Julie et Camille m’ont beaucoup aidé pour mon orientation et pour choisir mes vœux sur Parcoursup. Elles m’ont accompagné de la seconde à la terminale. Sans elles je ne sais pas comment j’aurais fait&nbsp;!!", qui: "Jade, Promo MAP 2025" },
+    { texte: "Julie est quelqu’un de très humain et également une excellente professionnelle. Avec Camille elles m’ont suivi quand j’étais en troisième. Elles m’ont aidé à décider de faire une seconde Professionnelle et aujourd’hui je suis dans une école d’infirmière&nbsp;!", qui: "Alexandra, Promo MAP 2024" },
+    { texte: "J’étais perdue, je ne savais pas comment m’y prendre. J’ai eu recours aux conseils de Camille et Julie : super organisation, ça m’a beaucoup aidée, je recommande.", qui: "Claire, terminale ST2S" }
+  ];
+
+  const angles = ["-1.2deg", "0.9deg", "-0.6deg", "1.1deg", "-0.9deg", "0.7deg"];
+  const carte = (t, i, extra = "") => `
+    <figure class="temoignage" style="--i:${i}; --angle:${angles[i % angles.length]}">
+      <blockquote><p>${t.texte}</p></blockquote>
+      ${extra}
+      <figcaption>${t.qui}</figcaption>
+    </figure>`;
+
+  const colonnes = (liste) => `
+    <div class="temoignages">${liste.map((t, i) => carte(t, i)).join("")}</div>`;
+
+  /* ---- Préférence de mouvement ---- */
+  const bOn = document.getElementById("anim-on");
+  const bOff = document.getElementById("anim-off");
+  const regler = (etat) => {
+    racine.dataset.anim = etat;
+    bOn.setAttribute("aria-pressed", String(etat === "on"));
+    bOff.setAttribute("aria-pressed", String(etat === "off"));
+  };
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) regler("off");
+  bOn.addEventListener("click", () => regler("on"));
+  bOff.addEventListener("click", () => regler("off"));
+
+  const variantes = [
+    {
+      titre: "Cascade à l'apparition",
+      quoi: "Les témoignages montent un par un, 90 ms d'écart, quand la section entre dans le champ.",
+      note: "<b>Le plus sûr des dix.</b> <b>Réserve :</b> six cartes en colonnes de hauteurs inégales, la cascade se lit mal — elle suit l'ordre du document, pas l'ordre visuel.",
+      scene: (id) => `<div class="scene scene--defile"><p class="scene__consigne">Faites défiler dans ce cadre.</p><div class="scene__pousse" aria-hidden="true"></div>${colonnes(temoins)}</div>`,
+      barre: '<button class="demo__bouton" type="button" data-rejouer>Rejouer</button>'
+    },
+    {
+      titre: "La carte se soulève",
+      quoi: "Au survol, la carte monte de 4 px et ses équerres s'écartent, comme sur les cartes de presse.",
+      note: "<b>Réserve :</b> un témoignage n'est pas cliquable. Un effet de survol sur un bloc inerte promet une action qui n'existe pas.",
+      scene: () => `<div class="scene">${colonnes(temoins.slice(0, 4))}</div>`
+    },
+    {
+      titre: "Le guillemet se lève",
+      quoi: "Un guillemet vert, discret, monte derrière le texte au survol. Le seul ornement possible ici : la carte n'a ni image ni bouton.",
+      note: "<b>Décoratif et sans promesse d'action</b> — c'est ce qui le rend acceptable là où le soulèvement ne l'est pas.",
+      scene: () => `<div class="scene">${colonnes(temoins.slice(0, 4))}</div>`
+    },
+    {
+      titre: "Deux colonnes en sens contraire",
+      quoi: "Les témoignages défilent tout seuls, une colonne vers le haut, l'autre vers le bas, en boucle continue. Arrêt au survol, au clavier et par le bouton.",
+      note: "<b>L'effet le plus spectaculaire, et le plus coûteux en lecture :</b> un texte qui bouge ne se lit pas. Il faut s'arrêter dessus pour le lire, donc chaque témoignage demande un geste.",
+      scene: () => `
+        <div class="scene">
+          <div class="colonnes" data-anime="oui" id="colonnes">
+            <div class="colonne"><div class="colonne__piste">${[...temoins.slice(0, 3), ...temoins.slice(0, 3)].map((t, i) => carte(t, i)).join("")}</div></div>
+            <div class="colonne"><div class="colonne__piste">${[...temoins.slice(3), ...temoins.slice(3)].map((t, i) => carte(t, i)).join("")}</div></div>
+          </div>
+        </div>`,
+      barre: '<button class="demo__bouton" type="button" id="pause-colonnes" aria-pressed="false">Arrêter le défilement</button>'
+    },
+    {
+      titre: "Rail à accrochage",
+      quoi: "Les six témoignages tiennent sur une ligne qu'on fait glisser, chacun s'accrochant en place. La section garde une hauteur fixe.",
+      note: "<b>Le plus économe en hauteur</b> — la section passe de six cartes empilées à une rangée. <b>Réserve :</b> ce qui n'est pas à l'écran n'est pas lu, et un témoignage non lu ne sert à rien.",
+      scene: () => `<div class="scene"><p class="scene__consigne">Faites glisser la rangée horizontalement.</p><div class="rail">${temoins.map((t, i) => carte(t, i)).join("")}</div></div>`
+    },
+    {
+      titre: "Le témoignage se déplie",
+      quoi: "Trois lignes par carte, puis tout le texte à la demande. Les six tiennent alors dans un écran.",
+      note: "<b>Mon choix si la section est jugée trop longue.</b> Les témoignages les plus utiles sont justement les plus longs — celui de la maman d'Angélique fait huit lignes. Tronqué, il donne envie de l'ouvrir.",
+      scene: () => `<div class="scene"><div class="temoignages">${temoins.map((t, i) => carte(t, i, '<button class="plus" type="button">Lire la suite</button>')).join("")}</div></div>`
+    },
+    {
+      titre: "Un témoignage à la fois",
+      quoi: "Une seule carte affichée, changée toutes les six secondes en fondu. Les puces permettent de naviguer à la main.",
+      note: "<b>Réserve sérieuse :</b> six témoignages valent surtout par leur nombre. Un seul à l'écran, et la preuve sociale passe de « beaucoup de familles » à « une famille ».",
+      scene: () => `
+        <div class="scene">
+          <div class="tourne" id="tourne">${temoins.map((t, i) => carte(t, i)).join("")}</div>
+          <div class="puces" id="puces"></div>
+        </div>`
+    },
+    {
+      titre: "Parallaxe des colonnes",
+      quoi: "Les deux colonnes ne montent pas exactement à la même vitesse pendant qu'on défile. L'écart est de 28 px, à peine perceptible.",
+      note: "<b>Coût :</b> nul sur Chrome, Edge et Safari, où une timeline CSS suffit ; Firefox ne bouge pas, sans rien casser. <b>Réserve :</b> l'effet ne se remarque que si on le cherche.",
+      scene: () => `
+        <div class="scene scene--defile">
+          <p class="scene__consigne">Faites défiler dans ce cadre.</p>
+          <div class="parallaxe">
+            <div class="colonne">${temoins.slice(0, 3).map((t, i) => carte(t, i)).join("")}</div>
+            <div class="colonne">${temoins.slice(3).map((t, i) => carte(t, i)).join("")}</div>
+          </div>
+        </div>`
+    },
+    {
+      titre: "Le filet se trace",
+      quoi: "Un trait vert descend le long du bord gauche au survol, et la signature glisse de six pixels en passant au vert.",
+      note: "<b>Le plus proche du dessin du site</b> : le même trait vert que les bornes de l'ADN et les intitulés des fiches. Rien ne se soulève, rien ne promet de clic.",
+      scene: () => `<div class="scene">${colonnes(temoins.slice(0, 4))}</div>`
+    },
+    {
+      titre: "La carte se pose",
+      quoi: "À l'entrée dans le champ, chaque carte arrive légèrement inclinée et se redresse — une pile de fiches qu'on pose sur la table.",
+      note: "<b>Réserve :</b> l'inclinaison est le seul endroit du site où une droite n'est pas droite. Charmant une fois, agaçant au troisième passage sur la page.",
+      scene: () => `<div class="scene scene--defile"><p class="scene__consigne">Faites défiler dans ce cadre.</p><div class="scene__pousse" aria-hidden="true"></div>${colonnes(temoins)}</div>`,
+      barre: '<button class="demo__bouton" type="button" data-rejouer>Rejouer</button>'
+    }
+  ];
+
+  document.getElementById("demos").innerHTML = variantes.map((v, i) => `
+    <section class="demo v${i + 1}">
+      <div class="demo__tete"><span class="demo__num">${String(i + 1).padStart(2, "0")}</span><h2>${v.titre}</h2></div>
+      <p class="demo__quoi">${v.quoi}</p>
+      ${v.scene(i + 1)}
+      ${v.barre ? `<div class="demo__barre">${v.barre}</div>` : ""}
+      <p class="demo__note">${v.note}</p>
+    </section>`).join("");
+
+  /* ---- 01 et 10 · cascade, déclenchée à l'entrée dans le cadre ---- */
+  for (const bouton of document.querySelectorAll("[data-rejouer]")) {
+    const demo = bouton.closest(".demo");
+    const liste = demo.querySelector(".temoignages");
+    const rejouer = () => {
+      liste.classList.remove("joue");
+      void liste.offsetWidth;
+      liste.classList.add("joue");
+    };
+    bouton.addEventListener("click", rejouer);
+    new IntersectionObserver((entrees, oeil) => {
+      for (const entree of entrees) {
+        if (!entree.isIntersecting) continue;
+        rejouer();
+        oeil.unobserve(entree.target);
+      }
+    }, { root: demo.querySelector(".scene--defile"), threshold: 0.2 }).observe(liste);
+  }
+
+  /* ---- 04 · arrêt du défilement continu ----
+     Le survol suffit à la souris, pas au doigt : d'où le bouton. */
+  const colonnesEl = document.getElementById("colonnes");
+  const pause = document.getElementById("pause-colonnes");
+  pause.addEventListener("click", () => {
+    const arrete = colonnesEl.dataset.anime === "non";
+    colonnesEl.dataset.anime = arrete ? "oui" : "non";
+    pause.setAttribute("aria-pressed", String(!arrete));
+    pause.textContent = arrete ? "Arrêter le défilement" : "Reprendre le défilement";
+  });
+
+  /* ---- 06 · dépliage ---- */
+  for (const bouton of document.querySelectorAll(".plus")) {
+    const fig = bouton.closest(".temoignage");
+    bouton.addEventListener("click", () => {
+      const ouvert = fig.dataset.ouvert === "oui";
+      fig.dataset.ouvert = ouvert ? "non" : "oui";
+      bouton.textContent = ouvert ? "Lire la suite" : "Replier";
+    });
+  }
+
+  /* ---- 07 · rotation ----
+     La rotation s'arrête dès qu'on choisit une puce : un carrousel qui
+     repart pendant qu'on lit est le défaut classique du genre. */
+  const tourne = document.getElementById("tourne");
+  const puces = document.getElementById("puces");
+  const cartes = [...tourne.children];
+  let index = 0;
+  let minuterie = null;
+
+  puces.innerHTML = cartes.map((_, i) =>
+    `<button class="puce" type="button" aria-label="Témoignage ${i + 1}"${i === 0 ? ' aria-current="true"' : ""}></button>`).join("");
+  const boutonsPuce = [...puces.children];
+
+  const montrer = (i) => {
+    index = i;
+    cartes.forEach((c, j) => c.setAttribute("data-actif", j === i ? "oui" : "non"));
+    boutonsPuce.forEach((b, j) => {
+      if (j === i) b.setAttribute("aria-current", "true");
+      else b.removeAttribute("aria-current");
+    });
+  };
+  montrer(0);
+
+  const lancer = () => {
+    clearInterval(minuterie);
+    minuterie = setInterval(() => {
+      if (racine.dataset.anim !== "on") return;
+      montrer((index + 1) % cartes.length);
+    }, 6000);
+  };
+  boutonsPuce.forEach((b, i) => b.addEventListener("click", () => { clearInterval(minuterie); montrer(i); }));
+  tourne.addEventListener("mouseenter", () => clearInterval(minuterie));
+
+  new IntersectionObserver((entrees) => {
+    for (const entree of entrees) {
+      if (entree.isIntersecting) lancer();
+      else clearInterval(minuterie);
+    }
+  }, { threshold: 0.4 }).observe(tourne);
+})();
+</script>
+</body>
+</html>

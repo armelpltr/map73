@@ -1,3 +1,4 @@
+@charset "utf-8";
 /* =========================================================
    MAP73 — feuille de style unique
    Direction : cartographie / itinéraire (Savoie, parcours scolaire)
@@ -76,6 +77,10 @@
   --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
   --voile: rgba(20, 36, 59, 0.06);
   --grille: rgba(20, 36, 59, 0.05);
+
+  /* Liens : la paire par defaut, sur papier. */
+  --lien: var(--lac);
+  --lien-survol: var(--ink);
 
   /* Typographie */
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
@@ -183,10 +188,15 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 6.5rem; }
+/* L'en-tete se compacte des le premier defilement : une ancre atteinte
+   s'arrete donc sous une barre de 4,25rem, pas de 5,75rem. */
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
 
 body {
   margin: 0;
+  /* Place de l'en-tete fixe, hauteur deployee. Constante : c'est ce qui
+     empeche le compactage de decaler la page. */
+  padding-top: 5.75rem;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--texte);
@@ -197,8 +207,14 @@ body {
 
 img { max-width: 100%; height: auto; display: block; }
 
-a { color: var(--lac); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { color: var(--ink); }
+/* La couleur des liens passe par deux jetons plutot que par une valeur en
+   dur : sur les surfaces encre — cartes MAP news, cartes de formules, bloc
+   « Le concept » — le survol ramenait le lien a la couleur de son propre
+   fond, et le texte disparaissait sous le curseur. Chaque surface sombre
+   redefinit les deux jetons ; tout lien ajoute plus tard y sera lisible
+   sans qu'il faille y penser. */
+a { color: var(--lien); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--lien-survol); }
 
 :where(a, button, input, textarea, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--lac);
@@ -243,6 +259,14 @@ p:last-child { margin-bottom: 0; }
 .section { padding-block: var(--section-y); position: relative; }
 .section--serre { padding-block: calc(var(--section-y) * 0.6); }
 .section--encre { background: var(--panneau); color: var(--sur-panneau); }
+/* Les trois surfaces encre du site : le lien y prend le lac eclairci, et
+   le survol le blanc, jamais l'encre. */
+.section--encre,
+.news__carte,
+.formule {
+  --lien: var(--lac-clair);
+  --lien-survol: var(--blanc);
+}
 .section--encre h2 { color: var(--blanc); }
 .section--craie { background: var(--paper-2); }
 
@@ -270,11 +294,17 @@ p:last-child { margin-bottom: 0; }
 /* L'encre fixe, et non --ink : en tenue sombre --ink est un voile clair, qui
    ne tient que 1,8 sur le vert du logo. */
 .bouton--plein { background: var(--vert); color: var(--sur-vert); }
-.bouton--plein:hover { background: var(--ink); color: var(--blanc); }
+/* Les deux survols posent un aplat qui ne s'inverse pas — l'un sombre, l'autre
+   blanc — et leur texte ne peut donc pas prendre --ink, qui s'inverse. Les deux
+   couples tombaient en tenue sombre : du voile clair sur l'aplat sombre pour le
+   premier, du presque-blanc sur le blanc pour le second. --panneau et
+   --sur-panneau sont les deux seuls jetons sombre/clair stables des deux cotes.
+   Le survol du bouton contour, lui, tient : --paper s'inverse avec --ink. */
+.bouton--plein:hover { background: var(--panneau); color: var(--sur-panneau); }
 .bouton--contour { border-color: var(--ink); color: var(--ink); }
 .bouton--contour:hover { background: var(--ink); color: var(--paper); }
 .bouton--clair { border-color: color-mix(in srgb, var(--blanc) 45%, transparent); color: var(--blanc); }
-.bouton--clair:hover { background: var(--blanc); color: var(--ink); }
+.bouton--clair:hover { background: var(--blanc); color: var(--panneau); }
 .bouton svg { flex: none; }
 
 /* ---------- Cartes : les coins équerre ---------- */
@@ -340,59 +370,115 @@ p:last-child { margin-bottom: 0; }
   .temoignage { border: 1px solid var(--ink); }
 }
 
-/* ---------- En-tête ---------- */
+/* ---------- En-tête ----------
+   L'en-tete tient sur un bandeau d'encre : le meme bleu que le fond des
+   cartes de formules et du bloc « Le concept ». Il donne au site sa
+   couleur des la premiere ligne, la ou l'ancien site posait du noir.
+   Le bandeau est opaque : translucide, le papier du hero le delavait et
+   le logo blanc perdait son fond. */
+/* Fixe, et non collant : l'en-tete change de hauteur au defilement, et
+   un element collant qui maigrit remonte tout le contenu d'un coup de
+   24 px. Fixe, il sort du flux ; la hauteur deployee est rendue par le
+   retrait haut du body, qui lui ne bouge jamais. */
 .entete {
-  position: sticky;
+  position: fixed;
+  inset-inline: 0;
   top: 0;
   z-index: 50;
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  /* --panneau et non --ink : le bandeau doit rester sombre dans les deux
+     tenues, sinon le logo blanc qu'il porte disparait. --ink est l'encre du
+     texte courant, qui passe au voile clair en tenue sombre. */
+  background: var(--panneau);
+  border-bottom: 1px solid rgba(255, 253, 249, 0.14);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .entete[data-defile="oui"] {
-  border-bottom-color: var(--trait);
-  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  border-bottom-color: rgba(255, 253, 249, 0.22);
+  box-shadow: 0 1px 12px rgba(20, 36, 59, 0.28);
 }
+/* Le bandeau se compacte des qu'on quitte le haut de page : 18 px de
+   hauteur rendus a la lecture, et le logo suit. C'est la seule mesure
+   animee du site ; elle ne porte que sur l'en-tete, jamais sur le
+   contenu, pour que le recalcul reste borne a une barre. */
 .entete__barre {
   display: flex;
   align-items: center;
   gap: 1.5rem;
   min-height: 5.75rem;
   position: relative;
+  transition: min-height 0.25s ease;
 }
-.entete__logo { flex: none; line-height: 0; }
-.entete__logo img { width: 104px; height: 63px; object-fit: contain; }
+.entete[data-defile="oui"] .entete__barre { min-height: 4.25rem; }
 
-.nav { margin-left: auto; }
+.entete__logo { flex: none; line-height: 0; }
+/* Version blanche du logo : sur le bandeau, le bleu passe entre les
+   lettres. Le pied de page, lui, garde le logo encre sur son papier.
+   Le dessin fait 2,45 de rapport, d'ou ces mesures : la hauteur reste le
+   reperage, la largeur suit. */
+.entete__logo img {
+  width: 156px;
+  height: 64px;
+  object-fit: contain;
+  transition: width 0.25s ease, height 0.25s ease;
+}
+.entete[data-defile="oui"] .entete__logo img { width: 122px; height: 50px; }
+
+/* Le filet du lien courant se deplace d'un intitule a l'autre : la barre
+   cesse d'etre une liste de liens et devient un repere de position. Il
+   est pose par le script, qui mesure le lien actif et ecrit sa largeur
+   et son deplacement ; le CSS ne fait que l'animer. Decoratif, donc
+   absent du flux de lecture des lecteurs d'ecran. */
+.nav { margin-left: auto; position: relative; }
+.nav__curseur {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 2px;
+  width: 0;
+  background: var(--vert);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    width 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    top 0.25s ease,
+    opacity 0.2s ease;
+}
+.nav__lien[aria-current="true"] { color: var(--blanc); }
 .nav__liste {
   display: flex;
   align-items: center;
-  gap: clamp(0.75rem, 1.8vw, 1.6rem);
+  /* Huit intitules plus le bouton d'appel : l'ecart se resserre, sinon
+     « Qui sommes-nous » se coupe en deux lignes et la barre double de
+     hauteur. */
+  gap: clamp(0.6rem, 1.25vw, 1.15rem);
   list-style: none;
   margin: 0;
   padding: 0;
 }
 .nav__lien {
   font-family: var(--display);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: var(--ink);
+  /* Un intitule ne se coupe jamais : mieux vaut basculer en menu
+     deroulant que garder une barre sur deux lignes. */
+  white-space: nowrap;
+  color: var(--sur-panneau);
   text-decoration: none;
   padding: 0.4rem 0;
   border-bottom: 2px solid transparent;
   display: inline-block;
 }
-.nav__lien:hover { border-bottom-color: var(--vert); }
+.nav__lien:hover { color: var(--blanc); border-bottom-color: var(--vert); }
 
 .entete__bascule {
   display: none;
   margin-left: auto;
   background: none;
-  border: 1.5px solid var(--trait);
+  border: 1.5px solid rgba(255, 253, 249, 0.35);
   border-radius: var(--rayon);
   padding: 0.5rem 0.7rem;
-  color: var(--ink);
+  color: var(--sur-panneau);
   cursor: pointer;
 }
 
@@ -407,10 +493,25 @@ p:last-child { margin-bottom: 0; }
   inset: 0;
   width: 100%;
   height: 100%;
+  /* Explicitement sous le contenu : le dessin est pose avant lui dans le
+     document, mais on ne laisse pas l'ordre du DOM decider seul de ce qui
+     passe devant du texte. */
+  z-index: 0;
   /* Les courbes de niveau ouvrent la page : elles portent le lac, dilue
      dans le papier, plutot que le filet courant. */
   color: color-mix(in srgb, var(--lac) 34%, var(--paper));
   pointer-events: none;
+  /* Le trace est cadre en « slice » : sur une fenetre large et basse, il
+     se recadre vers le haut et les courbes viennent barrer la colonne des
+     preuves chiffrees, a droite. On les estompe avant qu'elles y arrivent,
+     et sous l'en-tete, plutot que de dependre du format de la fenetre.
+     Deux masques combines en intersection ; un navigateur qui ignore
+     mask-composite les additionne, ce qui attenue moins mais ne casse
+     rien. */
+  mask-image:
+    linear-gradient(to bottom, transparent 0, #000 46%),
+    linear-gradient(to left, transparent 0, #000 48%);
+  mask-composite: intersect;
 }
 /* Le titre est borne a 15ch et le chapo a 52ch : le hero laissait donc une
    colonne de blanc a droite, sous le bouton de l'en-tete. Les preuves
@@ -418,6 +519,7 @@ p:last-child { margin-bottom: 0; }
    partir de 900 px ; en dessous, tout retombe dans le flux. */
 .hero__contenu {
   position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(15rem, 23vw, 18.5rem);
   column-gap: clamp(2rem, 5vw, 4rem);
@@ -728,7 +830,14 @@ p:last-child { margin-bottom: 0; }
    intitule et du texte — la bande respire, et l'adage porte la section a lui
    seul. C'est le seul italique du site, et le seul endroit ou une phrase est
    citee pour elle-meme. */
-.adn { border-bottom: 1px solid var(--trait); }
+/* Le filet de pied disparait : la section est passee a l'aplat encre, et
+   c'est la couture qui marque desormais sa limite. */
+.adn { border-bottom: 0; }
+/* Sur l'encre, l'adage prend le lac eclairci et le texte la valeur claire
+   de la famille : le lac sombre tombait a 3,1 de contraste, l'encre
+   adoucie a 1,9. */
+.section--encre .adn__adage { color: var(--lac-clair); }
+.section--encre .adn__texte { color: #b9c3d4; }
 .adn__liste {
   list-style: none;
   margin: 0;
@@ -983,8 +1092,6 @@ p:last-child { margin-bottom: 0; }
 .formule__pied .bouton { width: 100%; justify-content: center; }
 /* Le bouton contour est dessine pour le papier : sur l'aplat encre, son
    filet encre disparaissait. */
-.formule .bouton--contour { border-color: color-mix(in srgb, var(--blanc) 45%, transparent); color: var(--blanc); }
-.formule .bouton--contour:hover { background: var(--blanc); color: var(--ink); }
 
 .formule__details { margin: 0 0 1.25rem; font-size: var(--fs-small); }
 .formule__details summary {
@@ -1035,31 +1142,46 @@ p:last-child { margin-bottom: 0; }
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: clamp(1rem, 2.5vw, 1.5rem);
-  align-items: start;
+  /* Les deux fiches s'etirent a la hauteur de la plus haute : deux
+     parcours de longueur inegale ne doivent pas donner deux cartes
+     decalees. Les certifications sont poussees en pied, de sorte que
+     le blanc supplementaire tombe au milieu et non sous elles. */
+  align-items: stretch;
 }
 
 .fondatrice {
   --equerre: var(--vert);
   background-color: var(--surface);
-  padding: clamp(1.25rem, 2.5vw, 1.75rem);
-  display: grid;
-  gap: 1.25rem;
+  /* La section est passee a l'aplat encre : sans cette couleur, le nom et
+     les valeurs des fiches heritaient du papier et disparaissaient sur le
+     fond blanc de la carte. Seuls les intitules, qui portent leur propre
+     couleur, restaient lisibles. */
+  color: var(--ink);
+  padding: clamp(1.5rem, 2.5vw, 1.9rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* Traitement « profil » : portrait rond cercle de vert, nom et role
+     centres, faits alignes a gauche sous un filet. C'est le seul rond du
+     site, assume : la fiche parle de personnes, pas d'une offre. */
+  align-items: center;
+  text-align: center;
 }
 
 .fondatrice__entete {
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
-  gap: 1rem;
-  align-items: center;
+  justify-items: center;
+  gap: 0.6rem;
 }
 
 /* Le portrait est carré, comme les fichiers attendus : un cadrage décidé ici
    plutôt qu'au moment de la photo se verrait au premier remplacement. */
 .fondatrice__portrait {
-  width: 76px;
-  height: 76px;
+  width: 92px;
+  height: 92px;
   object-fit: cover;
-  border: 1px solid var(--trait);
+  border-radius: 50%;
+  border: 3px solid var(--vert);
 }
 
 .fondatrice h3 { font-size: 1.4rem; margin: 0 0 0.15rem; }
@@ -1071,18 +1193,15 @@ p:last-child { margin-bottom: 0; }
   margin: 0;
 }
 
-/* Repères chiffrés, sur une surface légèrement en creux. */
+/* Reperes chiffres : une rangee centree, sans creux ni filets. Le
+   panneau autorise un ou trois reperes, d'ou le retour a la ligne. */
 .fondatrice__chiffres {
-  display: grid;
-  /* auto-fit plutot que 1fr 1fr : le panel autorise un ou trois reperes,
-     la rangee doit rester lisible sans revenir dans la feuille de style. */
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: 1px;
-  background: var(--trait);
-  border: 1px solid var(--trait);
-  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.75rem;
 }
-.fondatrice__chiffre { background: var(--paper); padding: 0.85rem 1rem; }
+.fondatrice__chiffre { padding: 0; }
 .fondatrice__valeur {
   display: block;
   font-family: var(--display);
@@ -1099,7 +1218,44 @@ p:last-child { margin-bottom: 0; }
   margin-top: 0.15rem;
 }
 
-.fondatrice__faits { margin: 0; font-size: var(--fs-small); display: grid; gap: 0.9rem; }
+/* Les trois faits en grille deux par deux, chacun dans un cartouche en
+   creux : le parcours d'un cote et de l'autre, ce qu'elle fait en
+   seance seule en bas, sur toute la largeur et sur un fond vert lave.
+   C'est la seule des trois lignes qui parle de l'enfant du visiteur,
+   les deux autres parlant du parcours des fondatrices. */
+.fondatrice__faits {
+  margin: 0;
+  font-size: var(--fs-small);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  /* Le texte courant reste aligne a gauche : trois paragraphes centres
+     ne se lisent pas. Seuls le portrait, le nom et les chiffres le sont. */
+  text-align: left;
+  width: 100%;
+}
+.fondatrice__faits .fondatrice__ligne {
+  background: var(--paper);
+  padding: 0.85rem 0.95rem;
+  gap: 0.5rem;
+  align-content: start;
+}
+/* Chaque intitule porte un trait vert, comme les trois valeurs de
+   l'ADN : la meme borne, a l'echelle de la ligne. */
+.fondatrice__faits .fondatrice__ligne dt {
+  justify-self: start;
+  border-bottom: 2px solid var(--vert);
+  padding-bottom: 0.25rem;
+  color: var(--ink);
+}
+.fondatrice__faits .fondatrice__ligne:last-child {
+  grid-column: 1 / -1;
+  /* Melange avec --surface, le fond de la carte, et non --blanc : celui-ci
+     est blanc dans les deux tenues, et la ligne restait donc vert pale sous
+     un texte passe au clair — 1,0 de contraste en tenue sombre. */
+  background: color-mix(in srgb, var(--vert) 16%, var(--surface));
+}
+
 .fondatrice__ligne { display: grid; gap: 0.2rem; }
 /* Intitules en casse normale : six libelles en capitales dans une meme carte
    se lisent comme un gabarit, et le contraste de graisse suffit a les
@@ -1114,37 +1270,149 @@ p:last-child { margin-bottom: 0; }
 
 .fondatrice__pastilles {
   list-style: none;
-  margin: 0;
+  /* Poussees en pied : dans la fiche la plus courte, le blanc en trop
+     se loge au-dessus d'elles plutot qu'en dessous. */
+  margin: auto 0 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.4rem;
 }
 .pastille {
   font-family: var(--display);
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--ink);
-  background: color-mix(in srgb, var(--vert) 10%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--vert) 45%, var(--surface));
+  /* Aplat vert plein, texte a l'encre : le meme couple que le bouton et
+     que les tuiles des preuves chiffrees. La teinte lavee d'avant se
+     perdait sur le blanc de la fiche. C'est --sur-vert et non --ink, comme
+     pour le bouton : en tenue sombre --ink est un voile clair, qui ne tient
+     que 1,8 sur le vert du logo. */
+  color: var(--sur-vert);
+  background: var(--vert);
+  border: 1px solid var(--vert);
   /* Angles droits : arrondie a fond, l'etiquette se lisait comme un bouton,
      et rien ne se passe quand on clique dessus. */
   border-radius: 0;
   padding: 0.28rem 0.7rem;
 }
 
-/* ---------- Témoignages ---------- */
+/* Alignement des rangees d'une fiche a l'autre. Etirer les cartes a la
+   meme hauteur ne suffisait pas : un parcours plus long allongeait ses
+   cartouches, et « dans les seances » puis les certifications tombaient
+   plus bas d'un cote que de l'autre. Chaque fiche calque donc ses
+   rangees sur celles de la section — portrait, chiffres, premiere
+   rangee de faits, seances, certifications — et son bloc de faits fait
+   de meme sur deux d'entre elles.
+
+   Derriere un @supports : sans subgrid, les fiches gardent la colonne
+   souple d'avant, simplement moins bien alignees. */
+@supports (grid-template-rows: subgrid) {
+  .fondatrices {
+    grid-template-rows: repeat(5, auto);
+    row-gap: 1rem;
+  }
+  .fondatrice {
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    row-gap: 1rem;
+    justify-items: center;
+  }
+  .fondatrice__faits {
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    row-gap: 0.75rem;
+  }
+  /* La rangee etant commune aux deux fiches, les etiquettes s'alignent
+     d'elles-memes : le calage en pied n'a plus lieu d'etre. */
+  .fondatrice__pastilles { margin: 0; align-self: end; }
+}
+
+/* ---------- Témoignages ----------
+   Retour aux colonnes : la rangee qui defilait cachait la moitie des
+   temoignages, et un texte qui bouge ne se lit pas. Trois mouvements
+   les remplacent, tous discrets et rendus a la carte :
+
+   - un guillemet vert qui se leve derriere le texte au survol ;
+   - un filet vert qui se trace le long du bord gauche, et la
+     signature qui glisse de six pixels ;
+   - a l'entree dans le champ, la carte arrive legerement inclinee et
+     se redresse, comme une fiche qu'on pose.
+
+   Aucun ne promet de clic : une carte qui se souleve, sur un bloc
+   inerte, annonce une action qui n'existe pas.
+
+   Les durees sont en !important : le bloc « moins de mouvement » de la
+   feuille les ramenerait a un millieme de seconde, et ces trois effets
+   doivent rester visibles partout. */
 .temoignages { columns: 3 260px; column-gap: clamp(1.25rem, 2.5vw, 2rem); }
+
+@keyframes temoin-pose {
+  from { opacity: 0; transform: translateY(26px) rotate(var(--angle)) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.temoignages[data-pose="oui"] .temoignage {
+  animation: temoin-pose 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-duration: 0.6s !important;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+
 /* La carte seule passe a l'encre, la section garde son papier : c'est ce
    qui separe cette mise en page d'un bandeau plein. */
 .temoignage {
+  position: relative;
+  overflow: hidden;
   break-inside: avoid;
   margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
   --equerre: var(--lac-clair);
+  /* L'inclinaison alterne d'une carte a l'autre : le meme angle six
+     fois se lirait comme un defaut de mise en page. */
+  --angle: -0.9deg;
   background-color: var(--panneau);
   color: var(--sur-panneau);
   padding: 1.5rem;
 }
+.temoignage:nth-child(even) { --angle: 0.9deg; }
+
+/* Le filet qui se trace, au bord gauche. */
+.temoignage::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--vert);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+.temoignage:hover::before,
+.temoignage:focus-within::before { transform: scaleY(1); }
+
+/* Le guillemet qui se leve, derriere le texte. */
+.temoignage::after {
+  /* Le guillemet anglais ouvrant, dans la serif du corps de texte. Il
+     s'affichait en grand C : l'echappement CSS s'etait ecrit en
+     caractere de controle suivi d'un « C ». Le caractere est donc pose
+     en clair. */
+  content: "“";
+  position: absolute;
+  right: 0.9rem;
+  bottom: -2.6rem;
+  font-family: var(--texte);
+  font-size: 8rem;
+  line-height: 1;
+  color: var(--vert);
+  opacity: 0.16;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) !important, opacity 0.35s ease !important;
+}
+.temoignage:hover::after,
+.temoignage:focus-within::after { transform: translateY(-4px); opacity: 0.3; }
+
+.temoignage blockquote,
+.temoignage figcaption { position: relative; z-index: 1; }
 .temoignage blockquote { margin: 0 0 1rem; font-size: var(--fs-small); }
 .temoignage blockquote p { margin-bottom: 0.75rem; }
 .temoignage figcaption {
@@ -1152,19 +1420,65 @@ p:last-child { margin-bottom: 0; }
   font-size: var(--fs-micro);
   font-weight: 600;
   color: var(--lac-clair);
+  transition: transform 0.35s ease !important, color 0.35s ease !important;
 }
+.temoignage:hover figcaption,
+.temoignage:focus-within figcaption { transform: translateX(6px); color: var(--vert); }
 
-/* ---------- Presse ---------- */
+/* ---------- Presse ----------
+   La rangee defile toute seule, en boucle continue. Deux etats :
+
+   - sans script, c'est la grille d'avant, cinq parutions posees. Rien
+     ne bouge, rien ne manque.
+   - avec script, main.js double la serie, marque la copie en
+     aria-hidden et pose data-ruban sur le conteneur. Le CSS bascule
+     alors en piste horizontale et l'anime jusqu'a -50 % : la copie
+     arrive exactement la ou etait l'originale, la boucle ne se voit
+     pas.
+
+   Le mouvement s'arrete au survol, au clavier, et par le bouton — un
+   contenu qui bouge plus de cinq secondes doit pouvoir etre arrete
+   autrement qu'en le survolant, ce que le doigt ne sait pas faire. */
 .presse {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: clamp(1rem, 2vw, 1.75rem);
 }
 .presse__article { display: flex; flex-direction: column; margin: 0; }
+
+/* Ruban : monte par le script uniquement. */
+.presse[data-ruban="oui"] {
+  display: block;
+  overflow: hidden;
+  /* Les deux bords s'effacent : sans cela, les vignettes apparaissent et
+     disparaissent d'un coup contre le bord de la section. */
+  mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+}
+.presse__piste {
+  display: flex;
+  gap: clamp(1rem, 2vw, 1.75rem);
+  width: max-content;
+}
+.presse__piste > .presse__article { width: 210px; flex: none; }
+
+/* Sans garde de mouvement, a la demande de la cliente : les deux
+   rubans defilent pour tout le monde. Ils s'arretent au survol, au
+   clavier, et le ruban de presse porte un bouton d'arret. */
+.presse[data-ruban="oui"] .presse__piste {
+  animation: presse-ruban 60s linear infinite;
+}
+@keyframes presse-ruban { to { transform: translateX(-50%); } }
+
+.presse[data-ruban="oui"]:hover .presse__piste,
+.presse[data-ruban="oui"]:focus-within .presse__piste,
+.presse[data-anime="non"] .presse__piste { animation-play-state: paused; }
 .presse__lien { text-decoration: none; color: inherit; display: block; }
 .presse__lien img {
   border-radius: var(--rayon);
   border: 1px solid var(--trait);
+  /* La section est passee a l'aplat encre : le filet beige y dessinait un
+     cadre plus clair que la coupure de presse elle-meme. */
+  background: var(--blanc);
   aspect-ratio: 1 / 1;
   object-fit: cover;
   width: 100%;
@@ -1178,6 +1492,10 @@ p:last-child { margin-bottom: 0; }
   font-weight: 600;
   color: var(--ink-soft);
 }
+/* Sur l'aplat encre, l'encre adoucie tombe a 1,9 de contraste : la source
+   et le filet des vignettes prennent les valeurs claires de la famille. */
+.section--encre .presse__source { color: #b9c3d4; }
+.section--encre .presse__lien img { border-color: rgba(255, 253, 249, 0.28); }
 
 /* ---------- Contact ---------- */
 .contact {
@@ -1190,8 +1508,12 @@ p:last-child { margin-bottom: 0; }
 .coordonnees h3 { font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--blanc); }
 .coordonnees__bloc { margin-bottom: 1.75rem; }
 .coordonnees__bloc p { margin-bottom: 0.35rem; }
-.coordonnees a { color: var(--sur-panneau); }
-.coordonnees a:hover { color: var(--ambre); }
+/* :not(.bouton) : la regle est faite pour les liens courants du bloc, poses
+   a meme le panneau. Depuis que l'appel a l'action y est un bouton vert, elle
+   l'atteignait aussi — un lien est plus specifique qu'une classe de bouton —
+   et son texte passait au creme sur le vert, a 1,9 dans les deux tenues. */
+.coordonnees a:not(.bouton) { color: var(--sur-panneau); }
+.coordonnees a:not(.bouton):hover { color: var(--ambre); }
 
 .formulaire {
   background: var(--surface);
@@ -1258,7 +1580,7 @@ p:last-child { margin-bottom: 0; }
 .pied li { padding: 0.2rem 0; }
 .pied a { color: var(--ink); text-decoration: none; }
 .pied a:hover { text-decoration: underline; }
-.pied__logo img { width: 150px; height: 91px; object-fit: contain; margin-bottom: 0.85rem; }
+.pied__logo img { width: 160px; height: 65px; object-fit: contain; margin-bottom: 0.85rem; }
 .pied__bas {
   border-top: 1px solid var(--trait);
   padding-top: 1.25rem;
@@ -1348,6 +1670,37 @@ p:last-child { margin-bottom: 0; }
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: clamp(1rem, 2vw, 1.5rem);
 }
+/* Etat vide du blog : le message n'est pas pose a la main, il est masque
+   des que la liste contient un billet. Vider la liste suffit donc a le
+   faire apparaitre, et publier un article a le faire disparaitre — rien
+   a synchroniser entre le HTML et ce qui est affiche. */
+.blog__vide {
+  background: var(--paper-2);
+  border: 1px dashed var(--trait);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  max-width: 54ch;
+}
+.blog__vide h2,
+.blog__vide h3 {
+  font-size: var(--fs-h3);
+  margin-bottom: 0.5rem;
+}
+.blog__vide p {
+  color: var(--ink-soft);
+  font-size: var(--fs-small);
+  margin-bottom: 1.25rem;
+}
+.blog__vide .bouton + .bouton { margin-left: 0.5rem; }
+.blog__liste:has(> li) + .blog__vide { display: none; }
+
+/* Renvoi vers le blog complet, sous la liste de la page d'accueil. */
+.blog__tous {
+  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+  font-family: var(--display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
 .billet {
   --equerre: var(--lac-clair);
   --equerre-marge: 8px;
@@ -1496,26 +1849,44 @@ p:last-child { margin-bottom: 0; }
   }
 }
 
-@media (max-width: 780px) {
+/* ---------- En-tête : bascule en menu déroulant ----------
+   Sept intitulés plus un bouton d'appel ne tiennent pas sur une ligne en
+   dessous de 1240 px : ils passaient sur deux ou trois lignes et le bouton
+   d'appel enflait en pavé. Mesuré au rendu : la barre réclame 1125 px, et
+   le conteneur vaut la fenêtre moins deux gouttières de 40 px — il faut
+   donc 1205 px de fenêtre, 1240 avec la marge de sécurité. Le seuil est
+   celui de l'en-tête seul, pas celui du reste de la mise en page, qui
+   bascule plus bas. */
+@media (max-width: 1240px) {
+  body { padding-top: 4.75rem; }
   .entete__bascule { display: block; }
   .entete__barre { min-height: 4.75rem; }
-  .entete__logo img { width: 88px; height: 53px; }
+  .entete[data-defile="oui"] .entete__barre { min-height: 4rem; }
+  .entete__logo img { width: 130px; height: 53px; }
+  .entete[data-defile="oui"] .entete__logo img { width: 105px; height: 43px; }
+  /* Le menu déroulant est une colonne : un filet qui glisse d'une ligne à
+     l'autre n'y veut rien dire. Seul aria-current reste. */
+  .nav__curseur { display: none; }
+  /* Il prolonge le bandeau : même encre, filets clairs. En papier, il
+     retombait en blanc sous une barre bleue. */
   .nav {
     display: none;
     position: absolute;
     inset-inline: calc(var(--gouttiere) * -1);
     top: 100%;
-    background: var(--paper);
-    border-block: 1px solid var(--trait);
+    background: var(--ink);
+    border-block: 1px solid rgba(255, 253, 249, 0.18);
     padding: 1rem var(--gouttiere) 1.5rem;
     margin-left: 0;
   }
   .nav[data-ouvert="oui"] { display: block; }
   .nav__liste { flex-direction: column; align-items: stretch; gap: 0; }
-  .nav__lien { display: block; padding: 0.85rem 0; border-bottom: 1px solid var(--trait); }
+  .nav__lien { display: block; padding: 0.85rem 0; border-bottom: 1px solid rgba(255, 253, 249, 0.18); }
   .nav__lien:hover { border-bottom-color: var(--vert); }
   .nav .bouton { margin-top: 1rem; width: 100%; justify-content: center; }
+}
 
+@media (max-width: 780px) {
   .itineraire__etapes { grid-template-columns: 1fr; gap: 0; }
   .itineraire__etapes::before {
     top: 12px;
@@ -1544,7 +1915,8 @@ p:last-child { margin-bottom: 0; }
   .champs { grid-template-columns: 1fr; }
   .temoignages { columns: 1; }
 
-  .fondatrice__entete { grid-template-columns: 64px minmax(0, 1fr); gap: 0.85rem; }
+  .fondatrice__portrait { width: 80px; height: 80px; }
+  .fondatrice__chiffres { gap: 1.25rem; }
   .fondatrice__portrait { width: 64px; height: 64px; }
   .fondatrice h3 { font-size: 1.25rem; }
   .fondatrice__valeur { font-size: 1.25rem; }
@@ -1573,6 +1945,9 @@ p:last-child { margin-bottom: 0; }
   }
   .hero__actions .bouton { width: 100%; justify-content: center; }
   .formule { padding: 1.35rem; }
+  .presse__piste > .presse__article { width: 160px; }
+  /* Deux colonnes dans une carte de 300 px : les mots se coupent. */
+  .fondatrice__faits { grid-template-columns: 1fr; }
   .legende__item { padding: 0.9rem 1rem; }
 }
 
@@ -1589,6 +1964,8 @@ p:last-child { margin-bottom: 0; }
 
 @media print {
   .entete, .nav, .hero__fond, .formulaire, .couture { display: none; }
+  /* Sans l'en-tete, son retrait n'a plus lieu d'etre. */
+  body { padding-top: 0; }
   /* Les navigateurs n'impriment pas les images de fond : sans cadre, les
      cartes n'auraient plus aucune limite sur le papier. */
   .formule, .fondatrice, .legende__item, .temoignage, .billet { border: 1px solid #999; }
@@ -1610,7 +1987,7 @@ p:last-child { margin-bottom: 0; }
   height: 2.5rem;
   flex: none;
   padding: 0;
-  border: 1px solid var(--trait);
+  border: 1px solid color-mix(in srgb, var(--blanc) 35%, transparent);
   border-radius: 50%;
   background: transparent;
   color: var(--ink-soft);
@@ -2246,6 +2623,7 @@ p:last-child { margin-bottom: 0; }
    plus de la tenue, et un seul bloc suffit. Le texte doux et le vert y sont
    ceux qui se lisent sur un aplat sombre — c'est-a-dire l'inverse de ceux du
    fond de page en tenue claire, et les memes qu'en tenue sombre. */
+.entete,
 .section--encre,
 .formule,
 .pilier,
@@ -2263,12 +2641,13 @@ p:last-child { margin-bottom: 0; }
 .formules__onglets[hidden] { display: none; }
 
 /* ---------- Le logo, une image par tenue ---------- */
-/* Le fichier d'origine est un MAP bleu nuit : sur la nuit il disparait. Un
-   filtre CSS le blanchirait, mais il blanchirait aussi la fleche — un filtre
-   ne sait pas garder deux couleurs. D'ou un second fichier, ou seul le bleu
-   a ete remplace par du blanc : la fleche et le trait restent verts.
-   Les deux images sont dans la page et le CSS n'en montre qu'une, pour que
-   la bascule soit instantanee et suive l'attribut de tenue. */
+/* Le bandeau est sombre dans les deux tenues : il porte le logo blanc sans
+   condition, et cette bascule ne le concerne pas. Elle ne sert qu'au pied de
+   page, qui repose sur le papier : le logo encre y disparaitrait sur la nuit.
+   Les deux dessins existent deja — logo-240 pour le papier, logo-blanc-240
+   pour la nuit. Un filtre CSS ne ferait pas l'affaire : il blanchirait aussi
+   la fleche, qui doit rester verte. Les deux images sont dans la page et le
+   CSS n'en montre qu'une, pour que la bascule soit instantanee. */
 .logo--sombre { display: none; }
 
 [data-theme="dark"] .logo--clair { display: none; }
@@ -2299,7 +2678,12 @@ p:last-child { margin-bottom: 0; }
    panneau, eux, le sont : sans ce retour, sa mention legale prenait le texte
    doux calibre pour le panneau et tombait a 2,0 de contraste. */
 .formulaire,
-.formulaire__etat {
+.formulaire__etat,
+/* La fiche fondatrice est dans le meme cas depuis qu'elle est passee au
+   traitement « profil » : une carte a son propre fond, posee sur la section
+   encre. Le role et les mesures des chiffres y prenaient le texte doux du
+   panneau, pale, sur le blanc de la carte. */
+.fondatrice {
   --ink-soft: var(--ink-soft-page);
   --vert-texte: var(--vert-texte-page);
 }

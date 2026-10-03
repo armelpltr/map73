@@ -33,7 +33,7 @@
   } catch (e) {}
 })();
 </script>
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=20261003-0900">
 </head>
 
 <body>
@@ -42,8 +42,7 @@
 <header class="entete" id="entete">
   <div class="enveloppe entete__barre">
     <a class="entete__logo" href="index.html" aria-label="MAP73, accueil">
-      <img class="logo--clair" src="assets/img/logo-240.webp" srcset="assets/img/logo-240.webp 240w, assets/img/logo-480.webp 480w" sizes="104px" width="240" height="145" alt="MAP Orientation" fetchpriority="high">
-      <img class="logo--sombre" src="assets/img/logo-sombre-240.webp" srcset="assets/img/logo-sombre-240.webp 240w, assets/img/logo-sombre-480.webp 480w" sizes="104px" width="240" height="145" alt="" fetchpriority="high">
+      <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="156px" width="240" height="98" alt="MAP Orientation" fetchpriority="high">
     </a>
 
     <button class="bascule-theme" type="button" id="bascule-theme" aria-pressed="false">
@@ -59,6 +58,7 @@
 
     <nav class="nav" id="navigation" aria-label="Navigation principale">
       <ul class="nav__liste">
+        <li><a class="nav__lien" href="#accueil">Accueil</a></li>
         <li><a class="nav__lien" href="#news">MAP news</a></li>
         <li><a class="nav__lien" href="#a-propos">À propos</a></li>
         <li><a class="nav__lien" href="#concept">Le concept</a></li>
@@ -75,7 +75,7 @@
 <main id="contenu">
 
   <!-- ============ Hero ============ -->
-  <section class="hero">
+  <section class="hero" id="accueil">
     <svg class="hero__fond" viewBox="0 0 1440 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
       <g fill="none" stroke="currentColor" stroke-width="1.25">
         <path d="M-60 600C180 540 340 660 620 590S1080 430 1500 500" opacity=".9"/>
@@ -318,6 +318,15 @@
   </section>
 
 
+  <!-- couture -->
+  <div class="couture couture--clair-encre" aria-hidden="true">
+    <svg viewBox="0 0 600 54" preserveAspectRatio="none" focusable="false">
+      <path class="remplissage" d="M0 30C120 8 240 46 360 30S540 4 600 20V54H0Z"/>
+      <path class="niveau" d="M0 22C120 0 240 38 360 22S540 -4 600 12"/>
+      <path class="niveau" d="M0 14C120 -8 240 30 360 14S540 -12 600 4"/>
+    </svg>
+  </div>
+
   <!-- ============ L'ADN ============ -->
   <!-- Trois valeurs, chacune ouverte par un adage. C'est le seul endroit du
        site ou une phrase est citee pour elle-meme : elle prend donc l'italique
@@ -528,7 +537,7 @@
           <div class="formule__pied">
             <span class="formule__prix">à partir de 40 €</span>
             <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--contour" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
         <article class="formule" id="formule-map-seconde" data-niveau="seconde">
@@ -547,7 +556,7 @@
           <div class="formule__pied">
             <span class="formule__prix">à partir de 40 €</span>
             <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--contour" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
         <article class="formule" id="formule-map-premiere" data-niveau="premiere">
@@ -566,7 +575,7 @@
           <div class="formule__pied">
             <span class="formule__prix">à partir de 35 €</span>
             <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--contour" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
         <article class="formule" id="formule-map-terminale" data-niveau="terminale">
@@ -584,7 +593,7 @@
           <div class="formule__pied">
             <span class="formule__prix">89 €</span>
             <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--contour" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
       </div>
@@ -619,7 +628,7 @@
           <div class="formule__pied">
             <span class="formule__prix">45 €</span>
             <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--contour" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
         <article class="formule" id="formule-map-premium">
@@ -639,7 +648,7 @@
           <div class="formule__pied">
             <span class="formule__prix">50 €</span>
             <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
         </div>
@@ -663,7 +672,7 @@
           <div class="formule__pied">
             <span class="formule__prix">60 €</span>
             <span class="formule__prix-note">la séance</span>
-            <a class="bouton bouton--contour" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
         </div>
@@ -672,7 +681,7 @@
   </section>
 
   <!-- couture -->
-  <div class="couture couture--clair-craie couture--fine" aria-hidden="true">
+  <div class="couture couture--clair-encre" aria-hidden="true">
     <svg viewBox="0 0 600 54" preserveAspectRatio="none" focusable="false">
       <path class="remplissage" d="M0 30C120 8 240 46 360 30S540 4 600 20V54H0Z"/>
       <path class="niveau" d="M0 22C120 0 240 38 360 22S540 -4 600 12"/>
@@ -681,10 +690,10 @@
   </div>
 
   <!-- ============ Fondatrices ============ -->
-  <section class="section section--craie" id="fondatrices">
+  <section class="section section--encre" id="fondatrices">
     <div class="enveloppe">
       <div class="section-entete">
-        <h2>Julie et Camille</h2>
+        <h2>Camille et Julie</h2>
         <p>Deux parcours complémentaires, mis en commun pour aider les adolescents à franchir les obstacles de l’orientation et à choisir la filière qui leur plaît.</p>
       </div>
 
@@ -738,9 +747,9 @@
             <img class="fondatrice__portrait"
                  src="assets/img/portrait-julie.webp"
                  width="240" height="240" loading="lazy" decoding="async"
-                 alt="Julie Mazet, cofondatrice de MAP73, responsable ressources humaines">
+                 alt="Julie Mazetk, cofondatrice de MAP73, responsable ressources humaines">
             <div>
-              <h3>Julie Mazet</h3>
+              <h3>Julie Mazetk</h3>
               <p class="fondatrice__role">Ressources humaines</p>
             </div>
           </div>
@@ -780,7 +789,7 @@
   </section>
 
   <!-- couture -->
-  <div class="couture couture--craie-clair couture--fine couture--miroir" aria-hidden="true">
+  <div class="couture couture--encre-clair couture--miroir" aria-hidden="true">
     <svg viewBox="0 0 600 54" preserveAspectRatio="none" focusable="false">
       <path class="remplissage" d="M0 30C120 8 240 46 360 30S540 4 600 20V54H0Z"/>
       <path class="niveau" d="M0 22C120 0 240 38 360 22S540 -4 600 12"/>
@@ -843,7 +852,7 @@
   </section>
 
   <!-- couture -->
-  <div class="couture couture--clair-craie couture--fine" aria-hidden="true">
+  <div class="couture couture--clair-encre" aria-hidden="true">
     <svg viewBox="0 0 600 54" preserveAspectRatio="none" focusable="false">
       <path class="remplissage" d="M0 30C120 8 240 46 360 30S540 4 600 20V54H0Z"/>
       <path class="niveau" d="M0 22C120 0 240 38 360 22S540 -4 600 12"/>
@@ -852,7 +861,7 @@
   </div>
 
   <!-- ============ Presse ============ -->
-  <section class="section section--craie" id="actualites">
+  <section class="section section--encre" id="actualites">
     <div class="enveloppe">
       <div class="section-entete">
         <h2>On parle de nous</h2>
@@ -934,13 +943,52 @@
   </section>
 
   <!-- couture -->
-  <div class="couture couture--craie-clair couture--fine couture--miroir" aria-hidden="true">
+  <div class="couture couture--encre-clair couture--miroir" aria-hidden="true">
     <svg viewBox="0 0 600 54" preserveAspectRatio="none" focusable="false">
       <path class="remplissage" d="M0 30C120 8 240 46 360 30S540 4 600 20V54H0Z"/>
       <path class="niveau" d="M0 22C120 0 240 38 360 22S540 -4 600 12"/>
       <path class="niveau" d="M0 14C120 -8 240 30 360 14S540 -12 600 4"/>
     </svg>
   </div>
+
+  <!-- ============ Blog ============
+       Les trois derniers billets, repris de blog/index.html. Pour en
+       ajouter un : dupliquer un <li> ici et la-bas, et creer le dossier
+       a partir de blog/_modele-article.html. Si la liste est videe, le
+       bloc « Pas encore d'article » prend sa place tout seul. -->
+  <section class="section section--serre" id="blog" aria-labelledby="blog-titre">
+    <div class="enveloppe">
+      <div class="section-entete">
+        <h2 id="blog-titre">Le blog de l’orientation</h2>
+        <p>Ce qu’on répète le plus souvent en séance, mis par écrit&nbsp;: les échéances à ne pas manquer et les idées reçues qui coûtent cher.</p>
+      </div>
+
+      <ul class="blog__liste">
+        <li class="billet">
+          <p class="billet__meta"><time datetime="2026-09-13">13 septembre 2026</time> · 4 min</p>
+          <h3 class="billet__titre"><a href="blog/edito-parcoursup-camille-dorel/">Parcoursup, expliqué par Camille Dorel</a></h3>
+          <p class="billet__chapo">Du dossier aux propositions d’admission&nbsp;: ce que la plateforme demande vraiment, et pourquoi une bonne stratégie se prépare dès la première.</p>
+          <p class="billet__lire">Lire l’édito</p>
+        </li>
+        <li class="billet">
+          <p class="billet__meta"><time datetime="2026-09-13">13 septembre 2026</time> · 6 min</p>
+          <h3 class="billet__titre"><a href="blog/choisir-ses-specialites-en-seconde/">Seconde&nbsp;: choisir ses spécialités sans se fermer de portes</a></h3>
+          <p class="billet__chapo">Trois spécialités à choisir au deuxième trimestre, pour un métier qu’on ne connaît pas encore. Comment décider sans se tromper.</p>
+          <p class="billet__lire">Lire l’article</p>
+        </li>
+      </ul>
+
+      <!-- Etat vide : le CSS le masque des que la liste ci-dessus contient
+           un billet. Rien a commenter ni a decommenter a la main. -->
+      <div class="blog__vide">
+        <h3>Pas encore d’article</h3>
+        <p>Les premiers sont en cours d’écriture. En attendant, la réponse la plus rapide reste un appel de vingt minutes, offert et sans engagement.</p>
+        <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Appel découverte offert</a>
+      </div>
+
+      <p class="blog__tous"><a href="blog/">Tous les articles</a></p>
+    </div>
+  </section>
 
   <!-- ============ Questions fréquentes ============ -->
   <section class="section" id="questions">
@@ -1007,13 +1055,13 @@
             </div>
           </div>
 
-          <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">
+          <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
             Réserver un créneau
           </a>
         </div>
 
-        <form class="formulaire" id="formulaire-contact" method="post" action="https://formspree.io/f/REMPLACER_PAR_VOTRE_ID" novalidate>
+        <form class="formulaire" id="formulaire-contact" novalidate>
           <h3>Nous écrire</h3>
 
           <div class="champs">
@@ -1089,8 +1137,8 @@
   <div class="enveloppe">
     <div class="pied__grille">
       <div class="pied__logo">
-        <img class="logo--clair" src="assets/img/logo-240.webp" srcset="assets/img/logo-240.webp 240w, assets/img/logo-480.webp 480w" sizes="150px" width="240" height="145" loading="lazy" decoding="async" alt="MAP Orientation">
-        <img class="logo--sombre" src="assets/img/logo-sombre-240.webp" srcset="assets/img/logo-sombre-240.webp 240w, assets/img/logo-sombre-480.webp 480w" sizes="150px" width="240" height="145" loading="lazy" decoding="async" alt="">
+        <img class="logo--clair" src="assets/img/logo-240.webp" srcset="assets/img/logo-240.webp 240w, assets/img/logo-480.webp 480w" sizes="160px" width="240" height="98" loading="lazy" decoding="async" alt="MAP Orientation">
+        <img class="logo--sombre" src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="160px" width="240" height="98" loading="lazy" decoding="async" alt="">
         <p>Conseil et accompagnement en orientation scolaire, à Chambéry et en visio.</p>
       </div>
 
@@ -1138,7 +1186,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20260919-0054" defer></script>
+<script src="assets/js/main.js?v=20260922-0705" defer></script>
 
 <script type="application/ld+json">
 {
@@ -1187,7 +1235,7 @@
         "https://www.linkedin.com/company/map73/"
       ],
       "founder": [
-        { "@type": "Person", "name": "Julie Mazet", "jobTitle": "Consultante en orientation, responsable RH" },
+        { "@type": "Person", "name": "Julie Mazetk", "jobTitle": "Consultante en orientation, responsable RH" },
         { "@type": "Person", "name": "Camille Dorel", "jobTitle": "Consultante en orientation, enseignante certifiée" }
       ],
       "hasOfferCatalog": {

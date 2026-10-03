@@ -31,7 +31,11 @@
     });
   }
 
-  /* ---- Ombre de l'en-tête au défilement ---- */
+  /* ---- Ombre et compactage de l'en-tête au défilement ----
+     Une sentinelle d'un pixel en haut de page plutôt qu'un écouteur de
+     défilement : le navigateur prévient quand elle sort du champ, on ne
+     lui demande rien à chaque cran de molette. L'attribut data-defile
+     porte à la fois l'ombre et la hauteur réduite, côté CSS. */
   const entete = document.getElementById("entete");
   if (entete) {
     const sentinelle = document.createElement("div");
@@ -44,6 +48,135 @@
       },
       { threshold: 0 }
     ).observe(sentinelle);
+  }
+
+  /* ---- Le lien de la section lue ----
+     Un filet vert glisse d'un intitulé à l'autre selon la section à
+     l'écran. Deux partis pris :
+     - les sections sont suivies par IntersectionObserver, pas par un
+       calcul de position à chaque défilement ;
+     - le filet est créé ici, pas dans le HTML : il est décoratif, et
+       aucune des six pages n'a besoin d'être touchée pour l'accueillir.
+     Sur le menu mobile, qui est une colonne, le CSS le masque. */
+  if (nav) {
+    const liensAncres = [...nav.querySelectorAll('.nav__lien[href^="#"]')];
+    const sections = liensAncres
+      .map((lien) => document.getElementById(lien.getAttribute("href").slice(1)))
+      .filter(Boolean);
+
+    if (sections.length) {
+      const curseur = document.createElement("span");
+      curseur.className = "nav__curseur";
+      curseur.setAttribute("aria-hidden", "true");
+      nav.append(curseur);
+
+      const visibles = new Set();
+      let actif = null;
+
+      const placer = () => {
+        if (!actif || getComputedStyle(curseur).display === "none") {
+          curseur.style.opacity = "0";
+          return;
+        }
+        const l = actif.getBoundingClientRect();
+        const n = nav.getBoundingClientRect();
+        curseur.style.opacity = "1";
+        curseur.style.width = l.width + "px";
+        // Le filet se pose sur la bordure basse du lien, celle que le
+        // survol colore : les deux ne doivent pas se croiser de 2 px.
+        curseur.style.top = l.bottom - n.top - 2 + "px";
+        curseur.style.transform = "translateX(" + (l.left - n.left) + "px)";
+      };
+
+      const choisir = () => {
+        // La section active est la première visible dans l'ordre du
+        // document : en bas de page, plusieurs le sont à la fois.
+        const section = sections.find((s) => visibles.has(s));
+        const lien = section
+          ? liensAncres.find((l) => l.getAttribute("href") === "#" + section.id)
+          : null;
+
+        if (lien === actif) return;
+        for (const l of liensAncres) l.removeAttribute("aria-current");
+        if (lien) lien.setAttribute("aria-current", "true");
+        actif = lien;
+        placer();
+      };
+
+      // La bande utile commence sous l'en-tête et s'arrête à mi-écran :
+      // sans cela, la dernière section du bas resterait « active » dès
+      // qu'elle affleure en bas de fenêtre.
+      const oeilSections = new IntersectionObserver(
+        (entrees) => {
+          for (const entree of entrees) {
+            if (entree.isIntersecting) visibles.add(entree.target);
+            else visibles.delete(entree.target);
+          }
+          choisir();
+        },
+        { rootMargin: "-88px 0px -55% 0px", threshold: 0 }
+      );
+      for (const section of sections) oeilSections.observe(section);
+
+      // L'en-tête change de hauteur au défilement : le filet doit suivre.
+      new ResizeObserver(placer).observe(entete || document.body);
+      window.addEventListener("resize", placer, { passive: true });
+    }
+  }
+
+  /* ---- Presse : le ruban qui defile ----
+     La grille du HTML est transformee en piste horizontale, doublee, et
+     animee par le CSS. Trois points de vigilance :
+     - la copie est marquee aria-hidden et ses liens sortent du parcours
+       de tabulation, sinon chaque parution est annoncee et atteinte deux
+       fois ;
+     - sans script, la rangee reste une grille immobile, complete ;
+     - la duree est proportionnelle au nombre de parutions, sinon
+       ajouter une coupure de presse accelererait tout le ruban. */
+  const presse = document.getElementById("presse-liste");
+
+  if (presse && presse.children.length > 2) {
+    const piste = document.createElement("div");
+    piste.className = "presse__piste";
+    piste.append(...presse.children);
+
+    const copie = piste.cloneNode(true);
+    for (const article of copie.children) {
+      article.setAttribute("aria-hidden", "true");
+      for (const lien of article.querySelectorAll("a")) lien.tabIndex = -1;
+    }
+    piste.append(...copie.children);
+
+    presse.append(piste);
+    presse.dataset.ruban = "oui";
+    presse.dataset.anime = "oui";
+
+    // 6 secondes par parution : le ruban garde la meme allure qu'il en
+    // compte cinq ou douze.
+    const parutions = piste.children.length / 2;
+    // En !important : le bloc « moins de mouvement » de la feuille ecrase
+    // toutes les durees d'animation, y compris celle-ci. Les deux rubans
+    // sont les seuls mouvements que le site conserve dans tous les cas.
+    piste.style.setProperty("animation-duration", parutions * 6 + "s", "important");
+
+  }
+
+  /* ---- Témoignages : les cartes se posent ----
+     Une seule fois, a l'entree dans le champ. Le decalage est porte par
+     une variable sur chaque carte ; le reste — inclinaison, guillemet,
+     filet — est du CSS. */
+  const temoignages = document.getElementById("temoignages-liste");
+
+  if (temoignages) {
+    [...temoignages.children].forEach((carte, i) => carte.style.setProperty("--i", i));
+
+    new IntersectionObserver((entrees, oeil) => {
+      for (const entree of entrees) {
+        if (!entree.isIntersecting) continue;
+        temoignages.dataset.pose = "oui";
+        oeil.unobserve(entree.target);
+      }
+    }, { threshold: 0.15 }).observe(temoignages);
   }
 
   /* ---- Visionneuse d'images ----
@@ -278,49 +411,25 @@
       }
 
       const donnees = new FormData(formulaire);
-      const action = formulaire.getAttribute("action") || "";
 
-      // Tant qu'aucun service d'envoi n'est configuré, on bascule sur le client mail.
-      if (action.includes("REMPLACER")) {
-        const corps = [
-          `Prénom : ${donnees.get("prenom")}`,
-          `Nom : ${donnees.get("nom")}`,
-          `E-mail : ${donnees.get("email")}`,
-          `Téléphone : ${donnees.get("telephone") || "non communiqué"}`,
-          `Classe : ${donnees.get("niveau") || "non précisée"}`,
-          "",
-          String(donnees.get("message") || "")
-        ].join("\n");
+      // Aucun service d'envoi tiers : le message part par le client mail.
+      const corps = [
+        `Prénom : ${donnees.get("prenom")}`,
+        `Nom : ${donnees.get("nom")}`,
+        `E-mail : ${donnees.get("email")}`,
+        `Téléphone : ${donnees.get("telephone") || "non communiqué"}`,
+        `Classe : ${donnees.get("niveau") || "non précisée"}`,
+        "",
+        String(donnees.get("message") || "")
+      ].join("\n");
 
-        window.location.href =
-          "mailto:contacts@map73.fr?subject=" +
-          encodeURIComponent("Demande depuis le site MAP73") +
-          "&body=" +
-          encodeURIComponent(corps);
+      window.location.href =
+        "mailto:contacts@map73.fr?subject=" +
+        encodeURIComponent("Demande depuis le site MAP73") +
+        "&body=" +
+        encodeURIComponent(corps);
 
-        afficher("Votre messagerie s’ouvre avec le message pré-rempli. Vous pouvez aussi nous écrire directement à contacts@map73.fr.");
-        return;
-      }
-
-      const bouton = formulaire.querySelector("button[type=submit]");
-      if (bouton) bouton.disabled = true;
-
-      try {
-        const reponse = await fetch(action, {
-          method: "POST",
-          body: donnees,
-          headers: { Accept: "application/json" }
-        });
-
-        if (!reponse.ok) throw new Error(String(reponse.status));
-
-        formulaire.reset();
-        afficher("Message envoyé. Nous vous répondons sous 48 heures ouvrées.");
-      } catch {
-        afficher("L’envoi a échoué. Écrivez-nous à contacts@map73.fr ou appelez le 06 78 36 90 06.");
-      } finally {
-        if (bouton) bouton.disabled = false;
-      }
+      afficher("Votre messagerie s’ouvre avec le message pré-rempli. Vous pouvez aussi nous écrire directement à contacts@map73.fr.");
     });
   }
 })();
