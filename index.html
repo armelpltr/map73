@@ -33,7 +33,7 @@
   } catch (e) {}
 })();
 </script>
-<link rel="stylesheet" href="assets/css/style.css?v=20261003-1130">
+<link rel="stylesheet" href="assets/css/style.css?v=20261003-1230">
 </head>
 
 <body>
@@ -61,17 +61,41 @@
       <span class="visuellement-cache">Menu</span>
     </button>
 
-    <nav class="nav" id="navigation" aria-label="Navigation principale">
+    <!-- Les huit intitules sont ranges sous trois rubriques : a la suite,
+         ils se lisent un par un ; en paquets, le visiteur ne cherche que
+         dans celui qui le concerne. « Accueil » reste seul en tete, il ne
+         depend d'aucune rubrique. Chaque liste est nommee par son en-tete,
+         de sorte qu'un lecteur d'ecran annonce la rubrique avant ses
+         intitules. -->
+    <nav class="nav nav--rubriques" id="navigation" aria-label="Navigation principale">
       <ul class="nav__liste">
         <li><a class="nav__lien" href="#accueil">Accueil</a></li>
-        <li><a class="nav__lien" href="#news">MAP news</a></li>
-        <li><a class="nav__lien" href="#a-propos">À propos</a></li>
-        <li><a class="nav__lien" href="#concept">Le concept</a></li>
-        <li><a class="nav__lien" href="#formules">Formules</a></li>
-        <li><a class="nav__lien" href="#fondatrices">Qui sommes-nous</a></li>
-        <li><a class="nav__lien" href="#temoignages">Témoignages</a></li>
-        <li><a class="nav__lien" href="blog/">Blog</a></li>
       </ul>
+
+      <div class="nav__groupe">
+        <p class="nav__rubrique" id="rubrique-cabinet">Le cabinet</p>
+        <ul class="nav__liste" aria-labelledby="rubrique-cabinet">
+          <li><a class="nav__lien" href="#a-propos">À propos</a></li>
+          <li><a class="nav__lien" href="#fondatrices">Qui sommes-nous</a></li>
+          <li><a class="nav__lien" href="#temoignages">Témoignages</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__groupe">
+        <p class="nav__rubrique" id="rubrique-offre">L’offre</p>
+        <ul class="nav__liste" aria-labelledby="rubrique-offre">
+          <li><a class="nav__lien" href="#concept">Le concept</a></li>
+          <li><a class="nav__lien" href="#formules">Formules</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__groupe">
+        <p class="nav__rubrique" id="rubrique-lire">Lire</p>
+        <ul class="nav__liste" aria-labelledby="rubrique-lire">
+          <li><a class="nav__lien" href="#news">MAP news</a></li>
+          <li><a class="nav__lien" href="blog/">Blog</a></li>
+        </ul>
+      </div>
     </nav>
   </div>
 </header>

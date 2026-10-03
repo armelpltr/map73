@@ -449,7 +449,7 @@ p:last-child { margin-bottom: 0; }
   position: absolute;
   top: 100%;
   right: 0;
-  width: min(300px, calc(100vw - 2 * var(--gouttiere)));
+  width: min(320px, calc(100vw - 2 * var(--gouttiere)));
   background: var(--panneau);
   border: 1px solid rgba(255, 253, 249, 0.18);
   border-top: 0;
@@ -500,7 +500,30 @@ p:last-child { margin-bottom: 0; }
   padding: 0.85rem 0;
   border-bottom: 1px solid rgba(255, 253, 249, 0.18);
 }
+/* Le dernier intitule de chaque liste n'a rien a souligner : en bas du
+   panneau c'est le bord, et entre deux rubriques c'est l'en-tete suivant
+   qui fait la separation. */
 .nav__liste li:last-child .nav__lien { border-bottom: 0; }
+
+/* ---------- Le menu range par rubrique ----------
+   Huit lignes a la suite se lisent une par une ; sous trois en-tetes elles
+   deviennent trois paquets, et le visiteur ne cherche que dans celui qui le
+   concerne. « Accueil » reste seul en tete : il ne depend d'aucune rubrique,
+   il ramene en haut.
+
+   Les interlignes se resserrent, sinon les trois en-tetes allongeaient le
+   panneau d'un tiers. */
+.nav__groupe { margin-top: 0.9rem; }
+.nav__rubrique {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vert);
+  margin: 0 0 0.15rem;
+}
+.nav--rubriques .nav__lien { padding: 0.5rem 0; }
 .nav__lien:hover { color: var(--blanc); border-bottom-color: var(--vert); }
 
 /* L'appel a l'action prend la marge automatique : c'est lui qui pousse la
