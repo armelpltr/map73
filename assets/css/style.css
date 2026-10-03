@@ -305,6 +305,16 @@ p:last-child { margin-bottom: 0; }
 .bouton--contour:hover { background: var(--ink); color: var(--paper); }
 .bouton--clair { border-color: color-mix(in srgb, var(--blanc) 45%, transparent); color: var(--blanc); }
 .bouton--clair:hover { background: var(--blanc); color: var(--panneau); }
+/* Taille de barre. Le bouton de page est dessine pour une colonne de texte ;
+   pose dans l'en-tete il y tenait la hauteur de deux lignes et son libelle
+   se coupait en deux des que la fenetre se resserrait. Le libelle ne se
+   coupe plus : sous 560 px c'est le combine seul qui reste. */
+.bouton--compact {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
 .bouton svg { flex: none; }
 
 /* ---------- Cartes : les coins équerre ---------- */
@@ -423,12 +433,35 @@ p:last-child { margin-bottom: 0; }
 }
 .entete[data-defile="oui"] .entete__logo img { width: 122px; height: 50px; }
 
-/* Le filet du lien courant se deplace d'un intitule a l'autre : la barre
-   cesse d'etre une liste de liens et devient un repere de position. Il
-   est pose par le script, qui mesure le lien actif et ecrit sa largeur
-   et son deplacement ; le CSS ne fait que l'animer. Decoratif, donc
-   absent du flux de lecture des lecteurs d'ecran. */
-.nav { margin-left: auto; position: relative; }
+/* ---------- La navigation, toujours en menu deroulant ----------
+   Les huit intitules ne sont plus poses sur la barre, a aucune largeur :
+   ils tiennent dans un menu que le bouton a trois traits ouvre. La barre
+   ne garde que le logo, la bascule de tenue et l'appel a l'action.
+
+   Le menu est un panneau ancre sous le bouton, et non une nappe pleine
+   largeur : la barre est pleine largeur mais son contenu suit l'enveloppe
+   centree, si bien qu'au-dela de 1180 px une nappe calee sur l'enveloppe
+   flottait au milieu de la fenetre, bords visibles de part et d'autre.
+   Ancre a droite, il tombe sous le bouton a toute largeur. --panneau et
+   non --ink : le bandeau reste sombre dans les deux tenues, le menu aussi. */
+.nav {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: min(300px, calc(100vw - 2 * var(--gouttiere)));
+  background: var(--panneau);
+  border: 1px solid rgba(255, 253, 249, 0.18);
+  border-top: 0;
+  padding: 0.5rem 1.25rem 0.75rem;
+  box-shadow: 0 14px 30px rgba(5, 11, 22, 0.35);
+}
+.nav[data-ouvert="oui"] { display: block; }
+
+/* Le filet du lien courant est fait pour une rangee : dans une colonne il
+   ne veut rien dire. Le script le laisse a zero des que le CSS le masque,
+   et seul aria-current marque alors le lien de la section lue. */
+.nav__curseur { display: none; }
 .nav__curseur {
   position: absolute;
   left: 0;
@@ -447,11 +480,9 @@ p:last-child { margin-bottom: 0; }
 .nav__lien[aria-current="true"] { color: var(--blanc); }
 .nav__liste {
   display: flex;
-  align-items: center;
-  /* Huit intitules plus le bouton d'appel : l'ecart se resserre, sinon
-     « Qui sommes-nous » se coupe en deux lignes et la barre double de
-     hauteur. */
-  gap: clamp(0.6rem, 1.25vw, 1.15rem);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -465,15 +496,20 @@ p:last-child { margin-bottom: 0; }
   white-space: nowrap;
   color: var(--sur-panneau);
   text-decoration: none;
-  padding: 0.4rem 0;
-  border-bottom: 2px solid transparent;
-  display: inline-block;
+  display: block;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 253, 249, 0.18);
 }
+.nav__liste li:last-child .nav__lien { border-bottom: 0; }
 .nav__lien:hover { color: var(--blanc); border-bottom-color: var(--vert); }
 
+/* L'appel a l'action prend la marge automatique : c'est lui qui pousse la
+   fin de rangee a droite, le bouton de menu le suit. */
+.entete__appel { margin-left: auto; }
+
 .entete__bascule {
-  display: none;
-  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
   background: none;
   border: 1.5px solid rgba(255, 253, 249, 0.35);
   border-radius: var(--rayon);
@@ -1857,33 +1893,34 @@ p:last-child { margin-bottom: 0; }
    donc 1205 px de fenêtre, 1240 avec la marge de sécurité. Le seuil est
    celui de l'en-tête seul, pas celui du reste de la mise en page, qui
    bascule plus bas. */
+/* Le menu etant desormais deroulant a toutes les largeurs, il ne reste ici
+   que ce qui tient vraiment a la place : la barre se resserre et le logo
+   suit. Le seuil est celui de l'en-tete seul. */
 @media (max-width: 1240px) {
   body { padding-top: 4.75rem; }
-  .entete__bascule { display: block; }
   .entete__barre { min-height: 4.75rem; }
   .entete[data-defile="oui"] .entete__barre { min-height: 4rem; }
   .entete__logo img { width: 130px; height: 53px; }
   .entete[data-defile="oui"] .entete__logo img { width: 105px; height: 43px; }
-  /* Le menu déroulant est une colonne : un filet qui glisse d'une ligne à
-     l'autre n'y veut rien dire. Seul aria-current reste. */
-  .nav__curseur { display: none; }
-  /* Il prolonge le bandeau : même encre, filets clairs. En papier, il
-     retombait en blanc sous une barre bleue. */
-  .nav {
-    display: none;
+}
+
+/* Sous 560 px, l'appel a l'action ne garde que le combine : trois elements
+   plus un libelle de vingt-trois caracteres ne tiennent pas sur la rangee.
+   Le nom accessible reste porte par le texte, simplement sorti du rendu. */
+@media (max-width: 560px) {
+  .entete__barre { gap: 0.75rem; }
+  .entete__appel { padding: 0.55rem; border-radius: 50%; }
+  .entete__appel__texte {
     position: absolute;
-    inset-inline: calc(var(--gouttiere) * -1);
-    top: 100%;
-    background: var(--ink);
-    border-block: 1px solid rgba(255, 253, 249, 0.18);
-    padding: 1rem var(--gouttiere) 1.5rem;
-    margin-left: 0;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
-  .nav[data-ouvert="oui"] { display: block; }
-  .nav__liste { flex-direction: column; align-items: stretch; gap: 0; }
-  .nav__lien { display: block; padding: 0.85rem 0; border-bottom: 1px solid rgba(255, 253, 249, 0.18); }
-  .nav__lien:hover { border-bottom-color: var(--vert); }
-  .nav .bouton { margin-top: 1rem; width: 100%; justify-content: center; }
 }
 
 @media (max-width: 780px) {
