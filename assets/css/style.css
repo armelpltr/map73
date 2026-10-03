@@ -2580,6 +2580,64 @@ p:last-child { margin-bottom: 0; }
 }
 .adn__pilier .adn__texte { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; max-width: none; }
 
+/* ---------- L'ADN : les piliers se posent, puis repondent ----------
+   Deux mouvements qui ne se croisent pas. Le premier joue une fois, a
+   l'entree dans le champ : les quatre colonnes montent l'une apres
+   l'autre. Le second ne part jamais seul, il repond au visiteur.
+
+   Le remplissage est « backwards » et non « both » comme pour les
+   temoignages, parce que les deux mouvements se disputent le meme
+   transform : avec both, l'etat final de l'animation resterait pose sur
+   le pilier et le survol n'aurait plus prise. Backwards tient l'etat de
+   depart pendant le retard, puis rend le pilier a ses regles normales —
+   qui valent exactement ce que l'animation vient d'atteindre, de sorte
+   que rien ne saute au passage. */
+@keyframes adn-pilier-monte {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+.adn__liste[data-pose="oui"] .adn__pilier {
+  animation: adn-pilier-monte 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 110ms);
+}
+
+/* Le survol : le pilier se souleve, son point grossit et s'entoure de
+   lueur, son titre passe au vert, son filet s'allonge. :focus-within
+   double le geste au clavier — les piliers ne sont pas cliquables, mais
+   le texte se parcourt.
+
+   Le filet s'etire en scaleX plutot qu'en width : la largeur recalculerait
+   la mise en page a chaque image, l'echelle non. Il est centre, l'etirement
+   part donc du milieu. */
+.adn__pilier { transition: transform 0.25s ease; }
+.adn__pilier .adn__tige::before { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.adn__pilier .adn__nom { transition: color 0.25s ease; }
+.adn__pilier .adn__filet { transition: transform 0.25s ease; }
+
+.adn__pilier:hover,
+.adn__pilier:focus-within { transform: translateY(-5px); }
+.adn__pilier:hover .adn__tige::before,
+.adn__pilier:focus-within .adn__tige::before { transform: scale(1.6); box-shadow: 0 0 16px var(--vert); }
+.adn__pilier:hover .adn__nom,
+.adn__pilier:focus-within .adn__nom { color: var(--vert-texte); }
+.adn__pilier:hover .adn__filet,
+.adn__pilier:focus-within .adn__filet { transform: scaleX(1.6); }
+
+/* Qui demande moins de mouvement garde la section entiere, immobile. */
+@media (prefers-reduced-motion: reduce) {
+  .adn__liste[data-pose="oui"] .adn__pilier { animation: none; }
+  .adn__pilier,
+  .adn__pilier .adn__tige::before,
+  .adn__pilier .adn__nom,
+  .adn__pilier .adn__filet { transition: none; }
+  .adn__pilier:hover,
+  .adn__pilier:focus-within { transform: none; }
+  .adn__pilier:hover .adn__tige::before,
+  .adn__pilier:focus-within .adn__tige::before { transform: none; }
+  .adn__pilier:hover .adn__filet,
+  .adn__pilier:focus-within .adn__filet { transform: none; }
+}
+
 /* ---------- Formules : le selecteur remplace les six cartes ---------- */
 .formules__onglets {
   display: flex;

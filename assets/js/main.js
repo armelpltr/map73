@@ -179,6 +179,26 @@
     }, { threshold: 0.15 }).observe(temoignages);
   }
 
+  /* ---- ADN : les piliers se posent ----
+     Meme principe que les temoignages. Le seuil est plus haut parce que
+     la liste porte 150 px de retrait au-dessus d'elle, pour degager
+     l'arc : a 0,15 elle aurait ete declaree visible alors que seul ce
+     vide etait a l'ecran, et les piliers seraient montes avant qu'on
+     puisse les voir. */
+  const adnListe = document.getElementById("adn-liste");
+
+  if (adnListe) {
+    [...adnListe.children].forEach((pilier, i) => pilier.style.setProperty("--i", i));
+
+    new IntersectionObserver((entrees, oeil) => {
+      for (const entree of entrees) {
+        if (!entree.isIntersecting) continue;
+        adnListe.dataset.pose = "oui";
+        oeil.unobserve(entree.target);
+      }
+    }, { threshold: 0.4 }).observe(adnListe);
+  }
+
   /* ---- Visionneuse d'images ----
      Le declencheur est un lien vers l'image : sans script, le clic ouvre le
      fichier, ce qui reste utilisable. Avec script, on ouvre le dialogue
