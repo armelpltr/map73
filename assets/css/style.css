@@ -2462,7 +2462,18 @@ p:last-child { margin-bottom: 0; }
 .adn--arc { position: relative; overflow: hidden; }
 .adn--arc .section-entete { max-width: none; text-align: center; margin-inline: auto; }
 .adn--arc .section-entete h2 em { font-style: normal; color: var(--vert-texte); display: block; }
-.adn__chapo { max-width: 62ch; margin-inline: auto; text-align: center; color: var(--ink-soft); }
+/* .section-entete .adn__chapo et non .adn__chapo seul : le chapo est borne
+   a 62ch, et sans les marges automatiques son bloc se calait a gauche de
+   l'enveloppe — le texte s'y centrait bien, mais 283 px plus a gauche que
+   le titre. Les marges venaient d'etre effacees par .section-entete p, qui
+   pose margin: 0 et l'emporte avec une classe et un element contre une
+   seule classe. */
+.section-entete .adn__chapo {
+  max-width: 62ch;
+  margin-inline: auto;
+  text-align: center;
+  color: var(--ink-soft);
+}
 
 .adn__scene { position: relative; margin-top: clamp(2rem, 5vw, 3.5rem); }
 
