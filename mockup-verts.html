@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : cinq verts</title>
+<style>
+  /* Maquette de travail, hors site : elle charge la vraie page d'accueil dans
+     un cadre et n'y change qu'une chose, le vert. Tout le reste — mise en
+     page, encre, papier, nuit — est celui du site en ligne. */
+  :root {
+    --nuit: #050b16;
+    --panneau: #12213c;
+    --trait: #1b2c47;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+    --choisi: #94c412;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; white-space: nowrap; }
+
+  .verts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .vert {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.8rem 0.4rem 0.4rem;
+    border: 2px solid var(--trait);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .vert:hover { border-color: var(--doux); }
+  .vert[aria-pressed="true"] { border-color: var(--choisi); }
+  .vert__pastille { width: 26px; height: 26px; border-radius: 50%; flex: none; }
+  .vert__nom { font-weight: 600; }
+  .vert__hex { color: var(--doux); font-family: ui-monospace, Consolas, monospace; font-size: 0.8rem; }
+
+  .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
+  .reglage {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+
+  .fiche {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    width: 100%;
+    margin: 0;
+    color: var(--doux);
+    font-size: 0.85rem;
+  }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+  .fiche .alerte { color: #e8a33d; }
+
+  .scene {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-height: 0;
+    background: #000;
+  }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--nuit); }
+  .scene--mobile iframe { width: 390px; border-left: 1px solid var(--trait); border-right: 1px solid var(--trait); }
+
+  @media (max-width: 700px) {
+    .reglages { margin-left: 0; }
+    .vert__hex { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Cinq verts pour MAP</h1>
+  <div class="verts" id="verts"></div>
+  <div class="reglages">
+    <button class="reglage" type="button" data-theme="dark" aria-pressed="true">Sombre</button>
+    <button class="reglage" type="button" data-theme="light" aria-pressed="false">Clair</button>
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
+  </div>
+  <p class="fiche" id="fiche"></p>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="index.html" title="Page d'accueil repeinte avec le vert choisi"></iframe>
+</div>
+
+<script>
+  /* Les cinq candidats, plus le vert actuel pour comparer. Les contrastes
+     sont calcules (WCAG) contre la nuit #050b16, le panneau #12213c, l'encre
+     #14243b posee sur un aplat de vert (les boutons), et le papier #f7f6f1. */
+  const VERTS = [
+    { nom: "Actuel", hex: "#94c412", note: "Le vert du logo." },
+    { nom: "Citron", hex: "#b8e62a", note: "Plus vif, plus lumineux : très néon sur la nuit." },
+    { nom: "Pomme", hex: "#6cc24a", note: "Moins jaune, plus franc, plus « nature »." },
+    { nom: "Émeraude", hex: "#22c27a", note: "Bascule vers le bleu : plus frais, plus tech." },
+    { nom: "Menthe", hex: "#2ec4a6", note: "Presque turquoise, s'accorde avec le lac." },
+    { nom: "Olive", hex: "#7f9f2a", note: "Plus sourd, plus posé ; moins de pop sur la nuit." },
+  ];
+
+  const lum = (hex) => {
+    const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const contraste = (a, b) => {
+    const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+    return ((x + 0.05) / (y + 0.05)).toFixed(1).replace(".", ",");
+  };
+
+  const cadre = document.getElementById("site");
+  const fiche = document.getElementById("fiche");
+  const conteneur = document.getElementById("verts");
+  let courant = VERTS[0];
+  let tenue = "dark";
+
+  /* Le site range son vert dans --vert, et en tenue sombre le texte vert
+     dans --vert-texte-page. On reecrit les deux, avec la meme cascade que
+     la feuille du site, pour que la bascule clair/sombre suive. */
+  function peindre() {
+    const doc = cadre.contentDocument;
+    if (!doc || !doc.documentElement) return;
+    let style = doc.getElementById("maquette-vert");
+    if (!style) {
+      style = doc.createElement("style");
+      style.id = "maquette-vert";
+      doc.head.appendChild(style);
+    }
+    const v = courant.hex;
+    style.textContent = `
+      :root, :root[data-theme] { --vert: ${v} !important; }
+      :root[data-theme="dark"] { --vert-texte-page: ${v} !important; }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) { --vert-texte-page: ${v} !important; }
+      }`;
+    doc.documentElement.dataset.theme = tenue;
+  }
+
+  function choisir(v) {
+    courant = v;
+    document.documentElement.style.setProperty("--choisi", v.hex);
+    conteneur.querySelectorAll(".vert").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.hex === v.hex)));
+    const papier = contraste(v.hex, "#f7f6f1");
+    fiche.innerHTML =
+      `<span><strong>${v.nom} ${v.hex}</strong> — ${v.note}</span>` +
+      `<span>Texte sur la nuit : <strong>${contraste(v.hex, "#050b16")}</strong></span>` +
+      `<span>Sur un panneau : <strong>${contraste(v.hex, "#12213c")}</strong></span>` +
+      `<span>Encre sur le bouton vert : <strong>${contraste(v.hex, "#14243b")}</strong></span>` +
+      `<span class="alerte">Sur le papier : ${papier} (texte illisible, d'où l'encre en tenue claire)</span>` +
+      (v.hex !== "#94c412" ? `<span>Le logo garde #94c412 : il est en image.</span>` : "");
+    peindre();
+  }
+
+  VERTS.forEach((v) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "vert";
+    b.dataset.hex = v.hex;
+    b.innerHTML = `<span class="vert__pastille" style="background:${v.hex}"></span>` +
+      `<span class="vert__nom">${v.nom}</span><span class="vert__hex">${v.hex}</span>`;
+    b.addEventListener("click", () => choisir(v));
+    conteneur.appendChild(b);
+  });
+
+  document.querySelectorAll(".reglage").forEach((b) => {
+    b.addEventListener("click", () => {
+      const groupe = b.dataset.theme ? "theme" : "largeur";
+      document.querySelectorAll(`.reglage[data-${groupe}]`).forEach((x) =>
+        x.setAttribute("aria-pressed", String(x === b)));
+      if (b.dataset.theme) {
+        tenue = b.dataset.theme;
+        peindre();
+      } else {
+        document.getElementById("scene").classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+      }
+    });
+  });
+
+  // Chaque navigation dans le cadre recharge une page : on la repeint.
+  cadre.addEventListener("load", peindre);
+  // mockup-verts.html#3 ouvre directement sur le quatrieme vert.
+  choisir(VERTS[Number(location.hash.slice(1))] || VERTS[0]);
+</script>
+</body>
+</html>
