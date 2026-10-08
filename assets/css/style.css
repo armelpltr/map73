@@ -58,6 +58,8 @@
   --trait: #d5d1c2;
   --blanc: #fffdf9;
   --surface: #fffdf9;
+  /* Le fond clair de l'accompagnement, identique dans les deux tenues. */
+  --ciel: #e1eefa;
   /* Le fond des panneaux inverses. Il reprenait --ink, qui sert aussi d'encre
      du texte courant : les deux ne peuvent plus etre la meme valeur des lors
      que le panneau de la tenue sombre n'est plus un simple blanc. */
@@ -267,6 +269,25 @@ p:last-child { margin-bottom: 0; }
 }
 .section--encre h2 { color: var(--blanc); }
 .section--craie { background: var(--paper-2); }
+/* Le ciel : un bleu tres pale, le meme dans les deux tenues. La section qui
+   le porte reste claire meme en tenue sombre : elle fixe donc ses propres
+   jetons de texte au lieu de suivre la tenue. Le vert du logo n'y tient que
+   1,8 : comme sur le papier, ce qui ecrirait en vert s'ecrit a l'encre. Le
+   lac courant tombe a 4,3 sur ce fond ; il est assombri d'un cran (5,2). */
+.section--ciel {
+  color-scheme: light;
+  --ink: #14243b;
+  --ink-soft-page: #4a5872;
+  --ink-soft: var(--ink-soft-page);
+  --vert-texte-page: var(--ink);
+  --vert-texte: var(--vert-texte-page);
+  --lac: #22688c;
+  --lien: var(--lac);
+  --lien-survol: var(--ink);
+  --trait: #c3d4e5;
+  background: var(--ciel);
+  color: var(--ink);
+}
 
 .section-entete { max-width: 46ch; margin-bottom: clamp(2rem, 4vw, 3.25rem); }
 .section-entete h2 { font-size: var(--fs-h2); margin-bottom: 0.5rem; }
@@ -855,6 +876,16 @@ p:last-child { margin-bottom: 0; }
   --couture-sortant: var(--panneau);
   --couture-entrant: var(--paper);
   --couture-niveau: color-mix(in srgb, var(--sur-panneau) 24%, transparent);
+}
+.couture--clair-ciel {
+  --couture-sortant: var(--paper);
+  --couture-entrant: var(--ciel);
+  --couture-niveau: color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.couture--ciel-clair {
+  --couture-sortant: var(--ciel);
+  --couture-entrant: var(--paper);
+  --couture-niveau: rgba(20, 36, 59, 0.22);
 }
 .couture--encre-craie {
   --couture-sortant: var(--panneau);
