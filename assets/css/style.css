@@ -58,7 +58,8 @@
   --trait: #d5d1c2;
   --blanc: #fffdf9;
   --surface: #fffdf9;
-  /* Le fond clair de l'accompagnement, identique dans les deux tenues. */
+  /* Le fond des sections claires de l'alternance, identique dans les deux
+     tenues. */
   --ciel: #e1eefa;
   /* Le fond des panneaux inverses. Il reprenait --ink, qui sert aussi d'encre
      du texte courant : les deux ne peuvent plus etre la meme valeur des lors
@@ -269,22 +270,35 @@ p:last-child { margin-bottom: 0; }
 }
 .section--encre h2 { color: var(--blanc); }
 .section--craie { background: var(--paper-2); }
-/* Le ciel : un bleu tres pale, le meme dans les deux tenues. La section qui
-   le porte reste claire meme en tenue sombre : elle fixe donc ses propres
-   jetons de texte au lieu de suivre la tenue. Le vert du logo n'y tient que
-   1,8 : comme sur le papier, ce qui ecrirait en vert s'ecrit a l'encre. Le
-   lac courant tombe a 4,3 sur ce fond ; il est assombri d'un cran (5,2). */
+/* Le ciel : un bleu tres pale, le meme dans les deux tenues. Il remplace
+   partout le bleu des sections encre et craie : la page alterne la nuit (ou
+   le papier) et le ciel. Une section ciel reste claire meme en tenue
+   sombre : elle reprend donc tout le jeu de jetons de la tenue claire, pour
+   que ses cartes (formulaire, fiches) gardent leur fond et leur texte. Le
+   vert du logo n'y tient que 1,8 : comme sur le papier, ce qui ecrirait en
+   vert s'ecrit a l'encre. Le lac courant tombe a 4,3 sur ce fond ; il est
+   assombri d'un cran (5,2). */
 .section--ciel {
   color-scheme: light;
+  --paper: #f7f6f1;
+  --paper-2: #efece2;
   --ink: #14243b;
   --ink-soft-page: #4a5872;
   --ink-soft: var(--ink-soft-page);
   --vert-texte-page: var(--ink);
   --vert-texte: var(--vert-texte-page);
   --lac: #22688c;
+  --trait: #c3d4e5;
+  --blanc: #fffdf9;
+  --surface: #fffdf9;
+  --panneau: #14243b;
+  --lueur: 0 0 0 rgba(0, 0, 0, 0);
+  --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
+  --voile: rgba(20, 36, 59, 0.06);
+  --grille: rgba(20, 36, 59, 0.05);
   --lien: var(--lac);
   --lien-survol: var(--ink);
-  --trait: #c3d4e5;
+  --equerre-neutre: color-mix(in srgb, var(--trait) 62%, var(--ink));
   background: var(--ciel);
   color: var(--ink);
 }
@@ -1556,8 +1570,6 @@ p:last-child { margin-bottom: 0; }
 .presse__lien img {
   border-radius: var(--rayon);
   border: 1px solid var(--trait);
-  /* La section est passee a l'aplat encre : le filet beige y dessinait un
-     cadre plus clair que la coupure de presse elle-meme. */
   background: var(--blanc);
   aspect-ratio: 1 / 1;
   object-fit: cover;
@@ -1584,15 +1596,17 @@ p:last-child { margin-bottom: 0; }
   align-items: start;
 }
 .coordonnees { font-size: var(--fs-small); }
-.coordonnees h3 { font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--blanc); }
+.coordonnees h3 { font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--ink); }
 .coordonnees__bloc { margin-bottom: 1.75rem; }
 .coordonnees__bloc p { margin-bottom: 0.35rem; }
 /* :not(.bouton) : la regle est faite pour les liens courants du bloc, poses
    a meme le panneau. Depuis que l'appel a l'action y est un bouton vert, elle
    l'atteignait aussi — un lien est plus specifique qu'une classe de bouton —
-   et son texte passait au creme sur le vert, a 1,9 dans les deux tenues. */
-.coordonnees a:not(.bouton) { color: var(--sur-panneau); }
-.coordonnees a:not(.bouton):hover { color: var(--ambre); }
+   et son texte passait au creme sur le vert, a 1,9 dans les deux tenues.
+   Le bloc repose sur le ciel : encre, puis lac au survol (l'ambre n'y tient
+   que 1,8). */
+.coordonnees a:not(.bouton) { color: var(--ink); }
+.coordonnees a:not(.bouton):hover { color: var(--lac); }
 
 .formulaire {
   background: var(--surface);
