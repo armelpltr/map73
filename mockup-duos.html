@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : vingt duos</title>
+<style>
+  /* Maquette de travail, hors site : elle charge la vraie page d'accueil en
+     tenue sombre et remplace ses deux fonds. Le sombre prend la place de la
+     nuit (hero, sections sombres, et par derivation l'en-tete et les
+     cartes) ; le clair prend la place du ciel. Le vert #94c412 ne bouge pas :
+     chaque duo a ete choisi pour lui. */
+  :root {
+    --nuit: #050b16;
+    --panneau: #12213c;
+    --trait: #1b2c47;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+    --vert: #94c412;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.25rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; }
+  .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
+  .reglage {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+
+  .duos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.4rem;
+    width: 100%;
+  }
+  .duo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.5rem 0.3rem 0.3rem;
+    border: 2px solid var(--trait);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.78rem;
+    text-align: left;
+    cursor: pointer;
+  }
+  .duo:hover { border-color: var(--doux); }
+  .duo[aria-pressed="true"] { border-color: var(--vert); }
+  .duo--choix { position: relative; }
+  .duo--choix::after {
+    content: "★";
+    position: absolute;
+    top: -0.55rem;
+    right: -0.35rem;
+    color: var(--vert);
+    font-size: 0.9rem;
+  }
+  /* L'echantillon : le sombre, le clair, et le vert pose sur les deux. */
+  .duo__ech {
+    position: relative;
+    display: flex;
+    flex: none;
+    width: 40px;
+    height: 28px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #3a4b66;
+  }
+  .duo__ech span { flex: 1; display: grid; place-items: center; }
+  .duo__ech i { width: 7px; height: 7px; border-radius: 50%; background: var(--vert); }
+  .duo__nom { line-height: 1.2; }
+
+  .fiche { display: flex; flex-wrap: wrap; gap: 0.3rem 1.25rem; width: 100%; margin: 0; color: var(--doux); font-size: 0.8rem; }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+  .fiche .alerte { color: #e8a33d; font-weight: 600; }
+
+  .scene { flex: 1; display: flex; justify-content: center; min-height: 0; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--nuit); }
+  .scene--mobile iframe { width: 390px; }
+  @media (max-width: 700px) {
+    .reglages { margin-left: 0; }
+    .duos { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Vingt duos avec le vert #94c412</h1>
+  <div class="reglages">
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
+  </div>
+  <div class="duos" id="duos"></div>
+  <p class="fiche" id="fiche"></p>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="index.html" title="Page d'accueil repeinte avec le duo choisi"></iframe>
+</div>
+
+<script>
+  /* Le vert du logo est un jaune-vert chaud (76 deg). Il tient sur les bleus
+     profonds, les verts sombres et les neutres chauds ; il chante contre les
+     clairs chauds (creme, sable, ivoire) et se fait plus discret contre les
+     clairs froids. L'etoile marque le duo que je choisirais. */
+  const DUOS = [
+    { nom: "Nuit et ciel", sombre: "#050b16", clair: "#e1eefa", note: "Le site en ligne aujourd'hui." },
+    { nom: "Marine et crème", sombre: "#0b1a2e", clair: "#f6f1e4", choix: true,
+      note: "Mon choix : le bleu reste l'identité, la crème réchauffe et fait ressortir le vert, qui est lui-même chaud. Sobre, rassurant pour des parents." },
+    { nom: "Encre et blanc cassé", sombre: "#0f1b2d", clair: "#f7f7f2", note: "Le plus neutre : tout le relief vient du vert." },
+    { nom: "Forêt et menthe", sombre: "#0e1f17", clair: "#e8f3e0", note: "Camaïeu de verts : le vert du logo devient la note la plus vive." },
+    { nom: "Pétrole et sable", sombre: "#0b2a33", clair: "#f3ecdc", note: "Bleu-vert profond et sable : naturel, apaisé." },
+    { nom: "Anthracite et lin", sombre: "#15181d", clair: "#f2efe8", note: "Presque noir et lin : éditorial, très contrasté." },
+    { nom: "Ardoise et brume", sombre: "#1c2836", clair: "#e6ebf0", note: "Gris bleutés, froids et doux : le vert fait tout le pop." },
+    { nom: "Indigo et lavande", sombre: "#16163a", clair: "#ecebf8", note: "Violet-bleu : singulier, le vert claque fort dessus." },
+    { nom: "Canard et écume", sombre: "#063f4a", clair: "#e3f2ef", note: "Bleu canard et vert d'eau : frais, aquatique." },
+    { nom: "Olive et ivoire", sombre: "#1b2210", clair: "#faf7ea", note: "Ton sur ton avec le vert : très cohérent, un peu terreux." },
+    { nom: "Prune et rose poudré", sombre: "#2a1530", clair: "#f6e9ec", note: "Le contrepoint : le violet est presque complémentaire du vert." },
+    { nom: "Bleu roi et glacier", sombre: "#0b3d7a", clair: "#eaf3fb", note: "Vif et scolaire ; le bleu roi est plus présent que le vert." },
+    { nom: "Expresso et latte", sombre: "#24170f", clair: "#f4ebdc", note: "Bruns chauds : chaleureux, cosy, moins « tech »." },
+    { nom: "Noir et blanc", sombre: "#0a0a0a", clair: "#ffffff", note: "Le contraste maximal : le vert est la seule couleur du site." },
+    { nom: "Bleu nuit et paille", sombre: "#14243b", clair: "#fbf6dc", note: "Le bleu du logo et un jaune très pâle, cousin du vert." },
+    { nom: "Sapin et sauge", sombre: "#0f2b22", clair: "#e4ecdf", note: "Verts plus froids que le logo : nature, plus calme que la forêt." },
+    { nom: "Navy et pêche", sombre: "#101c3d", clair: "#fbeee4", note: "Marine franc et pêche pâle : chaleureux et moderne." },
+    { nom: "Graphite et perle", sombre: "#222a35", clair: "#eef0f3", note: "Gris moyens : le duo le plus discret, le moins marqué." },
+    { nom: "Bordeaux et crème rosée", sombre: "#2a0f17", clair: "#f7ece6", note: "Audacieux : rouge sombre contre vert, à manier avec soin." },
+    { nom: "Acier et ciel brumeux", sombre: "#1e3a4c", clair: "#e5eef2", note: "Bleu acier moyen : plus clair que la nuit, moins dramatique." },
+  ];
+
+  const lum = (hex) => {
+    const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const contraste = (a, b) => {
+    const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+    return (x + 0.05) / (y + 0.05);
+  };
+  const note = (a, b, seuil = 4.5) => {
+    const v = contraste(a, b);
+    const t = v.toFixed(1).replace(".", ",");
+    return v < seuil ? `<span class="alerte">${t}</span>` : `<strong>${t}</strong>`;
+  };
+
+  /* Sur le clair, le texte prend le sombre du duo s'il y tient au moins 7 :
+     le site parle alors d'une seule voix. Sinon, l'encre actuelle. Le lien
+     reste le lac assombri du site. */
+  const encreDe = (d) => (contraste(d.sombre, d.clair) >= 7 ? d.sombre : "#14243b");
+  const LIEN = "#22688c";
+
+  let duo;
+  const cadre = document.getElementById("site");
+
+  function peindre() {
+    const doc = cadre.contentDocument;
+    if (doc && doc.head) {
+      let style = doc.getElementById("mq-duo");
+      if (!style) {
+        style = doc.createElement("style");
+        style.id = "mq-duo";
+        doc.head.appendChild(style);
+      }
+      const S = duo.sombre;
+      const C = duo.clair;
+      const E = encreDe(duo);
+      // Les aplats sombres derivent du sombre, un cran plus clair chacun :
+      // fond < carte < panneau < filet, comme dans la tenue sombre du site.
+      style.textContent = `
+        .bascule-theme { display: none !important; }
+        :root[data-theme] {
+          --paper: ${S};
+          --surface: color-mix(in srgb, ${S}, #fff 5%);
+          --paper-2: color-mix(in srgb, ${S}, #fff 8%);
+          --panneau: color-mix(in srgb, ${S}, #fff 8%);
+          --trait: color-mix(in srgb, ${S}, #fff 14%);
+          --ciel: ${C};
+        }
+        body { background: ${S}; }
+        .section--ciel {
+          --ink: ${E};
+          --paper: color-mix(in srgb, ${C}, #fff 55%);
+          --surface: color-mix(in srgb, ${C}, #fff 75%);
+          --panneau: ${S};
+          --trait: color-mix(in srgb, ${C}, ${E} 16%);
+          --lac: ${LIEN};
+        }`;
+      doc.documentElement.dataset.theme = "dark";
+    }
+
+    document.querySelectorAll(".duo").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.nom === duo.nom)));
+    document.getElementById("fiche").innerHTML =
+      `<span><strong>${duo.nom} ${duo.sombre} / ${duo.clair}</strong> — ${duo.note}</span>` +
+      `<span>Sur le sombre : texte ${note("#e8f0fb", duo.sombre)}, vert ${note("#94c412", duo.sombre)}</span>` +
+      `<span>Sur le clair : texte ${note(encreDe(duo), duo.clair)}, liens ${note(LIEN, duo.clair)}, vert (traits) ${note("#94c412", duo.clair, 1.5)}</span>`;
+  }
+
+  const liste = document.getElementById("duos");
+  DUOS.forEach((d, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "duo" + (d.choix ? " duo--choix" : "");
+    b.dataset.nom = d.nom;
+    b.title = d.note;
+    b.innerHTML =
+      `<span class="duo__ech"><span style="background:${d.sombre}"><i></i></span><span style="background:${d.clair}"><i></i></span></span>` +
+      `<span class="duo__nom">${i}. ${d.nom}</span>`;
+    b.addEventListener("click", () => { duo = d; peindre(); });
+    liste.appendChild(b);
+  });
+
+  // mockup-duos.html#1 ouvre directement sur le duo 1.
+  duo = DUOS[Number(location.hash.slice(1))] || DUOS[0];
+  peindre();
+  cadre.addEventListener("load", peindre);
+
+  document.querySelectorAll(".reglage").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".reglage").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      document.getElementById("scene").classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+    });
+  });
+</script>
+</body>
+</html>
