@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : alternance blanc et bleu nuit</title>
+<style>
+  /* Maquette de travail, hors site : elle charge la vraie page d'accueil
+     dans un cadre et n'en change que les fonds. Le hero reste celui de la
+     tenue sombre ; ensuite les sections alternent blanc puis bleu nuit,
+     jusqu'au pied de page. Le site en ligne n'est pas touche. */
+  :root {
+    --nuit: #050b16;
+    --panneau: #12213c;
+    --trait: #1b2c47;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.5rem;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; }
+  .ordre { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0; padding: 0; list-style: none; font-size: 0.85rem; color: var(--doux); }
+  .ordre li { display: flex; align-items: center; gap: 0.35rem; }
+  .ordre li + li::before { content: "→"; margin-right: 0.35rem; }
+  .pastille { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #3a4b66; }
+  .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
+  .reglage {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+  .scene { flex: 1; display: flex; justify-content: center; min-height: 0; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+  .scene--mobile iframe { width: 390px; }
+  @media (max-width: 700px) { .reglages { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Alternance des fonds</h1>
+  <ol class="ordre">
+    <li><span class="pastille" style="background:#050b16"></span>Hero (inchangé)</li>
+    <li><span class="pastille" style="background:#ffffff"></span>Blanc</li>
+    <li><span class="pastille" style="background:#14243b"></span>Bleu nuit</li>
+    <li>et ainsi de suite</li>
+  </ol>
+  <div class="reglages">
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
+  </div>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="index.html" title="Page d'accueil avec l'alternance blanc et bleu nuit"></iframe>
+</div>
+
+<script>
+  const NUIT = "#050b16";   // le fond du hero en tenue sombre
+  const BLANC = "#ffffff";
+  const BLEU = "#14243b";   // --panneau / --ink : le bleu nuit du site
+
+  /* La page part de la tenue claire, qui sait deja poser du texte sur le
+     bleu nuit (section--encre) et sur le clair. Seul le hero repasse en
+     tenue sombre : on lui redonne localement les jetons de la nuit et les
+     trois effets qui n'existent qu'en sombre (halo, courbes, lucioles). */
+  const CSS = `
+    .bascule-theme { display: none !important; }
+    /* Le pied est blanc : le fond de page sous lui aussi. */
+    body { background: ${BLANC}; }
+
+    .hero {
+      color-scheme: dark;
+      --paper: ${NUIT};
+      --paper-2: #12213c;
+      --ink: #e8f0fb;
+      --ink-soft-page: #bac9de;
+      --ink-soft: var(--ink-soft-page);
+      --vert-texte-page: #94c412;
+      --vert-texte: var(--vert-texte-page);
+      --lac: #74c6ea;
+      --trait: #1b2c47;
+      --surface: #0d1929;
+      --panneau: #12213c;
+      --voile: rgba(232, 240, 251, 0.05);
+      --grille: var(--trait);
+      --lien: var(--lac);
+      --lien-survol: var(--ink);
+      background: ${NUIT};
+      color: var(--ink);
+    }
+    .hero::before { opacity: 1 !important; }
+    .hero__fond { color: var(--vert) !important; }
+    .hero__lucioles { opacity: 1 !important; }
+
+    /* Les sections blanches : la tenue claire, posee sur du blanc franc.
+       Les cartes qui reposaient sur --surface (presque blanc) prennent le
+       papier creme, sinon elles disparaitraient dans le fond. */
+    .mq-blanc {
+      --paper: ${BLANC};
+      --surface: #f7f6f1;
+      background: ${BLANC} !important;
+    }
+    .mq-bleu { --panneau: ${BLEU}; }
+  `;
+
+  const VAGUE = `
+    <svg viewBox="0 0 600 54" preserveAspectRatio="none" focusable="false">
+      <path class="remplissage" d="M0 30C120 8 240 46 360 30S540 4 600 20V54H0Z"/>
+      <path class="niveau" d="M0 22C120 0 240 38 360 22S540 -4 600 12"/>
+      <path class="niveau" d="M0 14C120 -8 240 30 360 14S540 -12 600 4"/>
+    </svg>`;
+
+  function transformer() {
+    const doc = cadre.contentDocument;
+    if (!doc || !doc.querySelector(".hero") || doc.getElementById("mq-style")) return;
+
+    doc.documentElement.dataset.theme = "light";
+    const style = doc.createElement("style");
+    style.id = "mq-style";
+    style.textContent = CSS;
+    doc.head.appendChild(style);
+
+    // Les vagues d'origine suivent l'ancienne alternance : on les retire et
+    // on en repose une entre chaque bloc, aux couleurs de ses deux voisins.
+    doc.querySelectorAll(".couture").forEach((c) => c.remove());
+
+    const hero = doc.querySelector(".hero");
+    const sections = [...doc.querySelectorAll("main > section:not(.hero)")];
+    const pied = doc.querySelector(".pied");
+    const blocs = [{ el: hero, fond: NUIT }];
+
+    [...sections, pied].forEach((el, i) => {
+      const blanc = i % 2 === 0;
+      el.classList.remove("section--encre", "section--craie", "mq-blanc", "mq-bleu");
+      if (blanc) {
+        el.classList.add("mq-blanc");
+      } else {
+        el.classList.add("mq-bleu");
+        if (el !== pied) el.classList.add("section--encre");
+        else el.style.cssText += `background:${BLEU};color:#f7f6f1;`;
+      }
+      blocs.push({ el, fond: blanc ? BLANC : BLEU });
+    });
+
+    for (let i = 0; i < blocs.length - 1; i++) {
+      const avant = blocs[i];
+      const apres = blocs[i + 1];
+      const vague = doc.createElement("div");
+      vague.className = "couture" + (i % 2 ? " couture--miroir" : "");
+      vague.setAttribute("aria-hidden", "true");
+      // Les niveaux sont dessines dans la couleur du texte de la section
+      // qui s'acheve, a faible intensite : creme sur le sombre, encre sur
+      // le blanc.
+      const niveau = avant.fond === BLANC ? "rgba(20, 36, 59, 0.22)" : "rgba(247, 246, 241, 0.24)";
+      vague.style.cssText =
+        `--couture-sortant:${avant.fond};--couture-entrant:${apres.fond};--couture-niveau:${niveau};`;
+      vague.innerHTML = VAGUE;
+      avant.el.after(vague);
+    }
+  }
+
+  const cadre = document.getElementById("site");
+  cadre.addEventListener("load", transformer);
+  if (cadre.contentDocument && cadre.contentDocument.readyState === "complete") transformer();
+
+  document.querySelectorAll(".reglage").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".reglage").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      document.getElementById("scene").classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+    });
+  });
+</script>
+</body>
+</html>
