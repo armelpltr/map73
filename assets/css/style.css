@@ -143,11 +143,12 @@
   --sur-panneau: #f7f6f1;
   --sur-panneau-doux: #b9c3d4;
 
-  /* Halo discret : a 0,28 sur un fluo, il mangeait le texte autour. */
-  --lueur: 0 0 14px rgba(148, 196, 18, 0.20);
-  --lueur-forte: 0 0 26px rgba(148, 196, 18, 0.30);
+  /* Pas de halo vert : un halo est un vert qui s'estompe, et le site n'en
+     porte qu'un, #94c412, pur. La trame passe au trait, sans vert. */
+  --lueur: 0 0 0 rgba(0, 0, 0, 0);
+  --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
   --voile: rgba(232, 240, 251, 0.05);
-  --grille: rgba(148, 196, 18, 0.07);
+  --grille: var(--trait);
 
   --equerre-neutre: color-mix(in srgb, var(--trait) 62%, var(--ink));
 }
@@ -176,10 +177,10 @@
     --panneau: #12213c;
     --sur-panneau: #f7f6f1;
     --sur-panneau-doux: #b9c3d4;
-    --lueur: 0 0 14px rgba(148, 196, 18, 0.20);
-    --lueur-forte: 0 0 26px rgba(148, 196, 18, 0.30);
+    --lueur: 0 0 0 rgba(0, 0, 0, 0);
+    --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
     --voile: rgba(232, 240, 251, 0.05);
-    --grille: rgba(148, 196, 18, 0.07);
+    --grille: var(--trait);
   }
 }
 
@@ -1312,7 +1313,7 @@ p:last-child { margin-bottom: 0; }
   /* Melange avec --surface, le fond de la carte, et non --blanc : celui-ci
      est blanc dans les deux tenues, et la ligne restait donc vert pale sous
      un texte passe au clair — 1,0 de contraste en tenue sombre. */
-  background: color-mix(in srgb, var(--vert) 16%, var(--surface));
+  box-shadow: inset 0 0 0 1px var(--vert);
 }
 
 .fondatrice__ligne { display: grid; gap: 0.2rem; }
@@ -1462,13 +1463,12 @@ p:last-child { margin-bottom: 0; }
   font-size: 8rem;
   line-height: 1;
   color: var(--vert);
-  opacity: 0.16;
   transform: translateY(12px);
   pointer-events: none;
-  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) !important, opacity 0.35s ease !important;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) !important;
 }
 .temoignage:hover::after,
-.temoignage:focus-within::after { transform: translateY(-4px); opacity: 0.3; }
+.temoignage:focus-within::after { transform: translateY(-4px); }
 
 .temoignage blockquote,
 .temoignage figcaption { position: relative; z-index: 1; }
@@ -1617,7 +1617,7 @@ p:last-child { margin-bottom: 0; }
   margin-top: 1rem;
   padding: 0.75rem 1rem;
   border-radius: var(--rayon);
-  background: color-mix(in srgb, var(--vert) 12%, var(--surface));
+  background: transparent;
   border: 1px solid var(--vert);
 }
 
@@ -2083,7 +2083,6 @@ p:last-child { margin-bottom: 0; }
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(60% 55% at 78% 18%, color-mix(in srgb, var(--vert) 12%, transparent), transparent 70%),
     radial-gradient(70% 60% at 12% 85%, color-mix(in srgb, var(--lac) 14%, transparent), transparent 72%);
   opacity: 0;
   transition: opacity 0.3s;
@@ -2107,15 +2106,9 @@ p:last-child { margin-bottom: 0; }
 }
 
 .hero__fond { color: var(--trait); }
-[data-theme="dark"] .hero__fond {
-  color: color-mix(in srgb, var(--vert) 32%, transparent);
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--vert) 45%, transparent));
-}
+[data-theme="dark"] .hero__fond { color: var(--vert); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .hero__fond {
-    color: color-mix(in srgb, var(--vert) 32%, transparent);
-    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--vert) 45%, transparent));
-  }
+  :root:not([data-theme="light"]) .hero__fond { color: var(--vert); }
 }
 
 /* Les points lumineux poses sur les courbes. Purement decoratifs, donc hors
@@ -2144,11 +2137,11 @@ p:last-child { margin-bottom: 0; }
   animation: luciole 5.5s ease-in-out infinite;
 }
 @keyframes luciole {
-  0%, 100% { opacity: 0.35; transform: scale(0.8); }
-  50%      { opacity: 1;    transform: scale(1.15); }
+  0%, 100% { transform: scale(0.8); }
+  50%      { transform: scale(1.15); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .luciole { animation: none; opacity: 0.75; }
+  .luciole { animation: none; }
 }
 
 /* Le titre : « un avenir. » passe au vert, comme sur la maquette. La classe
@@ -2242,9 +2235,11 @@ p:last-child { margin-bottom: 0; }
 }
 .hero__classe-bouton:hover {
   box-shadow: var(--lueur-forte);
-  background: color-mix(in srgb, var(--vert) 10%, transparent);
+  background: var(--vert);
+  color: var(--sur-vert);
 }
 .hero__classe-bouton svg { flex: none; color: var(--vert-texte); }
+.hero__classe-bouton:hover svg { color: var(--sur-vert); }
 
 /* ---------- Le dialogue « en quelle classe ? » ---------- */
 /* <dialog> natif : il gere le piege de tabulation, Echap et le retour du
@@ -2259,7 +2254,10 @@ p:last-child { margin-bottom: 0; }
   color: var(--ink);
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
 }
-[data-theme="dark"] .modale-classe { border-color: color-mix(in srgb, var(--vert) 35%, transparent); }
+[data-theme="dark"] .modale-classe { border-color: var(--vert); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .modale-classe { border-color: var(--vert); }
+}
 
 .modale-classe::backdrop {
   background: color-mix(in srgb, #050b16 72%, transparent);
@@ -2491,10 +2489,10 @@ p:last-child { margin-bottom: 0; }
     overflow: visible;
     color: var(--trait);
   }
-  [data-theme="dark"] .adn__arc {
-    color: color-mix(in srgb, var(--vert) 45%, transparent);
-    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--vert) 40%, transparent));
-  }
+  [data-theme="dark"] .adn__arc { color: var(--vert); }
+}
+@media (min-width: 900px) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .adn__arc { color: var(--vert); }
 }
 
 .adn__liste--arc {
@@ -2664,10 +2662,9 @@ p:last-child { margin-bottom: 0; }
 .onglet-niveau:hover { color: var(--ink); border-color: var(--ink-soft); }
 
 .onglet-niveau[aria-selected="true"] {
-  color: var(--vert-texte);
+  color: var(--sur-vert);
   border-color: var(--vert);
-  background: color-mix(in srgb, var(--vert) 12%, transparent);
-  box-shadow: var(--lueur);
+  background: var(--vert);
 }
 
 .onglet-niveau__puce {
