@@ -108,20 +108,21 @@
   /* Chaque proposition donne trois teintes : le fond clair, les cartes posees
      sur ce fond (un cran a cote, sinon elles s'y fondent), et le bleu. Le
      texte reste celui du site : encre #14243b sur le clair, creme sur le
-     bleu. */
+     bleu. Les liens du site (#2b759d) sont regles pour le blanc : sur un
+     fond teinte ils tombent a 4,3 ; ces palettes les assombrissent un peu. */
   const PALETTES = [
     { nom: "Blanc et bleu nuit", clair: "#ffffff", carte: "#f7f6f1", bleu: "#14243b",
       note: "La première maquette : blanc franc, bleu nuit du site." },
-    { nom: "Crème et marine", clair: "#f7f3ea", carte: "#fffdf8", bleu: "#0f1d33",
-      note: "Plus chaud, plus doux à l’œil ; le bleu se rapproche du hero." },
-    { nom: "Perle et ardoise", clair: "#eef1f5", carte: "#ffffff", bleu: "#24344d",
-      note: "Gris bleuté froid et bleu plus clair : moins d’écart entre les bandes." },
-    { nom: "Sable et encre", clair: "#f4eee3", carte: "#fbf8f2", bleu: "#0c1626",
-      note: "Papier sable, bleu presque noir : le plus éditorial." },
-    { nom: "Glacier et bleu profond", clair: "#e9f2f8", carte: "#ffffff", bleu: "#0d2b4e",
-      note: "Bleu ciel pâle et bleu plus saturé : tout le site tire vers le bleu." },
-    { nom: "Sauge et pétrole", clair: "#eef3ea", carte: "#f8fbf6", bleu: "#0f2e3a",
-      note: "Vert très pâle et bleu-vert : fait écho au vert du logo." },
+    { nom: "Crème et marine", clair: "#fbf0d9", carte: "#fffaf0", bleu: "#0a1a3a", lien: "#22688c",
+      note: "Crème franchement chaud, presque jaune paille, contre un marine saturé." },
+    { nom: "Béton et ardoise", clair: "#e2e6ec", carte: "#f4f6f9", bleu: "#2e3d55", lien: "#22688c",
+      note: "Gris froid et bleu ardoise clair : le plus sobre, le moins contrasté." },
+    { nom: "Lavande et indigo", clair: "#efeafb", carte: "#faf8ff", bleu: "#221d52", lien: "#22688c",
+      note: "Le bleu tire vers le violet : plus singulier, moins « institution »." },
+    { nom: "Ciel et bleu roi", clair: "#e1eefa", carte: "#f5faff", bleu: "#0b3d7a", lien: "#22688c",
+      note: "Bleu vif et lumineux : le plus énergique, le plus « école »." },
+    { nom: "Sauge et canard", clair: "#e4efdc", carte: "#f5f9f1", bleu: "#063f4a", lien: "#22688c",
+      note: "Vert pâle et bleu canard : nature, en écho au vert du logo." },
   ];
 
   /* La page part de la tenue claire, qui sait deja poser du texte sur le
@@ -163,6 +164,7 @@
     .mq-blanc {
       --paper: var(--mq-clair);
       --surface: var(--mq-carte);
+      --lac: var(--mq-lien);
       background: var(--mq-clair) !important;
     }
     .mq-bleu { --panneau: var(--mq-bleu); }
@@ -252,6 +254,7 @@
       r.setProperty("--mq-clair", palette.clair);
       r.setProperty("--mq-carte", palette.carte);
       r.setProperty("--mq-bleu", palette.bleu);
+      r.setProperty("--mq-lien", palette.lien || "#2b759d");
     }
     document.getElementById("ordre-clair").style.background = palette.clair;
     document.getElementById("ordre-bleu").style.background = palette.bleu;
@@ -262,7 +265,7 @@
       b.setAttribute("aria-pressed", String(b.dataset.nom === palette.nom)));
     document.getElementById("fiche").innerHTML =
       `<span><strong>${palette.clair} / ${palette.bleu}</strong> — ${palette.note}</span>` +
-      `<span>Sur le clair : texte ${note("#14243b", palette.clair)}, texte doux ${note("#4a5872", palette.clair)}, liens ${note("#2b759d", palette.clair)}</span>` +
+      `<span>Sur le clair : texte ${note("#14243b", palette.clair)}, texte doux ${note("#4a5872", palette.clair)}, liens ${note(palette.lien || "#2b759d", palette.clair)}</span>` +
       `<span>Sur le bleu : texte ${note("#f7f6f1", palette.bleu)}, texte doux ${note("#b9c3d4", palette.bleu)}, liens ${note("#79b8d8", palette.bleu)}, vert ${note("#94c412", palette.bleu)}</span>`;
   }
 
