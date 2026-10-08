@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Maquette : alternance blanc et bleu nuit</title>
+<title>Maquette : alternance des fonds</title>
 <style>
   /* Maquette de travail, hors site : elle charge la vraie page d'accueil
      dans un cadre et n'en change que les fonds. Le hero reste celui de la
@@ -40,6 +40,28 @@
   .ordre li { display: flex; align-items: center; gap: 0.35rem; }
   .ordre li + li::before { content: "→"; margin-right: 0.35rem; }
   .pastille { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #3a4b66; }
+  .palettes { display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%; }
+  .palette {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+    border: 2px solid var(--trait);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .palette:hover { border-color: var(--doux); }
+  .palette[aria-pressed="true"] { border-color: #94c412; }
+  .palette__duo { display: flex; border-radius: 50%; overflow: hidden; width: 26px; height: 26px; border: 1px solid #3a4b66; flex: none; }
+  .palette__duo span { flex: 1; }
+  .palette__nom { font-weight: 600; }
+  .fiche { display: flex; flex-wrap: wrap; gap: 0.3rem 1.25rem; width: 100%; margin: 0; color: var(--doux); font-size: 0.8rem; }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+  .fiche .alerte { color: #e8a33d; font-weight: 600; }
   .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
   .reglage {
     padding: 0.4rem 0.8rem;
@@ -64,24 +86,43 @@
   <h1>Alternance des fonds</h1>
   <ol class="ordre">
     <li><span class="pastille" style="background:#050b16"></span>Hero (inchangé)</li>
-    <li><span class="pastille" style="background:#ffffff"></span>Blanc</li>
-    <li><span class="pastille" style="background:#14243b"></span>Bleu nuit</li>
+    <li><span class="pastille" id="ordre-clair"></span><span id="ordre-clair-nom">Clair</span></li>
+    <li><span class="pastille" id="ordre-bleu"></span><span id="ordre-bleu-nom">Bleu</span></li>
     <li>et ainsi de suite</li>
   </ol>
   <div class="reglages">
     <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
     <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
   </div>
+  <div class="palettes" id="palettes"></div>
+  <p class="fiche" id="fiche"></p>
 </header>
 
 <div class="scene" id="scene">
-  <iframe id="site" src="index.html" title="Page d'accueil avec l'alternance blanc et bleu nuit"></iframe>
+  <iframe id="site" src="index.html" title="Page d'accueil avec l'alternance des fonds"></iframe>
 </div>
 
 <script>
   const NUIT = "#050b16";   // le fond du hero en tenue sombre
-  const BLANC = "#ffffff";
-  const BLEU = "#14243b";   // --panneau / --ink : le bleu nuit du site
+
+  /* Chaque proposition donne trois teintes : le fond clair, les cartes posees
+     sur ce fond (un cran a cote, sinon elles s'y fondent), et le bleu. Le
+     texte reste celui du site : encre #14243b sur le clair, creme sur le
+     bleu. */
+  const PALETTES = [
+    { nom: "Blanc et bleu nuit", clair: "#ffffff", carte: "#f7f6f1", bleu: "#14243b",
+      note: "La première maquette : blanc franc, bleu nuit du site." },
+    { nom: "Crème et marine", clair: "#f7f3ea", carte: "#fffdf8", bleu: "#0f1d33",
+      note: "Plus chaud, plus doux à l’œil ; le bleu se rapproche du hero." },
+    { nom: "Perle et ardoise", clair: "#eef1f5", carte: "#ffffff", bleu: "#24344d",
+      note: "Gris bleuté froid et bleu plus clair : moins d’écart entre les bandes." },
+    { nom: "Sable et encre", clair: "#f4eee3", carte: "#fbf8f2", bleu: "#0c1626",
+      note: "Papier sable, bleu presque noir : le plus éditorial." },
+    { nom: "Glacier et bleu profond", clair: "#e9f2f8", carte: "#ffffff", bleu: "#0d2b4e",
+      note: "Bleu ciel pâle et bleu plus saturé : tout le site tire vers le bleu." },
+    { nom: "Sauge et pétrole", clair: "#eef3ea", carte: "#f8fbf6", bleu: "#0f2e3a",
+      note: "Vert très pâle et bleu-vert : fait écho au vert du logo." },
+  ];
 
   /* La page part de la tenue claire, qui sait deja poser du texte sur le
      bleu nuit (section--encre) et sur le clair. Seul le hero repasse en
@@ -89,8 +130,8 @@
      trois effets qui n'existent qu'en sombre (halo, courbes, lucioles). */
   const CSS = `
     .bascule-theme { display: none !important; }
-    /* Le pied est blanc : le fond de page sous lui aussi. */
-    body { background: ${BLANC}; }
+    /* Le pied est clair : le fond de page sous lui aussi. */
+    body { background: var(--mq-clair); }
 
     .hero {
       color-scheme: dark;
@@ -116,15 +157,16 @@
     .hero__fond { color: var(--vert) !important; }
     .hero__lucioles { opacity: 1 !important; }
 
-    /* Les sections blanches : la tenue claire, posee sur du blanc franc.
-       Les cartes qui reposaient sur --surface (presque blanc) prennent le
-       papier creme, sinon elles disparaitraient dans le fond. */
+    /* Les sections claires : la tenue claire, posee sur le fond choisi.
+       Les cartes qui reposaient sur --surface prennent la teinte « carte »,
+       un cran a cote, sinon elles disparaitraient dans le fond. */
     .mq-blanc {
-      --paper: ${BLANC};
-      --surface: #f7f6f1;
-      background: ${BLANC} !important;
+      --paper: var(--mq-clair);
+      --surface: var(--mq-carte);
+      background: var(--mq-clair) !important;
     }
-    .mq-bleu { --panneau: ${BLEU}; }
+    .mq-bleu { --panneau: var(--mq-bleu); }
+    .pied.mq-bleu { background: var(--mq-bleu); color: #f7f6f1; }
   `;
 
   const VAGUE = `
@@ -151,7 +193,7 @@
     const hero = doc.querySelector(".hero");
     const sections = [...doc.querySelectorAll("main > section:not(.hero)")];
     const pied = doc.querySelector(".pied");
-    const blocs = [{ el: hero, fond: NUIT }];
+    const blocs = [{ el: hero, fond: NUIT, ton: "nuit" }];
 
     [...sections, pied].forEach((el, i) => {
       const blanc = i % 2 === 0;
@@ -161,9 +203,8 @@
       } else {
         el.classList.add("mq-bleu");
         if (el !== pied) el.classList.add("section--encre");
-        else el.style.cssText += `background:${BLEU};color:#f7f6f1;`;
       }
-      blocs.push({ el, fond: blanc ? BLANC : BLEU });
+      blocs.push({ el, fond: blanc ? "var(--mq-clair)" : "var(--mq-bleu)", ton: blanc ? "clair" : "bleu" });
     });
 
     for (let i = 0; i < blocs.length - 1; i++) {
@@ -175,15 +216,73 @@
       // Les niveaux sont dessines dans la couleur du texte de la section
       // qui s'acheve, a faible intensite : creme sur le sombre, encre sur
       // le blanc.
-      const niveau = avant.fond === BLANC ? "rgba(20, 36, 59, 0.22)" : "rgba(247, 246, 241, 0.24)";
+      const niveau = avant.ton === "clair" ? "rgba(20, 36, 59, 0.22)" : "rgba(247, 246, 241, 0.24)";
       vague.style.cssText =
         `--couture-sortant:${avant.fond};--couture-entrant:${apres.fond};--couture-niveau:${niveau};`;
       vague.innerHTML = VAGUE;
       avant.el.after(vague);
     }
+    peindre();
+  }
+
+  const lum = (hex) => {
+    const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const contraste = (a, b) => {
+    const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+    return (x + 0.05) / (y + 0.05);
+  };
+  // Sous 4,5, un petit texte ne passe pas le niveau AA : on le signale.
+  const note = (a, b) => {
+    const v = contraste(a, b);
+    const t = v.toFixed(1).replace(".", ",");
+    return v < 4.5 ? `<span class="alerte">${t}</span>` : `<strong>${t}</strong>`;
+  };
+
+  let palette;
+
+  // Les teintes passent par trois variables posees sur la racine du cadre :
+  // changer de proposition ne reconstruit rien, la cascade suit.
+  function peindre() {
+    const doc = cadre.contentDocument;
+    if (doc && doc.documentElement) {
+      const r = doc.documentElement.style;
+      r.setProperty("--mq-clair", palette.clair);
+      r.setProperty("--mq-carte", palette.carte);
+      r.setProperty("--mq-bleu", palette.bleu);
+    }
+    document.getElementById("ordre-clair").style.background = palette.clair;
+    document.getElementById("ordre-bleu").style.background = palette.bleu;
+    const [nomClair, nomBleu] = palette.nom.split(" et ");
+    document.getElementById("ordre-clair-nom").textContent = nomClair;
+    document.getElementById("ordre-bleu-nom").textContent = nomBleu[0].toUpperCase() + nomBleu.slice(1);
+    document.querySelectorAll(".palette").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.nom === palette.nom)));
+    document.getElementById("fiche").innerHTML =
+      `<span><strong>${palette.clair} / ${palette.bleu}</strong> — ${palette.note}</span>` +
+      `<span>Sur le clair : texte ${note("#14243b", palette.clair)}, texte doux ${note("#4a5872", palette.clair)}, liens ${note("#2b759d", palette.clair)}</span>` +
+      `<span>Sur le bleu : texte ${note("#f7f6f1", palette.bleu)}, texte doux ${note("#b9c3d4", palette.bleu)}, liens ${note("#79b8d8", palette.bleu)}, vert ${note("#94c412", palette.bleu)}</span>`;
   }
 
   const cadre = document.getElementById("site");
+
+  const liste = document.getElementById("palettes");
+  PALETTES.forEach((p, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "palette";
+    b.dataset.nom = p.nom;
+    b.innerHTML = `<span class="palette__duo"><span style="background:${p.clair}"></span><span style="background:${p.bleu}"></span></span>` +
+      `<span class="palette__nom">${i}. ${p.nom}</span>`;
+    b.addEventListener("click", () => { palette = p; peindre(); });
+    liste.appendChild(b);
+  });
+
+  // mockup-alternance.html#2 ouvre directement sur la proposition 2.
+  palette = PALETTES[Number(location.hash.slice(1))] || PALETTES[0];
+  peindre();
   cadre.addEventListener("load", transformer);
   if (cadre.contentDocument && cadre.contentDocument.readyState === "complete") transformer();
 
