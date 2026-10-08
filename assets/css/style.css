@@ -2531,7 +2531,7 @@ p:last-child { margin-bottom: 0; }
   width: 1px;
   height: 26px;
   margin: 0 auto 0.9rem;
-  background: linear-gradient(var(--vert), transparent);
+  background: var(--vert);
 }
 /* Le point pose sur l'arc. En CSS plutot que dans le SVG : il tombe ainsi
    pile au centre de la colonne, quelle que soit la gouttiere de la grille. */
