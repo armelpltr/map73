@@ -38,14 +38,11 @@
      papier), il ne porte que l'aplat, le trait et le dessin ; tout ce qui est
      texte sur fond clair prend l'encre ou le lac, sinon ca ne se lit plus. */
   --vert: #94c412;
-  /* Le meme vert, et rien d'autre : #55700a est #94c412 dont on n'a baisse
-     que la clarte. Teinte 76 deg et saturation 0,83 dans les deux cas ; seule
-     la clarte passe de 0,42 a 0,24. Il ne sert que la ou le vert doit porter
-     du texte sur un fond pale, ou le vert du logo ne tient que 1,91. Il doit
-     passer AA a 15 px aux deux endroits ou il ecrit : sur le papier nu (5,2)
-     et sur l'aplat vert a 12 % des onglets, qui eclaircit le fond et rogne le
-     contraste (4,8). Sur la nuit, c'est le vert du logo qui ecrit, a 9,7. */
-  --vert-texte-page: #55700a;
+  /* Le texte « vert » sur fond pale. Le site n'a qu'un vert, #94c412, et il
+     ne tient que 1,91 sur le papier : illisible. Un vert assombri en ferait
+     un second. Sur fond pale, ce texte s'ecrit donc a l'encre ; sur la nuit,
+     c'est le vert du logo qui ecrit, a 9,7. */
+  --vert-texte-page: var(--ink);
   --vert-texte: var(--vert-texte-page);
   /* Ce qui s'ecrit SUR un aplat de vert. Le vert du logo est une couleur
      moyenne : elle ne porte ni le creme ni le voile clair, dans aucune des
@@ -290,7 +287,6 @@ p:last-child { margin-bottom: 0; }
   border: 1.5px solid transparent;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 /* L'encre fixe, et non --ink : en tenue sombre --ink est un voile clair, qui
    ne tient que 1,8 sur le vert du logo. */
@@ -401,7 +397,6 @@ p:last-child { margin-bottom: 0; }
      texte courant, qui passe au voile clair en tenue sombre. */
   background: var(--panneau);
   border-bottom: 1px solid rgba(255, 253, 249, 0.14);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .entete[data-defile="oui"] {
   border-bottom-color: rgba(255, 253, 249, 0.22);
@@ -475,8 +470,7 @@ p:last-child { margin-bottom: 0; }
   transition:
     transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
     width 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
-    top 0.25s ease,
-    opacity 0.2s ease;
+    top 0.25s ease;
 }
 .nav__lien[aria-current="true"] { color: var(--blanc); }
 .nav__liste {
@@ -700,7 +694,6 @@ p:last-child { margin-bottom: 0; }
   place-items: center;
   position: relative;
   z-index: 1;
-  transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 .etape__point::after {
   content: "";
@@ -708,7 +701,6 @@ p:last-child { margin-bottom: 0; }
   height: 8px;
   border-radius: 50%;
   background: var(--ink);
-  transition: background-color 0.18s ease;
 }
 .etape__lien:hover .etape__point { background: var(--lac); border-color: var(--lac); }
 .etape__lien:hover .etape__point::after { background: var(--ink); }
@@ -975,7 +967,6 @@ p:last-child { margin-bottom: 0; }
   background: var(--paper);
   color: var(--ink);
   border: 1px solid var(--trait);
-  transition: background-color 0.18s ease, color 0.18s ease;
 }
 .agrandir:hover .agrandir__signe,
 .agrandir:focus-visible .agrandir__signe { background: var(--vert); color: var(--ink); }
@@ -1024,7 +1015,6 @@ p:last-child { margin-bottom: 0; }
   border: 1px solid rgba(255, 253, 249, 0.35);
   color: var(--paper);
   cursor: pointer;
-  transition: background-color 0.18s ease, color 0.18s ease;
 }
 .visionneuse__fermer:hover { background: var(--paper); color: var(--ink); }
 
@@ -1051,7 +1041,7 @@ p:last-child { margin-bottom: 0; }
   place-items: center;
   width: 26px;
   height: 26px;
-  border: 2px solid var(--vert-texte);
+  border: 2px solid var(--vert);
   border-radius: 50%;
   margin-bottom: 1rem;
 }
@@ -1409,8 +1399,8 @@ p:last-child { margin-bottom: 0; }
 .temoignages { columns: 3 260px; column-gap: clamp(1.25rem, 2.5vw, 2rem); }
 
 @keyframes temoin-pose {
-  from { opacity: 0; transform: translateY(26px) rotate(var(--angle)) scale(0.97); }
-  to { opacity: 1; transform: none; }
+  from { transform: translateY(26px) rotate(var(--angle)) scale(0.97); }
+  to { transform: none; }
 }
 .temoignages[data-pose="oui"] .temoignage {
   animation: temoin-pose 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
@@ -1479,7 +1469,7 @@ p:last-child { margin-bottom: 0; }
   font-size: var(--fs-micro);
   font-weight: 600;
   color: var(--lac-clair);
-  transition: transform 0.35s ease !important, color 0.35s ease !important;
+  transition: transform 0.35s ease !important;
 }
 .temoignage:hover figcaption,
 .temoignage:focus-within figcaption { transform: translateX(6px); color: var(--vert); }
@@ -1541,7 +1531,6 @@ p:last-child { margin-bottom: 0; }
   aspect-ratio: 1 / 1;
   object-fit: cover;
   width: 100%;
-  transition: border-color 0.18s ease;
 }
 .presse__lien:hover img { border-color: var(--vert); }
 .presse__citation { font-size: var(--fs-small); margin: 0.9rem 0 0.4rem; }
@@ -2052,7 +2041,6 @@ p:last-child { margin-bottom: 0; }
   background: transparent;
   color: var(--ink-soft);
   cursor: pointer;
-  transition: color 0.18s, border-color 0.18s, box-shadow 0.18s;
 }
 .bascule-theme:hover {
   color: var(--vert-texte);
@@ -2085,7 +2073,6 @@ p:last-child { margin-bottom: 0; }
   background:
     radial-gradient(70% 60% at 12% 85%, color-mix(in srgb, var(--lac) 14%, transparent), transparent 72%);
   opacity: 0;
-  transition: opacity 0.3s;
 }
 [data-theme="dark"] .hero::before { opacity: 1; }
 @media (prefers-color-scheme: dark) {
@@ -2120,7 +2107,6 @@ p:last-child { margin-bottom: 0; }
   z-index: -1;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.3s;
 }
 [data-theme="dark"] .hero__lucioles { opacity: 1; }
 @media (prefers-color-scheme: dark) {
@@ -2231,7 +2217,6 @@ p:last-child { margin-bottom: 0; }
   cursor: pointer;
   text-align: left;
   text-decoration: none;
-  transition: box-shadow 0.18s, background 0.18s;
 }
 .hero__classe-bouton:hover {
   box-shadow: var(--lueur-forte);
@@ -2267,8 +2252,8 @@ p:last-child { margin-bottom: 0; }
 
 .modale-classe[open] { animation: modale-entree 0.22s ease-out; }
 @keyframes modale-entree {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to   { opacity: 1; transform: none; }
+  from { transform: translateY(10px) scale(0.98); }
+  to   { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .modale-classe[open] { animation: none; }
@@ -2325,7 +2310,7 @@ p:last-child { margin-bottom: 0; }
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+  transition: transform 0.18s;
 }
 .classe-choix:hover {
   border-color: var(--vert);
@@ -2397,7 +2382,7 @@ p:last-child { margin-bottom: 0; }
   content: "";
   width: 34px;
   height: 2px;
-  background: var(--vert-texte);
+  background: var(--vert);
 }
 
 .accompagnement__titre { font-size: var(--fs-h2); margin-bottom: 1.25rem; }
@@ -2436,7 +2421,7 @@ p:last-child { margin-bottom: 0; }
   height: 64px;
   margin: 0 auto 0.85rem;
   flex: none;
-  border: 2px solid var(--vert-texte);
+  border: 2px solid var(--vert);
   border-radius: 50%;
   color: var(--vert-texte);
   box-shadow: var(--lueur);
@@ -2528,7 +2513,7 @@ p:last-child { margin-bottom: 0; }
 .adn__tige {
   display: none;
   position: relative;
-  width: 1px;
+  width: 2px;
   height: 26px;
   margin: 0 auto 0.9rem;
   background: var(--vert);
@@ -2591,8 +2576,8 @@ p:last-child { margin-bottom: 0; }
    qui valent exactement ce que l'animation vient d'atteindre, de sorte
    que rien ne saute au passage. */
 @keyframes adn-pilier-monte {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: none; }
+  from { transform: translateY(20px); }
+  to { transform: none; }
 }
 .adn__liste[data-pose="oui"] .adn__pilier {
   animation: adn-pilier-monte 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
@@ -2608,8 +2593,7 @@ p:last-child { margin-bottom: 0; }
    la mise en page a chaque image, l'echelle non. Il est centre, l'etirement
    part donc du milieu. */
 .adn__pilier { transition: transform 0.25s ease; }
-.adn__pilier .adn__tige::before { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-.adn__pilier .adn__nom { transition: color 0.25s ease; }
+.adn__pilier .adn__tige::before { transition: transform 0.25s ease; }
 .adn__pilier .adn__filet { transition: transform 0.25s ease; }
 
 .adn__pilier:hover,
@@ -2657,7 +2641,6 @@ p:last-child { margin-bottom: 0; }
   border: 1px solid var(--trait);
   border-radius: 999px;
   cursor: pointer;
-  transition: color 0.18s, border-color 0.18s, box-shadow 0.18s;
 }
 .onglet-niveau:hover { color: var(--ink); border-color: var(--ink-soft); }
 
