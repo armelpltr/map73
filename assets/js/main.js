@@ -239,46 +239,6 @@
     });
   }
 
-  /* ---- Tenue claire / sombre ----
-     La tenue initiale est posee par le petit script du <head>, avant le
-     premier rendu. Ici on ne gere que la bascule et sa memorisation. Sans
-     choix enregistre, la feuille suit prefers-color-scheme ; des le premier
-     clic, le choix du visiteur l'emporte. */
-  const basculeTheme = document.getElementById("bascule-theme");
-
-  if (basculeTheme) {
-    const racine = document.documentElement;
-    const libelle = document.getElementById("bascule-theme-libelle");
-    const systemeSombre = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const estSombre = () =>
-      racine.dataset.theme ? racine.dataset.theme === "dark" : systemeSombre.matches;
-
-    const refleter = () => {
-      const sombre = estSombre();
-      basculeTheme.setAttribute("aria-pressed", String(sombre));
-      if (libelle) libelle.textContent = sombre ? "Passer en tenue claire" : "Passer en tenue sombre";
-    };
-
-    basculeTheme.addEventListener("click", () => {
-      racine.dataset.theme = estSombre() ? "light" : "dark";
-      try {
-        localStorage.setItem("map73-theme", racine.dataset.theme);
-      } catch (e) {
-        /* Navigation privee ou stockage refuse : la tenue tient pour la
-           visite en cours, elle ne survit simplement pas au rechargement. */
-      }
-      refleter();
-    });
-
-    /* Tant que le visiteur n'a pas choisi, on suit le systeme en direct. */
-    systemeSombre.addEventListener("change", () => {
-      if (!racine.dataset.theme) refleter();
-    });
-
-    refleter();
-  }
-
   /* ---- Formules : le selecteur de niveau ----
      Les onglets sont caches dans le HTML et reveles ici : sans script, les
      sept formules restent affichees a la suite, ce qui vaut mieux qu'une

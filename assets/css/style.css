@@ -5,81 +5,60 @@
    ========================================================= */
 
 /* ---------- Jetons ---------- */
-/* Le site a deux tenues. La claire est celle d'origine : papier creme, encre
-   bleu nuit, vert olive du logo. La sombre repond a la demande de Camille :
-   bleu nuit et vert fluo, esprit futuriste.
-
-   Les deux se disent avec les memes jetons, et c'est ce qui rend la bascule
-   tenable : la feuille entiere consomme --paper, --ink, --vert, --trait, et
-   il suffit de les redefinir sous [data-theme="dark"] pour retourner le site.
-   Deux jetons meritent une lecture particuliere, parce qu'ils ne nomment pas
-   une couleur mais un role :
-     --ink    sert d'encre du texte ET de fond des panneaux inverses. En clair
-              c'est un bleu nuit sur creme, en sombre un voile clair sur nuit.
-              Les sections --encre alternent donc dans les deux tenues, ce qui
-              donne gratuitement la page blanche que Camille veut intercaler.
-     --blanc  est le texte pose sur ces panneaux inverses : creme en clair,
-              presque noir en sombre. Le fond des cartes, lui, a son propre
-              jeton, --surface, parce que les deux divergent en sombre. */
+/* Une seule tenue, sombre : marine et creme, avec le vert du logo. La page
+   alterne deux fonds — le marine (--paper) et la creme (--ciel, voir
+   .section--ciel). Les aplats sombres (cartes, panneaux, en-tete) sont le
+   marine eclairci d'un ou deux crans. */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
   /* Couleurs */
-  --paper: #f7f6f1;
-  --paper-2: #efece2;
-  --ink: #14243b;
-  /* La valeur du fond de page, gardee a part : les panneaux inverses
-     retournent --ink-soft pour leur aplat, et une carte qui repose son propre
-     fond a l'interieur d'un panneau doit pouvoir revenir ici. */
-  --ink-soft-page: #4a5872;
+  /* Le marine du fond, puis deux crans plus clairs pour les aplats. */
+  --paper: #0b1a2e;
+  --paper-2: #1f2c3f;
+  /* L'encre du texte courant, claire sur le marine. */
+  --ink: #e8f0fb;
+  /* La valeur du fond de page, gardee a part : les panneaux retournent
+     --ink-soft, et une carte qui repose son propre fond a l'interieur d'un
+     panneau doit pouvoir revenir ici. */
+  --ink-soft-page: #bac9de;
   --ink-soft: var(--ink-soft-page);
   /* Le vert du logo, mesure sur assets/img/logo-480.webp : #94C412, une teinte
-     olive a 76 deg. C'est le seul vert du site. Vert clair (1,91 sur le
-     papier), il ne porte que l'aplat, le trait et le dessin ; tout ce qui est
-     texte sur fond clair prend l'encre ou le lac, sinon ca ne se lit plus. */
+     olive a 76 deg. C'est le seul vert du site. Sur le marine il porte aussi
+     du texte (8,5) ; sur la creme il n'en tient que 1,8, et ce qui y
+     ecrirait en vert s'ecrit a l'encre (voir .section--ciel). */
   --vert: #94c412;
-  /* Le texte « vert » sur fond pale. Le site n'a qu'un vert, #94c412, et il
-     ne tient que 1,91 sur le papier : illisible. Un vert assombri en ferait
-     un second. Sur fond pale, ce texte s'ecrit donc a l'encre ; sur la nuit,
-     c'est le vert du logo qui ecrit, a 9,7. */
-  --vert-texte-page: var(--ink);
+  --vert-texte-page: #94c412;
   --vert-texte: var(--vert-texte-page);
-  /* Ce qui s'ecrit SUR un aplat de vert. Le vert du logo est une couleur
-     moyenne : elle ne porte ni le creme ni le voile clair, dans aucune des
-     deux tenues. L'encre y tient 7,5, et c'est la meme des deux cotes. */
+  /* Ce qui s'ecrit SUR un aplat de vert : ni la creme ni le voile clair n'y
+     tiennent, l'encre bleu nuit si (7,5). */
   --sur-vert: #14243b;
-  --lac: #2b759d; /* assombri : le bleu d'origine tombait a 4,48 sur blanc,
-                     sous le seuil AA des petits textes qui l'utilisent. */
-  /* Le meme lac, eclairci pour l'aplat encre : sur #14243b, le lac courant
-     ne monte qu'a 3,07 et aucun petit texte ne s'y lit. Celui-ci tient
-     7,18, de quoi porter les intitules et les depliants des formules. */
+  --lac: #74c6ea;
+  /* Le lac des panneaux et des cartes. */
   --lac-clair: #79b8d8;
   --ambre: #e8a33d;
-  --trait: #d5d1c2;
+  --trait: #2d3a4b;
+  /* Le titre pose sur un panneau. */
   --blanc: #fffdf9;
-  --surface: #fffdf9;
-  /* Le fond des sections claires de l'alternance, identique dans les deux
-     tenues : une creme chaude, qui accompagne le vert (lui-meme chaud) mieux
-     qu'un clair froid. Elle va avec le marine #0b1a2e de la tenue sombre. */
+  --surface: #172538;
+  /* Le fond des sections claires de l'alternance : une creme chaude, qui
+     accompagne le vert (lui-meme chaud) mieux qu'un clair froid. */
   --ciel: #f6f1e4;
-  /* Le fond des panneaux inverses. Il reprenait --ink, qui sert aussi d'encre
-     du texte courant : les deux ne peuvent plus etre la meme valeur des lors
-     que le panneau de la tenue sombre n'est plus un simple blanc. */
-  --panneau: #14243b;
-  /* Le texte pose sur un panneau. Identique dans les deux tenues, puisque le
-     panneau y est sombre des deux cotes. */
+  /* Le fond des panneaux et des cartes, un cran au-dessus du fond. */
+  --panneau: #1f2c3f;
+  /* Le texte pose sur un panneau. */
   --sur-panneau: #f7f6f1;
   --sur-panneau-doux: #b9c3d4;
 
-  /* Lueur : nulle en tenue claire. Le halo vert des maquettes ne marche que
-     sur la nuit ; sur le papier il ne produirait qu'une salissure. Les memes
-     regles servent les deux tenues, elles lisent juste une lueur a zero. */
+  /* Pas de halo vert : un halo est un vert qui s'estompe, et le site n'en
+     porte qu'un, #94c412, pur. La trame passe au trait, sans vert. Les
+     jetons restent, a zero, pour les regles qui les lisent. */
   --lueur: 0 0 0 rgba(0, 0, 0, 0);
   --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
-  --voile: rgba(20, 36, 59, 0.06);
-  --grille: rgba(20, 36, 59, 0.05);
+  --voile: rgba(232, 240, 251, 0.05);
+  --grille: var(--trait);
 
-  /* Liens : la paire par defaut, sur papier. */
+  /* Liens : la paire par defaut, sur le marine. */
   --lien: var(--lac);
   --lien-survol: var(--ink);
 
@@ -105,84 +84,6 @@
   /* Couleur des equerres quand la carte n'appartient a aucune famille
      coloree : le filet courant est trop pale pour se lire en repere. */
   --equerre-neutre: color-mix(in srgb, var(--trait) 62%, var(--ink));
-}
-
-[data-theme="dark"] {
-  color-scheme: dark;
-
-  /* Marine du fond, puis deux crans plus clairs pour les aplats. */
-  --paper: #0b1a2e;
-  /* Le second ton de l'alternance. Il rejoint --panneau : en tenue sombre la
-     page ne joue que deux tons, qui se relaient d'une section a l'autre. */
-  --paper-2: #1f2c3f;
-  /* L'encre du texte courant, 15,8 sur la nuit. Elle ne sert plus de fond aux
-     panneaux inverses : celui-ci a son propre jeton, --panneau. */
-  --ink: #e8f0fb;
-  --ink-soft-page: #bac9de;
-  --ink-soft: var(--ink-soft-page);
-  /* Le vert du logo, inchange. Sur la nuit il tient 9,7 : il porte enfin du
-     texte, ce qu'il ne pouvait pas faire sur le papier. */
-  --vert: #94c412;
-  --vert-texte-page: #94c412;
-  --vert-texte: var(--vert-texte-page);
-  --sur-vert: #14243b;
-  --lac: #74c6ea;
-  /* Ces deux-la ne servent que sur les panneaux, qui sont sombres dans les
-     deux tenues : ils reprennent donc les memes valeurs claires qu'en tenue
-     claire. */
-  --lac-clair: #79b8d8;
-  --ambre: #e8a33d;
-  --trait: #2d3a4b;
-  /* Le titre pose sur un panneau : clair des deux cotes, maintenant que le
-     panneau ne s'inverse plus. */
-  --blanc: #fffdf9;
-  --surface: #172538;
-  /* La tenue sombre n'inverse pas ses panneaux : aucune section claire dans
-     la page. Un cran au-dessus du fond et de la craie, juste assez pour que
-     les trois familles de sections restent distinctes. */
-  --panneau: #1f2c3f;
-  --sur-panneau: #f7f6f1;
-  --sur-panneau-doux: #b9c3d4;
-
-  /* Pas de halo vert : un halo est un vert qui s'estompe, et le site n'en
-     porte qu'un, #94c412, pur. La trame passe au trait, sans vert. */
-  --lueur: 0 0 0 rgba(0, 0, 0, 0);
-  --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
-  --voile: rgba(232, 240, 251, 0.05);
-  --grille: var(--trait);
-
-  --equerre-neutre: color-mix(in srgb, var(--trait) 62%, var(--ink));
-}
-
-/* Sans choix enregistre, on suit le systeme. L'attribut pose par le script
-   l'emporte, d'ou le :not() : un visiteur en clair sur une machine en sombre
-   garde le clair. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --paper: #0b1a2e;
-    --paper-2: #1f2c3f;
-    --ink: #e8f0fb;
-    --ink-soft-page: #bac9de;
-    --ink-soft: var(--ink-soft-page);
-    --vert: #94c412;
-    --vert-texte-page: #94c412;
-    --vert-texte: var(--vert-texte-page);
-    --sur-vert: #14243b;
-    --lac: #74c6ea;
-    --lac-clair: #79b8d8;
-    --ambre: #e8a33d;
-    --trait: #2d3a4b;
-    --blanc: #fffdf9;
-    --surface: #172538;
-    --panneau: #1f2c3f;
-    --sur-panneau: #f7f6f1;
-    --sur-panneau-doux: #b9c3d4;
-    --lueur: 0 0 0 rgba(0, 0, 0, 0);
-    --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
-    --voile: rgba(232, 240, 251, 0.05);
-    --grille: var(--trait);
-  }
 }
 
 /* ---------- Base ---------- */
@@ -260,25 +161,18 @@ p:last-child { margin-bottom: 0; }
 
 .section { padding-block: var(--section-y); position: relative; }
 .section--serre { padding-block: calc(var(--section-y) * 0.6); }
-.section--encre { background: var(--panneau); color: var(--sur-panneau); }
-/* Les trois surfaces encre du site : le lien y prend le lac eclairci, et
-   le survol le blanc, jamais l'encre. */
-.section--encre,
+/* Les cartes marine : le lien y prend le lac eclairci, et le survol le
+   blanc, jamais l'encre. */
 .news__carte,
 .formule {
   --lien: var(--lac-clair);
   --lien-survol: var(--blanc);
 }
-.section--encre h2 { color: var(--blanc); }
-.section--craie { background: var(--paper-2); }
-/* Le ciel : la creme #f6f1e4, la meme dans les deux tenues. Il remplace
-   partout le bleu des sections encre et craie : la page alterne la nuit (ou
-   le papier) et le ciel. Une section ciel reste claire meme en tenue
-   sombre : elle reprend donc tout le jeu de jetons de la tenue claire, pour
-   que ses cartes (formulaire, fiches) gardent un texte lisible. Le
-   vert du logo n'y tient que 1,8 : comme sur le papier, ce qui ecrirait en
-   vert s'ecrit a l'encre. Le lac courant tombe a 4,3 sur ce fond ; il est
-   assombri d'un cran (5,2). */
+/* Le ciel : la creme #f6f1e4, le second fond de l'alternance. Sur ce fond
+   clair, les jetons de texte s'inversent : encre bleu nuit, texte doux
+   gris-bleu, et tout le jeu qui va avec, pour que ses cartes (formulaire,
+   fiches) restent lisibles. Le vert du logo n'y tient que 1,8 : ce qui
+   ecrirait en vert s'ecrit a l'encre. Le lac courant y est assombri (5,2). */
 .section--ciel {
   color-scheme: light;
   /* Pas de blanc pur sur la creme : les cartes (fiches, formulaire) se
@@ -312,7 +206,6 @@ p:last-child { margin-bottom: 0; }
 .section-entete { max-width: 46ch; margin-bottom: clamp(2rem, 4vw, 3.25rem); }
 .section-entete h2 { font-size: var(--fs-h2); margin-bottom: 0.5rem; }
 .section-entete p { color: var(--ink-soft); font-size: 1.125rem; margin: 0; }
-.section--encre .section-entete p { color: var(--ink-soft); }
 
 /* ---------- Boutons ---------- */
 .bouton {
@@ -887,16 +780,6 @@ p:last-child { margin-bottom: 0; }
    jointures portent donc la meme vague, a la meme amplitude. */
 .couture--fine { height: 54px; }
 
-.couture--clair-encre {
-  --couture-sortant: var(--paper);
-  --couture-entrant: var(--panneau);
-  --couture-niveau: color-mix(in srgb, var(--ink) 22%, transparent);
-}
-.couture--encre-clair {
-  --couture-sortant: var(--panneau);
-  --couture-entrant: var(--paper);
-  --couture-niveau: color-mix(in srgb, var(--sur-panneau) 24%, transparent);
-}
 .couture--clair-ciel {
   --couture-sortant: var(--paper);
   --couture-entrant: var(--ciel);
@@ -907,24 +790,9 @@ p:last-child { margin-bottom: 0; }
   --couture-entrant: var(--paper);
   --couture-niveau: rgba(20, 36, 59, 0.22);
 }
-.couture--encre-craie {
-  --couture-sortant: var(--panneau);
-  --couture-entrant: var(--paper-2);
-  --couture-niveau: color-mix(in srgb, var(--sur-panneau) 24%, transparent);
-}
 /* Entre le papier et la craie, l'ecart de valeur est de deux pour cent : le
    remplissage seul ne se verrait pas. Ce sont les niveaux qui dessinent la
    courbe, donc ils sont un cran plus sombres que le filet courant. */
-.couture--clair-craie {
-  --couture-sortant: var(--paper);
-  --couture-entrant: var(--paper-2);
-  --couture-niveau: color-mix(in srgb, var(--ink) 22%, transparent);
-}
-.couture--craie-clair {
-  --couture-sortant: var(--paper-2);
-  --couture-entrant: var(--paper);
-  --couture-niveau: color-mix(in srgb, var(--ink) 22%, transparent);
-}
 
 /* ---------- L'ADN ---------- */
 /* Trois valeurs, chacune ouverte par un adage. La legende et les nouveautes
@@ -939,8 +807,6 @@ p:last-child { margin-bottom: 0; }
 /* Sur l'encre, l'adage prend le lac eclairci et le texte la valeur claire
    de la famille : le lac sombre tombait a 3,1 de contraste, l'encre
    adoucie a 1,9. */
-.section--encre .adn__adage { color: var(--lac-clair); }
-.section--encre .adn__texte { color: #b9c3d4; }
 .adn__liste {
   list-style: none;
   margin: 0;
@@ -1591,8 +1457,6 @@ p:last-child { margin-bottom: 0; }
 }
 /* Sur l'aplat encre, l'encre adoucie tombe a 1,9 de contraste : la source
    et le filet des vignettes prennent les valeurs claires de la famille. */
-.section--encre .presse__source { color: #b9c3d4; }
-.section--encre .presse__lien img { border-color: rgba(255, 253, 249, 0.28); }
 
 /* ---------- Contact ---------- */
 .contact {
@@ -2076,39 +1940,6 @@ p:last-child { margin-bottom: 0; }
    Refonte 2026 — demandes du document « modif site »
    ========================================================= */
 
-/* ---------- Bascule clair / sombre ---------- */
-/* Un seul bouton pour les deux etats, avec aria-pressed : deux boutons
-   auraient double la barre sans rien ajouter. Les deux dessins sont dans le
-   bouton, le CSS n'en montre qu'un selon la tenue. */
-.bascule-theme {
-  display: inline-grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  flex: none;
-  padding: 0;
-  border: 1px solid color-mix(in srgb, var(--blanc) 35%, transparent);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--ink-soft);
-  cursor: pointer;
-}
-.bascule-theme:hover {
-  color: var(--vert-texte);
-  border-color: var(--vert);
-  box-shadow: var(--lueur);
-}
-.bascule-theme svg { grid-area: 1 / 1; }
-.bascule-theme__nuit { display: none; }
-
-[data-theme="dark"] .bascule-theme__jour { display: none; }
-[data-theme="dark"] .bascule-theme__nuit { display: block; }
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .bascule-theme__jour { display: none; }
-  :root:not([data-theme="light"]) .bascule-theme__nuit { display: block; }
-}
-
 /* ---------- Hero ---------- */
 /* Le fond futuriste des maquettes : un degrade de nuit, une trame de points,
    et les courbes du trace d'origine qui deviennent des filets lumineux. Rien
@@ -2123,11 +1954,6 @@ p:last-child { margin-bottom: 0; }
   z-index: -2;
   background:
     radial-gradient(70% 60% at 12% 85%, color-mix(in srgb, var(--lac) 14%, transparent), transparent 72%);
-  opacity: 0;
-}
-[data-theme="dark"] .hero::before { opacity: 1; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .hero::before { opacity: 1; }
 }
 
 /* La trame de points. Discrete sur le papier, elle porte la lueur en nuit. */
@@ -2143,25 +1969,15 @@ p:last-child { margin-bottom: 0; }
   pointer-events: none;
 }
 
-.hero__fond { color: var(--trait); }
-[data-theme="dark"] .hero__fond { color: var(--vert); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .hero__fond { color: var(--vert); }
-}
+.hero__fond { color: var(--vert); }
 
 /* Les points lumineux poses sur les courbes. Purement decoratifs, donc hors
-   du flux et hors du lecteur d'ecran. En tenue claire ils disparaissent :
-   des pastilles vertes sur du creme n'evoquent rien. */
+   du flux et hors du lecteur d'ecran. */
 .hero__lucioles {
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0;
-}
-[data-theme="dark"] .hero__lucioles { opacity: 1; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .hero__lucioles { opacity: 1; }
 }
 
 .luciole {
@@ -2184,7 +2000,6 @@ p:last-child { margin-bottom: 0; }
 /* Le titre : « un avenir. » passe au vert, comme sur la maquette. La classe
    est posee dans le HTML sur le dernier segment. */
 .hero__accent { color: var(--vert-texte); }
-[data-theme="dark"] .hero__accent { text-shadow: var(--lueur); }
 
 /* Le trait court au-dessus du titre, repris des maquettes. */
 .hero__filet {
@@ -2284,15 +2099,11 @@ p:last-child { margin-bottom: 0; }
 .modale-classe {
   width: min(100% - 2rem, 30rem);
   padding: 0;
-  border: 1px solid var(--trait);
+  border: 1px solid var(--vert);
   border-radius: var(--rayon-l);
   background: var(--surface);
   color: var(--ink);
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
-}
-[data-theme="dark"] .modale-classe { border-color: var(--vert); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .modale-classe { border-color: var(--vert); }
 }
 
 .modale-classe::backdrop {
@@ -2523,12 +2334,8 @@ p:last-child { margin-bottom: 0; }
     width: 100%;
     height: 180px;
     overflow: visible;
-    color: var(--trait);
+    color: var(--vert);
   }
-  [data-theme="dark"] .adn__arc { color: var(--vert); }
-}
-@media (min-width: 900px) and (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .adn__arc { color: var(--vert); }
 }
 
 .adn__liste--arc {
@@ -2776,24 +2583,11 @@ p:last-child { margin-bottom: 0; }
   margin: 0 0 0.85rem;
 }
 
-/* ---------- Jetons du panneau inverse ---------- */
-/* .section--encre peint un aplat --ink et ecrit en --paper : en tenue claire
-   c'est creme sur bleu nuit, en tenue sombre clair sur nuit. Deux jetons ne
-   suivent pas tout seuls et doivent repasser de l'autre cote :
-     --ink-soft   sert au texte doux, qui serait sinon du bleu nuit sur bleu
-                  nuit. On le reconstruit en melangeant le fond de page a
-                  l'encre : le melange penche toujours du bon cote.
-     --vert-texte est calibre pour le fond de page, pas pour ce panneau. En
-                  clair, le vert du logo tient 7,5 sur l'encre et suffit ; en
-                  sombre, le panneau devient clair et le fluo n'y tient que
-                  1,6, d'ou un vert franchement assombri, a 5,0. */
 /* ---------- Jetons du panneau ---------- */
-/* Un panneau est sombre dans les deux tenues : ce qui s'y pose ne depend donc
-   plus de la tenue, et un seul bloc suffit. Le texte doux et le vert y sont
-   ceux qui se lisent sur un aplat sombre — c'est-a-dire l'inverse de ceux du
-   fond de page en tenue claire, et les memes qu'en tenue sombre. */
+/* Les panneaux et les cartes marine : le texte doux et le vert y sont ceux
+   qui se lisent sur un aplat sombre. Une carte posee sur la creme les
+   retrouve ainsi, au lieu d'heriter des jetons inverses de la section. */
 .entete,
-.section--encre,
 .formule,
 .pilier,
 .news__carte,
@@ -2808,24 +2602,6 @@ p:last-child { margin-bottom: 0; }
    inertes ne ferait qu'egarer. L'attribut seul ne suffit pas contre le
    display: flex de la regle. */
 .formules__onglets[hidden] { display: none; }
-
-/* ---------- Le logo, une image par tenue ---------- */
-/* Le bandeau est sombre dans les deux tenues : il porte le logo blanc sans
-   condition, et cette bascule ne le concerne pas. Elle ne sert qu'au pied de
-   page, qui repose sur le papier : le logo encre y disparaitrait sur la nuit.
-   Les deux dessins existent deja — logo-240 pour le papier, logo-blanc-240
-   pour la nuit. Un filtre CSS ne ferait pas l'affaire : il blanchirait aussi
-   la fleche, qui doit rester verte. Les deux images sont dans la page et le
-   CSS n'en montre qu'une, pour que la bascule soit instantanee. */
-.logo--sombre { display: none; }
-
-[data-theme="dark"] .logo--clair { display: none; }
-[data-theme="dark"] .logo--sombre { display: block; }
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .logo--clair { display: none; }
-  :root:not([data-theme="light"]) .logo--sombre { display: block; }
-}
 
 /* La grille du hero remplace l'ancienne mise en page a trois rangees, qui
    calait le chapo et les boutons en premiere colonne pour laisser la place

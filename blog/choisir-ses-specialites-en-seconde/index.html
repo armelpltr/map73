@@ -23,18 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
-<script>
-/* Tenue claire ou sombre, posee avant le premier rendu pour eviter le
-   clignotement blanc. Sans choix enregistre on ne pose rien : la feuille
-   suit alors prefers-color-scheme. */
-(function () {
-  try {
-    var t = localStorage.getItem("map73-theme");
-    if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
-  } catch (e) {}
-})();
-</script>
-<link rel="stylesheet" href="../../assets/css/style.css?v=20261008-1926">
+<link rel="stylesheet" href="../../assets/css/style.css?v=20261008-1929">
 </head>
 
 <body>
@@ -45,12 +34,6 @@
     <a class="entete__logo" href="../../index.html" aria-label="MAP73, accueil">
       <img src="../../assets/img/logo-blanc-240.webp" srcset="../../assets/img/logo-blanc-240.webp 240w, ../../assets/img/logo-blanc-480.webp 480w" sizes="156px" width="240" height="98" alt="MAP Orientation">
     </a>
-
-    <button class="bascule-theme" type="button" id="bascule-theme" aria-pressed="false">
-      <svg class="bascule-theme__jour" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke-linecap="round"/></svg>
-      <svg class="bascule-theme__nuit" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M20.5 14.3A8.8 8.8 0 0 1 9.7 3.5a8.8 8.8 0 1 0 10.8 10.8Z" stroke-linejoin="round"/></svg>
-      <span class="visuellement-cache" id="bascule-theme-libelle">Passer en tenue sombre</span>
-    </button>
 
     <a class="bouton bouton--plein bouton--compact entete__appel" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6.4 3.5h3.1l1.6 4-2 1.3a11.5 11.5 0 0 0 6.1 6.1l1.3-2 4 1.6v3.1a1.9 1.9 0 0 1-2.1 1.9A16.8 16.8 0 0 1 4.5 5.6a1.9 1.9 0 0 1 1.9-2.1Z"/></svg>
@@ -174,6 +157,6 @@
 }
 </script>
 
-<script src="../../assets/js/main.js?v=20260922-0705" defer></script>
+<script src="../../assets/js/main.js?v=20261008-1929" defer></script>
 </body>
 </html>
