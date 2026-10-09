@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : vingt transitions</title>
+<style>
+  /* Maquette de travail, hors site : elle charge la vraie page d'accueil et
+     remplace les vagues (.couture) entre les sections marine et creme par
+     l'une des vingt jointures ci-dessous. Le site en ligne n'est pas
+     touche. */
+  :root {
+    --nuit: #0b1a2e;
+    --panneau: #1f2c3f;
+    --trait: #2d3a4b;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+    --vert: #94c412;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.25rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; }
+  .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
+  .reglage {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+
+  .choix {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.4rem;
+    width: 100%;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.5rem 0.3rem 0.3rem;
+    border: 2px solid var(--trait);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.78rem;
+    text-align: left;
+    cursor: pointer;
+  }
+  .option:hover { border-color: var(--doux); }
+  .option[aria-pressed="true"] { border-color: var(--vert); }
+  /* L'apercu : un bout de marine, la jointure en petit, un bout de creme. */
+  .apercu {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    width: 44px;
+    height: 34px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #3a4b66;
+    --couture-sortant: #0b1a2e;
+    --couture-entrant: #f0e2c2;
+    --k: 0.22;
+  }
+  .apercu__haut { flex: 1; background: var(--couture-sortant); }
+  .apercu .mq::after { width: 7px !important; height: 7px !important; box-shadow: 0 0 0 2px var(--couture-sortant) !important; }
+  .apercu__bas { flex: 1; background: var(--couture-entrant); }
+  .option__nom { line-height: 1.2; }
+
+  .fiche { width: 100%; margin: 0; color: var(--doux); font-size: 0.8rem; }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+
+  .scene { flex: 1; display: flex; justify-content: center; min-height: 0; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--nuit); }
+  .scene--mobile iframe { width: 390px; }
+  @media (max-width: 700px) {
+    .reglages { margin-left: 0; }
+    .choix { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+<style id="jointures">
+  /* Les jointures, partagees par les apercus et par la page. Chacune part
+     de la couleur sortante (le fond de la .couture) et dessine la couleur
+     entrante par-dessus, dans un ::before. --h est sa hauteur sur la page ;
+     --k la reduit dans les apercus. */
+  .couture.mq {
+    --v: #94c412;
+    position: relative;
+    display: block;
+    height: calc(var(--h, 60px) * var(--k, 1)) !important;
+    margin-bottom: -1px;
+    background: var(--couture-sortant);
+    overflow: hidden;
+  }
+  .couture.mq svg { display: none; }
+  .couture.mq::before,
+  .couture.mq::after { content: ""; position: absolute; }
+  .couture.mq::before { inset: 0; background: var(--couture-entrant); }
+  .couture.mq.couture--miroir::before { transform: scaleX(-1); }
+
+  /* 1. Bord franc */
+  .mq[data-mq="franc"] { --h: 1px; }
+  /* 2. Filet vert */
+  .mq[data-mq="filet"] { --h: 3px; background: var(--v); }
+  .mq[data-mq="filet"]::before { display: none; }
+  /* 3. Trait vert centre, a cheval sur la jointure */
+  .mq[data-mq="trait"] { --h: 4px; background: linear-gradient(var(--couture-sortant) 50%, var(--couture-entrant) 50%); overflow: visible; z-index: 2; }
+  .mq[data-mq="trait"]::before { inset: 0 auto 0 50%; width: 72px; transform: translateX(-50%) !important; background: var(--v); }
+  /* 4. Pastille verte */
+  .mq[data-mq="pastille"] { --h: 1px; overflow: visible; z-index: 2; }
+  .mq[data-mq="pastille"]::after { left: 50%; top: 50%; width: 18px; height: 18px; border-radius: 50%; background: var(--v); box-shadow: 0 0 0 5px var(--couture-sortant); transform: translate(-50%, -50%); }
+  /* 5. Losange */
+  .mq[data-mq="losange"] { --h: 1px; overflow: visible; z-index: 2; }
+  .mq[data-mq="losange"]::after { left: 50%; top: 50%; width: 16px; height: 16px; background: var(--v); box-shadow: 0 0 0 5px var(--couture-sortant); transform: translate(-50%, -50%) rotate(45deg); }
+  /* 6. Diagonale */
+  .mq[data-mq="diagonale"] { --h: 90px; }
+  .mq[data-mq="diagonale"]::before { clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+  /* 7. Pente douce */
+  .mq[data-mq="pente"] { --h: 36px; }
+  .mq[data-mq="pente"]::before { clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+  /* 8. Chevron : la section sortante pointe vers le bas */
+  .mq[data-mq="chevron"] { --h: 56px; }
+  .mq[data-mq="chevron"]::before { clip-path: polygon(0 0, 50% 100%, 100% 0, 100% 100%, 0 100%); }
+  /* 9. Fleche montante : la section entrante pointe vers le haut */
+  .mq[data-mq="fleche"] { --h: 56px; }
+  .mq[data-mq="fleche"]::before { clip-path: polygon(0 100%, 50% 0, 100% 100%); }
+  /* 10. Escalier */
+  .mq[data-mq="escalier"] { --h: 64px; }
+  .mq[data-mq="escalier"]::before { clip-path: polygon(0 100%, 0 75%, 25% 75%, 25% 50%, 50% 50%, 50% 25%, 75% 25%, 75% 0, 100% 0, 100% 100%); }
+  /* 11. Dents de scie */
+  .mq[data-mq="dents"] { --h: 14px; }
+  .mq[data-mq="dents"]::before {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 14'%3E%3Cpath d='M0 14L14 0L28 14Z'/%3E%3C/svg%3E") 0 100% / 28px 100% repeat-x;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 14'%3E%3Cpath d='M0 14L14 0L28 14Z'/%3E%3C/svg%3E") 0 100% / 28px 100% repeat-x;
+  }
+  /* 12. Creneaux */
+  .mq[data-mq="creneaux"] { --h: 16px; }
+  .mq[data-mq="creneaux"]::before {
+    -webkit-mask: linear-gradient(90deg, #000 50%, transparent 50%) 0 0 / 64px 100% repeat-x;
+            mask: linear-gradient(90deg, #000 50%, transparent 50%) 0 0 / 64px 100% repeat-x;
+  }
+  /* 13. Arc */
+  .mq[data-mq="arc"] { --h: 60px; }
+  .mq[data-mq="arc"]::before { clip-path: ellipse(75% 100% at 50% 100%); }
+  /* 14. Coin coupe */
+  .mq[data-mq="coin"] { --h: 70px; }
+  .mq[data-mq="coin"]::before { clip-path: polygon(0 100%, 18% 0, 100% 0, 100% 100%); }
+  /* 15. Onglet */
+  .mq[data-mq="onglet"] { --h: 40px; }
+  .mq[data-mq="onglet"]::before { clip-path: polygon(0 100%, 0 60%, 40% 60%, 43% 0, 57% 0, 60% 60%, 100% 60%, 100% 100%); }
+  /* 16. Fondu */
+  .mq[data-mq="fondu"] { --h: 140px; background: linear-gradient(var(--couture-sortant), var(--couture-entrant)); }
+  .mq[data-mq="fondu"]::before { display: none; }
+  /* 17. Pointilles verts */
+  .mq[data-mq="pointilles"] { --h: 4px; background: repeating-linear-gradient(90deg, var(--v) 0 4px, transparent 4px 14px), linear-gradient(var(--couture-sortant) 50%, var(--couture-entrant) 50%); }
+  .mq[data-mq="pointilles"]::before { display: none; }
+  /* 18. Double filet */
+  .mq[data-mq="double"] { --h: 10px; background: linear-gradient(var(--v) 0 2px, var(--couture-sortant) 2px 8px, var(--v) 8px 10px); }
+  .mq[data-mq="double"]::before { display: none; }
+  /* 19. Bande verte */
+  .mq[data-mq="bande"] { --h: 12px; background: var(--v); }
+  .mq[data-mq="bande"]::before { display: none; }
+  /* 20. Hachures */
+  .mq[data-mq="hachures"] { --h: 22px; background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--v) 70%, transparent) 0 2px, transparent 2px 10px), var(--couture-sortant); }
+  .mq[data-mq="hachures"]::before { display: none; }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Vingt transitions entre les sections</h1>
+  <div class="reglages">
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
+  </div>
+  <div class="choix" id="choix"></div>
+  <p class="fiche" id="fiche"></p>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="index.html" title="Page d'accueil avec la transition choisie"></iframe>
+</div>
+
+<script>
+  /* La 0 est la page telle qu'elle est en ligne, pour comparer. */
+  const JOINTURES = [
+    { id: "vagues", nom: "Actuel : vagues", note: "Le site en ligne aujourd'hui, pour comparer." },
+    { id: "franc", nom: "Bord franc", note: "Aucune transition : le marine s'arrête, la crème commence. Le plus net." },
+    { id: "filet", nom: "Filet vert", note: "Un trait vert de 3 px souligne chaque changement de fond." },
+    { id: "trait", nom: "Trait vert centré", note: "Un court trait vert à cheval sur la jointure, comme celui des titres." },
+    { id: "pastille", nom: "Pastille verte", note: "Bord franc, ponctué d'un point vert au centre : rappel des lucioles du hero." },
+    { id: "losange", nom: "Losange", note: "Bord franc et un petit losange vert au centre : plus graphique." },
+    { id: "diagonale", nom: "Diagonale", note: "Coupe en biais franche, alternée d'un côté à l'autre." },
+    { id: "pente", nom: "Pente douce", note: "La même diagonale, très couchée : du mouvement sans effet appuyé." },
+    { id: "chevron", nom: "Chevron", note: "La section qui s'achève pointe vers le bas : elle guide vers la suite." },
+    { id: "fleche", nom: "Flèche montante", note: "La section qui arrive pointe vers le haut, comme la flèche du logo." },
+    { id: "escalier", nom: "Escalier", note: "Quatre marches : l'idée de progression, étape par étape." },
+    { id: "dents", nom: "Dents de scie", note: "Petits triangles réguliers : effet ticket, plus ludique." },
+    { id: "creneaux", nom: "Créneaux", note: "Rectangles alternés : rythme géométrique, assez fort." },
+    { id: "arc", nom: "Arc", note: "Une seule courbe ample et régulière, sans ondulation." },
+    { id: "coin", nom: "Coin coupé", note: "Bord franc sauf un angle biseauté : discret, éditorial." },
+    { id: "onglet", nom: "Onglet", note: "La section suivante dépasse en onglet au centre, comme un intercalaire." },
+    { id: "fondu", nom: "Fondu", note: "Dégradé du marine vers la crème : aucune arête." },
+    { id: "pointilles", nom: "Pointillés verts", note: "Une ligne de points verts sur la jointure : léger, « parcours »." },
+    { id: "double", nom: "Double filet", note: "Deux filets verts fins : plus soigné qu'un seul trait." },
+    { id: "bande", nom: "Bande verte", note: "Un aplat vert de 12 px : le vert du logo devient séparateur." },
+    { id: "hachures", nom: "Hachures", note: "Une bande hachurée de vert : texture, plus « atelier »." },
+  ];
+
+  let jointure;
+  const cadre = document.getElementById("site");
+
+  function peindre() {
+    const doc = cadre.contentDocument;
+    if (doc && doc.head && doc.querySelector(".couture")) {
+      if (!doc.getElementById("mq-jointures")) {
+        const style = doc.createElement("style");
+        style.id = "mq-jointures";
+        style.textContent = document.getElementById("jointures").textContent;
+        doc.head.appendChild(style);
+      }
+      doc.querySelectorAll(".couture").forEach((c) => {
+        const vagues = jointure.id === "vagues";
+        c.classList.toggle("mq", !vagues);
+        if (vagues) delete c.dataset.mq;
+        else c.dataset.mq = jointure.id;
+      });
+    }
+    document.querySelectorAll(".option").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.id === jointure.id)));
+    document.getElementById("fiche").innerHTML = `<strong>${jointure.nom}</strong> — ${jointure.note}`;
+  }
+
+  const liste = document.getElementById("choix");
+  JOINTURES.forEach((j, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "option";
+    b.dataset.id = j.id;
+    b.title = j.note;
+    const coupe = j.id === "vagues"
+      ? `<svg class="apercu__vague" viewBox="0 0 44 8" preserveAspectRatio="none" style="display:block;width:100%;height:8px;background:#0b1a2e"><path d="M0 5C8 1 16 8 24 5S38 1 44 3V8H0Z" fill="#f0e2c2"/></svg>`
+      : `<span class="couture mq" data-mq="${j.id}"></span>`;
+    b.innerHTML =
+      `<span class="apercu"><span class="apercu__haut"></span>${coupe}<span class="apercu__bas"></span></span>` +
+      `<span class="option__nom">${i}. ${j.nom}</span>`;
+    b.addEventListener("click", () => { location.hash = String(i); });
+    liste.appendChild(b);
+  });
+
+  // mockup-transitions.html#6 ouvre directement sur la jointure 6. Un lien
+  // vers un autre numero ne change que le #, sans recharger : on le suit.
+  const lireHash = () => {
+    jointure = JOINTURES[Number(location.hash.slice(1))] || JOINTURES[0];
+    peindre();
+  };
+  window.addEventListener("hashchange", lireHash);
+  lireHash();
+  cadre.addEventListener("load", peindre);
+
+  document.querySelectorAll(".reglage").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".reglage").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      document.getElementById("scene").classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+    });
+  });
+</script>
+</body>
+</html>
