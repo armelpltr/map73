@@ -753,18 +753,17 @@ p:last-child { margin-bottom: 0; }
   justify-self: start;
 }
 
-/* ---------- Coutures : la pente courbe ---------- */
-/* Entre le marine et la creme, le bord de la section qui s'acheve descend
-   en une seule courbe, d'un cote a l'autre de la page, comme une piste. La
-   couture porte la couleur entrante ; son ::before, la couleur sortante,
-   arrondi sur toute sa hauteur et toute sa largeur. Pas de filet : la
-   courbe marque seule la limite. */
+/* ---------- Coutures : l'arc ---------- */
+/* Entre le marine et la creme, la section qui arrive monte en un seul arc
+   ample et regulier, au centre de la page. La couture porte la couleur
+   sortante ; son ::before, la couleur entrante, decoupe en demi-ellipse.
+   Pas de filet : l'arc marque seul la limite. */
 .couture {
   position: relative;
   display: block;
-  height: 90px;
-  background: var(--couture-entrant);
-  /* La courbe et la section suivante se touchent : sans ce pixel, un liseré
+  height: 60px;
+  background: var(--couture-sortant);
+  /* L'arc et la section suivante se touchent : sans ce pixel, un liseré
      de la couleur sortante reste visible aux zooms fractionnaires. */
   margin-bottom: -1px;
   overflow: hidden;
@@ -773,14 +772,8 @@ p:last-child { margin-bottom: 0; }
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--couture-sortant);
-  border-bottom-right-radius: 100% 100%;
-}
-/* Une couture sur deux descend dans l'autre sens : la meme pente huit fois
-   de suite se verrait comme un motif. */
-.couture--miroir::before {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 100% 100%;
+  background: var(--couture-entrant);
+  clip-path: ellipse(75% 100% at 50% 100%);
 }
 
 .couture--clair-ciel {
@@ -1885,7 +1878,7 @@ p:last-child { margin-bottom: 0; }
   .fondatrice__portrait { width: 64px; height: 64px; }
   .fondatrice h3 { font-size: 1.25rem; }
   .fondatrice__valeur { font-size: 1.25rem; }
-  .couture { height: 48px; }
+  .couture { height: 32px; }
   .formule,
   .fondatrice,
   .legende__item,
