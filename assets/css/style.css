@@ -43,7 +43,7 @@
   --surface: #172538;
   /* Le fond des sections claires de l'alternance : une creme chaude, qui
      accompagne le vert (lui-meme chaud) mieux qu'un clair froid. */
-  --ciel: #f6f1e4;
+  --ciel: #f0e2c2;
   /* Le fond des panneaux et des cartes, un cran au-dessus du fond. */
   --panneau: #1f2c3f;
   /* Le texte pose sur un panneau. */
@@ -168,7 +168,7 @@ p:last-child { margin-bottom: 0; }
   --lien: var(--lac-clair);
   --lien-survol: var(--blanc);
 }
-/* Le ciel : la creme #f6f1e4, le second fond de l'alternance. Sur ce fond
+/* Le ciel : la creme #f0e2c2, le second fond de l'alternance. Sur ce fond
    clair, les jetons de texte s'inversent : encre bleu nuit, texte doux
    gris-bleu, et tout le jeu qui va avec, pour que ses cartes (formulaire,
    fiches) restent lisibles. Le vert du logo n'y tient que 1,8 : ce qui
@@ -180,15 +180,15 @@ p:last-child { margin-bottom: 0; }
      equerres ; ce qui reposait sur --paper a l'interieur (lignes des fiches,
      champs) prend une creme un cran plus sombre. --blanc, titre pose sur
      les cartes marine, devient la creme elle-meme. */
-  --paper: #ebe7dc;
-  --paper-2: #e4e1d6;
+  --paper: #e7d6b2;
+  --paper-2: #e0cea8;
   --ink: #14243b;
   --ink-soft-page: #4a5872;
   --ink-soft: var(--ink-soft-page);
   --vert-texte-page: var(--ink);
   --vert-texte: var(--vert-texte-page);
   --lac: #22688c;
-  --trait: #d9d2bf;
+  --trait: #d6c39c;
   --blanc: var(--ciel);
   --surface: var(--ciel);
   --panneau: #14243b;
