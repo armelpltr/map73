@@ -184,14 +184,14 @@
     peindre();
   }
 
-  VERTS.forEach((v) => {
+  VERTS.forEach((v, i) => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "vert";
     b.dataset.hex = v.hex;
     b.innerHTML = `<span class="vert__pastille" style="background:${v.hex}"></span>` +
       `<span class="vert__nom">${v.nom}</span><span class="vert__hex">${v.hex}</span>`;
-    b.addEventListener("click", () => choisir(v));
+    b.addEventListener("click", () => { location.hash = String(i); });
     conteneur.appendChild(b);
   });
 
@@ -212,7 +212,11 @@
   // Chaque navigation dans le cadre recharge une page : on la repeint.
   cadre.addEventListener("load", peindre);
   // mockup-verts.html#3 ouvre directement sur le quatrieme vert.
-  choisir(VERTS[Number(location.hash.slice(1))] || VERTS[0]);
+  // Un lien vers un autre numero ne change que le #, sans recharger la
+  // page : on suit donc chaque changement, et les boutons passent par la.
+  const lireHash = () => choisir(VERTS[Number(location.hash.slice(1))] || VERTS[0]);
+  window.addEventListener("hashchange", lireHash);
+  lireHash();
 </script>
 </body>
 </html>

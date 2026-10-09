@@ -233,13 +233,19 @@
     b.innerHTML =
       `<span class="duo__ech"><span style="background:${d.sombre}"><i></i></span><span style="background:${d.clair}"><i></i></span></span>` +
       `<span class="duo__nom">${i}. ${d.nom}</span>`;
-    b.addEventListener("click", () => { duo = d; peindre(); });
+    b.addEventListener("click", () => { location.hash = String(i); });
     liste.appendChild(b);
   });
 
   // mockup-duos.html#1 ouvre directement sur le duo 1.
-  duo = DUOS[Number(location.hash.slice(1))] || DUOS[0];
-  peindre();
+  // Un lien vers un autre numero ne change que le #, sans recharger la
+  // page : on suit donc chaque changement, et les boutons passent par la.
+  const lireHash = () => {
+    duo = DUOS[Number(location.hash.slice(1))] || DUOS[0];
+    peindre();
+  };
+  window.addEventListener("hashchange", lireHash);
+  lireHash();
   cadre.addEventListener("load", peindre);
 
   document.querySelectorAll(".reglage").forEach((b) => {

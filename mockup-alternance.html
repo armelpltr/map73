@@ -279,13 +279,19 @@
     b.dataset.nom = p.nom;
     b.innerHTML = `<span class="palette__duo"><span style="background:${p.clair}"></span><span style="background:${p.bleu}"></span></span>` +
       `<span class="palette__nom">${i}. ${p.nom}</span>`;
-    b.addEventListener("click", () => { palette = p; peindre(); });
+    b.addEventListener("click", () => { location.hash = String(i); });
     liste.appendChild(b);
   });
 
   // mockup-alternance.html#2 ouvre directement sur la proposition 2.
-  palette = PALETTES[Number(location.hash.slice(1))] || PALETTES[0];
-  peindre();
+  // Un lien vers un autre numero ne change que le #, sans recharger la
+  // page : on suit donc chaque changement, et les boutons passent par la.
+  const lireHash = () => {
+    palette = PALETTES[Number(location.hash.slice(1))] || PALETTES[0];
+    peindre();
+  };
+  window.addEventListener("hashchange", lireHash);
+  lireHash();
   cadre.addEventListener("load", transformer);
   if (cadre.contentDocument && cadre.contentDocument.readyState === "complete") transformer();
 
