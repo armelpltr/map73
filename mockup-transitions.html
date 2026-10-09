@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Maquette : vingt transitions</title>
+<title>Maquette : diagonales et arcs</title>
 <style>
   /* Maquette de travail, hors site : elle charge la vraie page d'accueil et
      remplace les vagues (.couture) entre les sections marine et creme par
-     l'une des vingt jointures ci-dessous. Le site en ligne n'est pas
+     l'une des jointures ci-dessous. Le site en ligne n'est pas
      touche. */
   :root {
     --nuit: #0b1a2e;
@@ -87,7 +87,6 @@
     --k: 0.22;
   }
   .apercu__haut { flex: 1; background: var(--couture-sortant); }
-  .apercu .mq::after { width: 7px !important; height: 7px !important; box-shadow: 0 0 0 2px var(--couture-sortant) !important; }
   .apercu__bas { flex: 1; background: var(--couture-entrant); }
   .option__nom { line-height: 1.2; }
 
@@ -120,79 +119,61 @@
   .couture.mq::before,
   .couture.mq::after { content: ""; position: absolute; }
   .couture.mq::before { inset: 0; background: var(--couture-entrant); }
-  .couture.mq.couture--miroir::before { transform: scaleX(-1); }
+  .couture.mq.couture--miroir::before,
+  .couture.mq.couture--miroir::after { transform: scaleX(-1); }
 
-  /* 1. Bord franc */
-  .mq[data-mq="franc"] { --h: 1px; }
-  /* 2. Filet vert */
-  .mq[data-mq="filet"] { --h: 3px; background: var(--v); }
-  .mq[data-mq="filet"]::before { display: none; }
-  /* 3. Trait vert centre, a cheval sur la jointure */
-  .mq[data-mq="trait"] { --h: 4px; background: linear-gradient(var(--couture-sortant) 50%, var(--couture-entrant) 50%); overflow: visible; z-index: 2; }
-  .mq[data-mq="trait"]::before { inset: 0 auto 0 50%; width: 72px; transform: translateX(-50%) !important; background: var(--v); }
-  /* 4. Pastille verte */
-  .mq[data-mq="pastille"] { --h: 1px; overflow: visible; z-index: 2; }
-  .mq[data-mq="pastille"]::after { left: 50%; top: 50%; width: 18px; height: 18px; border-radius: 50%; background: var(--v); box-shadow: 0 0 0 5px var(--couture-sortant); transform: translate(-50%, -50%); }
-  /* 5. Losange */
-  .mq[data-mq="losange"] { --h: 1px; overflow: visible; z-index: 2; }
-  .mq[data-mq="losange"]::after { left: 50%; top: 50%; width: 16px; height: 16px; background: var(--v); box-shadow: 0 0 0 5px var(--couture-sortant); transform: translate(-50%, -50%) rotate(45deg); }
-  /* 6. Diagonale */
+  /* Seules restent les coupes amples, d'un seul geste : diagonales et
+     arcs. Le vert n'y entre qu'en filet, sur deux d'entre elles. */
+
+  /* La diagonale de reference, et ses variantes */
   .mq[data-mq="diagonale"] { --h: 90px; }
   .mq[data-mq="diagonale"]::before { clip-path: polygon(0 100%, 100% 0, 100% 100%); }
-  /* 7. Pente douce */
   .mq[data-mq="pente"] { --h: 36px; }
   .mq[data-mq="pente"]::before { clip-path: polygon(0 100%, 100% 0, 100% 100%); }
-  /* 8. Chevron : la section sortante pointe vers le bas */
-  .mq[data-mq="chevron"] { --h: 56px; }
-  .mq[data-mq="chevron"]::before { clip-path: polygon(0 0, 50% 100%, 100% 0, 100% 100%, 0 100%); }
-  /* 9. Fleche montante : la section entrante pointe vers le haut */
-  .mq[data-mq="fleche"] { --h: 56px; }
-  .mq[data-mq="fleche"]::before { clip-path: polygon(0 100%, 50% 0, 100% 100%); }
-  /* 10. Escalier */
-  .mq[data-mq="escalier"] { --h: 64px; }
-  .mq[data-mq="escalier"]::before { clip-path: polygon(0 100%, 0 75%, 25% 75%, 25% 50%, 50% 50%, 50% 25%, 75% 25%, 75% 0, 100% 0, 100% 100%); }
-  /* 11. Dents de scie */
-  .mq[data-mq="dents"] { --h: 14px; }
-  .mq[data-mq="dents"]::before {
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 14'%3E%3Cpath d='M0 14L14 0L28 14Z'/%3E%3C/svg%3E") 0 100% / 28px 100% repeat-x;
-            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 14'%3E%3Cpath d='M0 14L14 0L28 14Z'/%3E%3C/svg%3E") 0 100% / 28px 100% repeat-x;
-  }
-  /* 12. Creneaux */
-  .mq[data-mq="creneaux"] { --h: 16px; }
-  .mq[data-mq="creneaux"]::before {
-    -webkit-mask: linear-gradient(90deg, #000 50%, transparent 50%) 0 0 / 64px 100% repeat-x;
-            mask: linear-gradient(90deg, #000 50%, transparent 50%) 0 0 / 64px 100% repeat-x;
-  }
-  /* 13. Arc */
+  .mq[data-mq="raide"] { --h: 150px; }
+  .mq[data-mq="raide"]::before { clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+  /* Une diagonale qui change d'angle aux deux tiers */
+  .mq[data-mq="brisee"] { --h: 90px; }
+  .mq[data-mq="brisee"]::before { clip-path: polygon(0 100%, 65% 55%, 100% 0, 100% 100%); }
+  /* Deux plans : une pente pleine, et devant elle une pente plus raide a
+     demi-teinte */
+  .mq[data-mq="facettes"] { --h: 90px; }
+  .mq[data-mq="facettes"]::before { clip-path: polygon(0 100%, 100% 45%, 100% 100%); }
+  .mq[data-mq="facettes"]::after { inset: 0; background: var(--couture-entrant); opacity: 0.45; clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+  /* La diagonale, bordee d'un filet vert */
+  .mq[data-mq="diagonale-verte"] { --h: 90px; }
+  .mq[data-mq="diagonale-verte"]::before { clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+  .mq[data-mq="diagonale-verte"]::after { inset: 0; background: var(--v); clip-path: polygon(0 calc(100% - 4px), 100% -4px, 100% 0, 0 100%); }
+
+  /* L'arc de reference, et ses variantes */
   .mq[data-mq="arc"] { --h: 60px; }
   .mq[data-mq="arc"]::before { clip-path: ellipse(75% 100% at 50% 100%); }
-  /* 14. Coin coupe */
-  .mq[data-mq="coin"] { --h: 70px; }
-  .mq[data-mq="coin"]::before { clip-path: polygon(0 100%, 18% 0, 100% 0, 100% 100%); }
-  /* 15. Onglet */
-  .mq[data-mq="onglet"] { --h: 40px; }
-  .mq[data-mq="onglet"]::before { clip-path: polygon(0 100%, 0 60%, 40% 60%, 43% 0, 57% 0, 60% 60%, 100% 60%, 100% 100%); }
-  /* 16. Fondu */
-  .mq[data-mq="fondu"] { --h: 140px; background: linear-gradient(var(--couture-sortant), var(--couture-entrant)); }
-  .mq[data-mq="fondu"]::before { display: none; }
-  /* 17. Pointilles verts */
-  .mq[data-mq="pointilles"] { --h: 4px; background: repeating-linear-gradient(90deg, var(--v) 0 4px, transparent 4px 14px), linear-gradient(var(--couture-sortant) 50%, var(--couture-entrant) 50%); }
-  .mq[data-mq="pointilles"]::before { display: none; }
-  /* 18. Double filet */
-  .mq[data-mq="double"] { --h: 10px; background: linear-gradient(var(--v) 0 2px, var(--couture-sortant) 2px 8px, var(--v) 8px 10px); }
-  .mq[data-mq="double"]::before { display: none; }
-  /* 19. Bande verte */
-  .mq[data-mq="bande"] { --h: 12px; background: var(--v); }
-  .mq[data-mq="bande"]::before { display: none; }
-  /* 20. Hachures */
-  .mq[data-mq="hachures"] { --h: 22px; background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--v) 70%, transparent) 0 2px, transparent 2px 10px), var(--couture-sortant); }
-  .mq[data-mq="hachures"]::before { display: none; }
+  .mq[data-mq="arc-plat"] { --h: 30px; }
+  .mq[data-mq="arc-plat"]::before { clip-path: ellipse(80% 100% at 50% 100%); }
+  .mq[data-mq="arc-decentre"] { --h: 70px; }
+  .mq[data-mq="arc-decentre"]::before { clip-path: ellipse(110% 100% at 25% 100%); }
+  /* L'arc retourne : la section sortante s'arrondit vers le bas */
+  .mq[data-mq="arc-creuse"] { --h: 60px; }
+  .mq[data-mq="arc-creuse"]::before {
+    -webkit-mask: radial-gradient(75% 100% at 50% 0, transparent 99%, #000 100%);
+            mask: radial-gradient(75% 100% at 50% 0, transparent 99%, #000 100%);
+  }
+  /* L'arc, souligne d'un filet vert */
+  .mq[data-mq="arc-vert"] { --h: 60px; }
+  .mq[data-mq="arc-vert"]::before { background: var(--v); clip-path: ellipse(75% 100% at 50% 100%); }
+  .mq[data-mq="arc-vert"]::after { inset: calc(4px * var(--k, 1)) 0 0; background: var(--couture-entrant); clip-path: ellipse(75% 100% at 50% 100%); }
+  /* Un seul angle arrondi, le reste plat */
+  .mq[data-mq="angle"] { --h: 80px; }
+  .mq[data-mq="angle"]::before { border-top-left-radius: 45% 100%; }
+  /* Une pente qui se creuse : la diagonale devenue courbe */
+  .mq[data-mq="pente-courbe"] { --h: 90px; }
+  .mq[data-mq="pente-courbe"]::after { inset: 0; background: var(--couture-sortant); border-bottom-right-radius: 100% 100%; }
 </style>
 </head>
 <body>
 
 <header class="barre">
-  <h1>Vingt transitions entre les sections</h1>
+  <h1>Transitions : diagonales et arcs</h1>
   <div class="reglages">
     <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
     <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
@@ -209,26 +190,19 @@
   /* La 0 est la page telle qu'elle est en ligne, pour comparer. */
   const JOINTURES = [
     { id: "vagues", nom: "Actuel : vagues", note: "Le site en ligne aujourd'hui, pour comparer." },
-    { id: "franc", nom: "Bord franc", note: "Aucune transition : le marine s'arrête, la crème commence. Le plus net." },
-    { id: "filet", nom: "Filet vert", note: "Un trait vert de 3 px souligne chaque changement de fond." },
-    { id: "trait", nom: "Trait vert centré", note: "Un court trait vert à cheval sur la jointure, comme celui des titres." },
-    { id: "pastille", nom: "Pastille verte", note: "Bord franc, ponctué d'un point vert au centre : rappel des lucioles du hero." },
-    { id: "losange", nom: "Losange", note: "Bord franc et un petit losange vert au centre : plus graphique." },
-    { id: "diagonale", nom: "Diagonale", note: "Coupe en biais franche, alternée d'un côté à l'autre." },
-    { id: "pente", nom: "Pente douce", note: "La même diagonale, très couchée : du mouvement sans effet appuyé." },
-    { id: "chevron", nom: "Chevron", note: "La section qui s'achève pointe vers le bas : elle guide vers la suite." },
-    { id: "fleche", nom: "Flèche montante", note: "La section qui arrive pointe vers le haut, comme la flèche du logo." },
-    { id: "escalier", nom: "Escalier", note: "Quatre marches : l'idée de progression, étape par étape." },
-    { id: "dents", nom: "Dents de scie", note: "Petits triangles réguliers : effet ticket, plus ludique." },
-    { id: "creneaux", nom: "Créneaux", note: "Rectangles alternés : rythme géométrique, assez fort." },
-    { id: "arc", nom: "Arc", note: "Une seule courbe ample et régulière, sans ondulation." },
-    { id: "coin", nom: "Coin coupé", note: "Bord franc sauf un angle biseauté : discret, éditorial." },
-    { id: "onglet", nom: "Onglet", note: "La section suivante dépasse en onglet au centre, comme un intercalaire." },
-    { id: "fondu", nom: "Fondu", note: "Dégradé du marine vers la crème : aucune arête." },
-    { id: "pointilles", nom: "Pointillés verts", note: "Une ligne de points verts sur la jointure : léger, « parcours »." },
-    { id: "double", nom: "Double filet", note: "Deux filets verts fins : plus soigné qu'un seul trait." },
-    { id: "bande", nom: "Bande verte", note: "Un aplat vert de 12 px : le vert du logo devient séparateur." },
-    { id: "hachures", nom: "Hachures", note: "Une bande hachurée de vert : texture, plus « atelier »." },
+    { id: "diagonale", nom: "Diagonale", note: "Retenue : coupe en biais franche, alternée d'un côté à l'autre." },
+    { id: "pente", nom: "Pente douce", note: "Retenue : la même diagonale, très couchée." },
+    { id: "arc", nom: "Arc", note: "Retenu : une seule courbe ample et régulière." },
+    { id: "raide", nom: "Pente raide", note: "La diagonale à 150 px : plus dynamique, plus affirmée." },
+    { id: "brisee", nom: "Diagonale brisée", note: "La pente change d'angle aux deux tiers : un pli, comme une page." },
+    { id: "facettes", nom: "Facettes", note: "Deux pentes superposées, la seconde en demi-teinte : du relief." },
+    { id: "diagonale-verte", nom: "Diagonale verte", note: "La diagonale bordée d'un filet vert : le vert du logo trace la coupe." },
+    { id: "arc-plat", nom: "Arc plat", note: "L'arc très couché : la courbe se devine plus qu'elle ne se voit." },
+    { id: "arc-decentre", nom: "Arc décentré", note: "Le sommet de l'arc part à gauche : moins symétrique, plus vivant." },
+    { id: "arc-creuse", nom: "Arc creusé", note: "L'arc retourné : la section qui s'achève s'arrondit vers le bas." },
+    { id: "arc-vert", nom: "Arc vert", note: "L'arc souligné d'un filet vert." },
+    { id: "angle", nom: "Angle arrondi", note: "Un seul coin arrondi, le reste à plat : discret, doux." },
+    { id: "pente-courbe", nom: "Pente courbe", note: "Une diagonale qui se creuse en courbe, comme une piste." },
   ];
 
   let jointure;
