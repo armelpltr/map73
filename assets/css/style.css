@@ -1962,7 +1962,10 @@ p:last-child { margin-bottom: 0; }
   pointer-events: none;
 }
 
-.hero__fond { color: var(--vert); }
+/* Les courbes gardent le vert du logo, mais a 30 % : en plein, elles
+   barraient le titre et le chapo qu'elles traversent. Seule exception a la
+   regle du vert pur, voulue pour la lecture. */
+.hero__fond { color: var(--vert); opacity: 0.3; }
 
 /* Les points lumineux poses sur les courbes. Purement decoratifs, donc hors
    du flux et hors du lecteur d'ecran. */
