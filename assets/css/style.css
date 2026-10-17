@@ -2210,13 +2210,10 @@ p:last-child { margin-bottom: 0; }
   height: 64px;
   margin: 0 auto 0.85rem;
   flex: none;
-  border: 2px solid var(--neon-bleu-coeur);
+  border: 2px solid var(--vert);
   border-radius: 50%;
   color: var(--vert-texte);
-  box-shadow:
-    0 0 2px var(--neon-bleu),
-    0 0 10px var(--neon-bleu),
-    inset 0 0 8px color-mix(in srgb, var(--neon-bleu) 53%, transparent);
+  box-shadow: var(--lueur);
 }
 @media (max-width: 560px) {
   .chiffre__rond { margin: 0; width: 52px; height: 52px; }
