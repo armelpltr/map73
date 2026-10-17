@@ -1830,54 +1830,100 @@ p:last-child { margin-bottom: 0; }
    ========================================================= */
 
 /* ---------- Hero ---------- */
-/* Le fond du hero est le marine de toute la page, sans halo ni courbes :
-   rien ne marque sa fin, il se poursuit dans la section suivante. Seules
-   la trame de points et les lucioles l'animent. */
-.hero { position: relative; isolation: isolate; overflow: hidden; }
-
-
-/* La trame de points. Discrete sur le papier, elle porte la lueur en nuit. */
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background-image: radial-gradient(circle, var(--grille) 1px, transparent 1px);
-  background-size: 34px 34px;
-  mask-image: radial-gradient(75% 65% at 50% 40%, #000 30%, transparent 100%);
-  -webkit-mask-image: radial-gradient(75% 65% at 50% 40%, #000 30%, transparent 100%);
-  pointer-events: none;
+/* Le fond du hero est le marine de toute la page. Il porte un decor
+   « synthwave » : un sol quadrille bleu en perspective qui defile vers le
+   lecteur, sous une ligne d'horizon lumineuse. Le decor s'efface sur le bas
+   du hero : rien ne marque sa fin, il se poursuit dans la section suivante.
+   Deux enseignes au neon s'y detachent : le selecteur de classe en tube
+   bleu, « un avenir. » en tube vert. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  --neon-bleu: #2f8cff;
+  --neon-bleu-coeur: #d6e9ff;
+  --neon-vert: #6cc24a;
+  --neon-vert-coeur: #e2ffd6;
 }
 
-/* Les points lumineux poses sur les courbes. Purement decoratifs, donc hors
-   du flux et hors du lecteur d'ecran. */
-.hero__lucioles {
+.hero__decor {
   position: absolute;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
   pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+}
+.hero__horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 220px;
+  transform: translateY(-50%);
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--neon-bleu) 20%, transparent), transparent 70%);
+}
+/* Un plan quadrille, bascule en arriere depuis son bord haut, qui tient
+   lieu d'horizon. Il deborde a gauche et a droite pour que la perspective
+   ne laisse pas voir ses bords. */
+.hero__sol {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  top: 50%;
+  height: 120%;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--neon-bleu) 60%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--neon-bleu) 60%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  transform: perspective(400px) rotateX(72deg);
+  transform-origin: 50% 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 25%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 25%);
+  opacity: 0.5;
+  animation: hero-sol 2.4s linear infinite;
+}
+@keyframes hero-sol { to { background-position: 0 64px; } }
+/* La lumiere des deux neons sur le fond : bleue autour du selecteur,
+   verte sous le titre. */
+.hero__lueur {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(560px 380px at 74% 34%, color-mix(in srgb, var(--neon-bleu) 15%, transparent), transparent 70%),
+    radial-gradient(520px 300px at 26% 52%, color-mix(in srgb, var(--neon-vert) 8%, transparent), transparent 70%);
 }
 
-.luciole {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--vert);
-  box-shadow: var(--lueur-forte);
-  animation: luciole 5.5s ease-in-out infinite;
-}
-@keyframes luciole {
-  0%, 100% { transform: scale(0.8); }
-  50%      { transform: scale(1.15); }
+/* Le gresillement : de temps en temps, un tube vacille une fraction de
+   seconde, comme une vraie enseigne. */
+@keyframes neon-gresille {
+  0%, 90%, 100% { opacity: 1; }
+  91% { opacity: 0.45; }
+  92% { opacity: 1; }
+  94% { opacity: 0.65; }
+  95% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .luciole { animation: none; }
+  .hero__sol,
+  .hero__classe,
+  .hero__accent { animation: none; }
 }
 
-/* Le titre : « un avenir. » passe au vert, comme sur la maquette. La classe
-   est posee dans le HTML sur le dernier segment. */
-.hero__accent { color: var(--vert-texte); }
+/* Le titre : « un avenir. » en tube neon vert, dessine au trait, sans
+   remplissage. La classe est posee dans le HTML sur le dernier segment. */
+.hero__accent {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--neon-vert-coeur);
+  filter:
+    drop-shadow(0 0 2px var(--neon-vert))
+    drop-shadow(0 0 7px var(--neon-vert))
+    drop-shadow(0 0 18px var(--neon-vert));
+  animation: neon-gresille 7s steps(1) -4s infinite;
+}
+@media (max-width: 700px) {
+  .hero__accent { -webkit-text-stroke-width: 1.5px; }
+}
 
 /* Le trait court au-dessus du titre, repris des maquettes. */
 .hero__filet {
@@ -1905,20 +1951,27 @@ p:last-child { margin-bottom: 0; }
 /* Camille le veut a droite du titre, puis en grand au clic. C'est donc un
    bouton, pas un <select> : il ouvre un dialogue. Le <select> reste dans le
    formulaire de contact, ou il n'a pas ce role. */
+/* Une enseigne au neon bleu : un tube a coeur presque blanc, entoure de
+   halos de plus en plus larges. */
 .hero__classe {
-  border-left: 1px solid var(--trait);
-  padding-left: clamp(1.25rem, 3vw, 2.25rem);
+  position: relative;
   display: grid;
   gap: 1.25rem;
   align-content: start;
+  padding: 1.75rem;
+  border: 2px solid var(--neon-bleu-coeur);
+  border-radius: 26px;
+  background: rgba(5, 11, 22, 0.6);
+  box-shadow:
+    0 0 2px var(--neon-bleu),
+    0 0 8px var(--neon-bleu),
+    0 0 22px var(--neon-bleu),
+    0 0 48px color-mix(in srgb, var(--neon-bleu) 53%, transparent),
+    inset 0 0 14px color-mix(in srgb, var(--neon-bleu) 53%, transparent);
+  animation: neon-gresille 9s steps(1) infinite;
 }
 @media (max-width: 900px) {
-  .hero__classe {
-    border-left: 0;
-    border-top: 1px solid var(--trait);
-    padding-left: 0;
-    padding-top: 1.75rem;
-  }
+  .hero__classe { padding: 1.5rem 1.25rem; border-radius: 22px; }
 }
 
 .hero__classe-entete { display: flex; align-items: center; gap: 1rem; }
@@ -1929,10 +1982,13 @@ p:last-child { margin-bottom: 0; }
   width: 62px;
   height: 62px;
   flex: none;
-  border: 2px solid var(--vert);
+  border: 2px solid var(--neon-bleu-coeur);
   border-radius: 50%;
   color: var(--vert-texte);
-  box-shadow: var(--lueur);
+  box-shadow:
+    0 0 2px var(--neon-bleu),
+    0 0 10px var(--neon-bleu),
+    inset 0 0 8px color-mix(in srgb, var(--neon-bleu) 53%, transparent);
 }
 
 .hero__classe-titre {
@@ -1956,8 +2012,9 @@ p:last-child { margin-bottom: 0; }
   font-size: 1.05rem;
   color: var(--ink);
   background: var(--voile);
-  border: 1px solid var(--vert);
+  border: 1px solid var(--neon-bleu);
   border-radius: 999px;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--neon-bleu) 33%, transparent);
   cursor: pointer;
   text-align: left;
   text-decoration: none;
@@ -2161,10 +2218,13 @@ p:last-child { margin-bottom: 0; }
   height: 64px;
   margin: 0 auto 0.85rem;
   flex: none;
-  border: 2px solid var(--vert);
+  border: 2px solid var(--neon-bleu-coeur);
   border-radius: 50%;
   color: var(--vert-texte);
-  box-shadow: var(--lueur);
+  box-shadow:
+    0 0 2px var(--neon-bleu),
+    0 0 10px var(--neon-bleu),
+    inset 0 0 8px color-mix(in srgb, var(--neon-bleu) 53%, transparent);
 }
 @media (max-width: 560px) {
   .chiffre__rond { margin: 0; width: 52px; height: 52px; }
