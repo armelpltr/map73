@@ -50,6 +50,81 @@
     ).observe(sentinelle);
   }
 
+  /* ---- Les vagues néon du hero ----
+     Trois tubes, bleu, vert, bleu, qui ondulent sous le texte. Le canevas
+     ne dessine que net : le flou est un filtre CSS posé sur lui. Le
+     dessin s'arrête quand le hero sort de l'écran, et se fige sur une
+     seule image pour qui a demandé moins de mouvement. */
+  const vagues = document.querySelector(".hero__vagues");
+  if (vagues && vagues.getContext) {
+    const ctx = vagues.getContext("2d");
+    const blanchir = (c) => c.map((v) => Math.round(v + (255 - v) * 0.75));
+    const tubes = [
+      { c: [47, 140, 255], y: 0.80, a: 26, f: 0.0042, v: 0.6, p: 0 },
+      { c: [108, 194, 74], y: 0.86, a: 30, f: 0.0035, v: -0.45, p: 2 },
+      { c: [47, 140, 255], y: 0.92, a: 22, f: 0.0055, v: 0.8, p: 4 }
+    ];
+    const immobile = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let largeur = 0;
+    let hauteur = 0;
+    let visible = true;
+    let demande = 0;
+
+    const dimensionner = () => {
+      const r = vagues.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      largeur = r.width;
+      hauteur = r.height;
+      vagues.width = Math.round(largeur * dpr);
+      vagues.height = Math.round(hauteur * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const dessiner = (t) => {
+      ctx.clearRect(0, 0, largeur, hauteur);
+      for (const l of tubes) {
+        const chemin = new Path2D();
+        for (let x = -20; x <= largeur + 20; x += 6) {
+          const y = hauteur * l.y +
+            l.a * Math.sin(x * l.f + t * l.v + l.p) +
+            l.a * 0.45 * Math.sin(x * l.f * 2.3 - t * l.v * 1.4);
+          if (x === -20) chemin.moveTo(x, y); else chemin.lineTo(x, y);
+        }
+        ctx.shadowColor = `rgb(${l.c})`;
+        ctx.shadowBlur = 22;
+        ctx.strokeStyle = `rgba(${l.c}, 0.75)`;
+        ctx.lineWidth = 7.2;
+        ctx.stroke(chemin);
+        ctx.shadowBlur = 6;
+        ctx.strokeStyle = `rgba(${blanchir(l.c)}, 0.6)`;
+        ctx.lineWidth = 2.25;
+        ctx.stroke(chemin);
+      }
+      ctx.shadowBlur = 0;
+    };
+
+    const image = (maintenant) => {
+      demande = 0;
+      dessiner(maintenant / 1000);
+      if (visible && !immobile.matches) demande = requestAnimationFrame(image);
+    };
+    const relancer = () => {
+      if (!demande) demande = requestAnimationFrame(image);
+    };
+
+    dimensionner();
+    relancer();
+    window.addEventListener("resize", () => {
+      dimensionner();
+      relancer();
+    });
+    immobile.addEventListener("change", relancer);
+    new IntersectionObserver(([entree]) => {
+      visible = entree.isIntersecting;
+      if (visible) relancer();
+    }).observe(vagues);
+  }
+
   /* ---- Le lien de la section lue ----
      Un filet vert glisse d'un intitulé à l'autre selon la section à
      l'écran. Deux partis pris :

@@ -1843,10 +1843,10 @@ p:last-child { margin-bottom: 0; }
    ========================================================= */
 
 /* ---------- Hero ---------- */
-/* Le fond du hero est le marine de toute la page. Il porte un decor
-   « synthwave » : un sol quadrille bleu en perspective qui defile vers le
-   lecteur, sous une ligne d'horizon lumineuse. Le decor s'efface sur le bas
-   du hero : rien ne marque sa fin, il se poursuit dans la section suivante.
+/* Le fond du hero est le marine de toute la page. Trois vagues neon
+   floues, bleu, vert, bleu, y ondulent sous le texte (dessinees par
+   main.js). Le decor s'efface sur le bas du hero : rien ne marque sa fin,
+   il se poursuit dans la section suivante.
    Deux enseignes au neon s'y detachent : le selecteur de classe en tube
    bleu, « un avenir. » en tube vert. */
 .hero {
@@ -1865,39 +1865,19 @@ p:last-child { margin-bottom: 0; }
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
 }
-.hero__horizon {
+/* Le flou est un filtre CSS sur le canevas entier, applique par la carte
+   graphique : calcule dans le canevas, image par image, il etait trop
+   lent. */
+.hero__vagues {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 220px;
-  transform: translateY(-50%);
-  background: radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--neon-bleu) 20%, transparent), transparent 70%);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: blur(7px);
 }
-/* Un plan quadrille, bascule en arriere depuis son bord haut, qui tient
-   lieu d'horizon. Il deborde a gauche et a droite pour que la perspective
-   ne laisse pas voir ses bords. */
-.hero__sol {
-  position: absolute;
-  left: -50%;
-  right: -50%;
-  top: 50%;
-  height: 120%;
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--neon-bleu) 60%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--neon-bleu) 60%, transparent) 1px, transparent 1px);
-  background-size: 64px 64px;
-  transform: perspective(400px) rotateX(72deg);
-  transform-origin: 50% 0;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 25%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 25%);
-  opacity: 0.5;
-  animation: hero-sol 2.4s linear infinite;
-}
-@keyframes hero-sol { to { background-position: 0 64px; } }
 /* La lumiere des deux neons sur le fond : bleue autour du selecteur,
    verte sous le titre. */
 .hero__lueur {
@@ -1918,7 +1898,6 @@ p:last-child { margin-bottom: 0; }
   95% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero__sol,
   .hero__classe,
   .hero__accent { animation: none; }
 }
