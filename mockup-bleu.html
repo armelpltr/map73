@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : un seul bleu</title>
+<style>
+  /* Maquette : la page d'accueil, chargee dans un cadre, sans la creme.
+     Toutes les sections prennent le marine du hero (#0b1a2e), les coutures
+     disparaissent, et le contraste revient par les cartes. Trois
+     propositions, qui ne different que par les cartes passees au clair. */
+  :root {
+    --nuit: #050b16;
+    --panneau: #12213c;
+    --trait: #1b2c47;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+    --choisi: #6cc24a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; white-space: nowrap; }
+
+  .choix { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .option {
+    padding: 0.45rem 0.9rem;
+    border: 2px solid var(--trait);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .option:hover { border-color: var(--doux); }
+  .option[aria-pressed="true"] { border-color: var(--choisi); }
+
+  .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
+  .reglage {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+
+  .fiche { width: 100%; margin: 0; color: var(--doux); font-size: 0.85rem; }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+
+  .scene {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-height: 0;
+    background: #000;
+  }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--nuit); }
+  .scene--mobile iframe { width: 390px; border-left: 1px solid var(--trait); border-right: 1px solid var(--trait); }
+
+  @media (max-width: 700px) {
+    .reglages { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Un seul bleu, sans la crème</h1>
+  <div class="choix" id="choix"></div>
+  <div class="reglages">
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
+  </div>
+  <p class="fiche" id="fiche"></p>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="index.html" title="Page d'accueil en marine, sans la crème"></iframe>
+</div>
+
+<script>
+  /* Les cartes du site, et celles qui vivaient sur la creme. */
+  const TOUTES = ".news__carte, .formule, .temoignage, .pilier, .fondatrice, .formulaire, .billet, .legende__item";
+  const EX_CREME = ".section--ciel .pilier, .section--ciel .fondatrice, .section--ciel .formulaire";
+
+  const PROPOSITIONS = [
+    {
+      nom: "A · Tout marine",
+      cartes: null,
+      note: "Toutes les sections au marine du hero. Les cartes restent sombres (#1f2c3f), un cran au-dessus du fond. Le plus sobre ; rien ne casse le rythme, au risque d'une longue page d'un seul ton.",
+    },
+    {
+      nom: "B · Clair là où était la crème",
+      cartes: EX_CREME,
+      note: "Fond marine partout. Les cartes des anciennes sections crème (piliers, fondatrices, formulaire) passent au blanc bleuté #eef2f7 : l'alternance survit, portée par les cartes et non plus par les fonds.",
+    },
+    {
+      nom: "C · Toutes les cartes claires",
+      cartes: TOUTES,
+      note: "Fond marine partout, et toutes les cartes au blanc bleuté #eef2f7 (nouveautés, formules, témoignages, blog compris). Contraste maximal, page plus « tuiles ».",
+    },
+  ];
+
+  /* Les jetons de la tenue sombre, reposes sur les anciennes sections
+     creme : elles redeviennent des sections comme les autres. */
+  const SANS_CREME = `
+    .section--ciel {
+      color-scheme: dark;
+      --paper: #0b1a2e; --paper-2: #1f2c3f;
+      --ink: #e8f0fb; --ink-soft-page: #bac9de; --ink-soft: #bac9de;
+      --vert-texte-page: #6cc24a; --vert-texte: #6cc24a;
+      --lac: #74c6ea; --trait: #2d3a4b; --blanc: #fffdf9;
+      --surface: #1f2c3f; --panneau: #1f2c3f;
+      --voile: rgba(232, 240, 251, 0.05); --grille: #2d3a4b;
+      --lien: #74c6ea; --lien-survol: #e8f0fb;
+      background: #0b1a2e !important;
+      color: #e8f0fb;
+    }
+    .couture { display: none !important; }
+    .pied { border-top: 1px solid var(--trait) !important; }`;
+
+  /* Une carte claire : fond blanc bleute, et les jetons de texte qui
+     s'inversent, comme le faisait la creme. Le vert n'y tient pas : ce
+     qui s'ecrirait en vert s'ecrit a l'encre. */
+  const carteClaire = (sel) => `
+    ${sel} {
+      color-scheme: light;
+      --ink: #14243b; --ink-soft-page: #4a5872; --ink-soft: #4a5872;
+      --vert-texte-page: #14243b; --vert-texte: #14243b;
+      --lac: #22688c; --lac-clair: #22688c;
+      --trait: #cfd8e3; --paper: #e1e8f0; --paper-2: #dbe3ec;
+      --blanc: #14243b; --surface: #eef2f7;
+      --sur-panneau: #14243b; --sur-panneau-doux: #4a5872;
+      --lien: #22688c; --lien-survol: #14243b;
+      --equerre: #22688c;
+      background-color: #eef2f7 !important;
+      color: #14243b !important;
+    }`;
+
+  const cadre = document.getElementById("site");
+  const scene = document.getElementById("scene");
+  const fiche = document.getElementById("fiche");
+  const conteneur = document.getElementById("choix");
+
+  const depart = Math.min(Math.max(parseInt(location.hash.slice(1), 10) || 1, 1), PROPOSITIONS.length) - 1;
+  let courant = PROPOSITIONS[depart];
+
+  function peindre() {
+    const doc = cadre.contentDocument;
+    if (!doc || !doc.head) return;
+    let style = doc.getElementById("maquette-bleu");
+    if (!style) {
+      style = doc.createElement("style");
+      style.id = "maquette-bleu";
+      doc.head.appendChild(style);
+    }
+    style.textContent = SANS_CREME + (courant.cartes ? carteClaire(courant.cartes) : "");
+  }
+
+  function choisir(p) {
+    courant = p;
+    history.replaceState(null, "", "#" + (PROPOSITIONS.indexOf(p) + 1));
+    conteneur.querySelectorAll(".option").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.nom === p.nom)));
+    fiche.innerHTML = `<strong>${p.nom}.</strong> ${p.note}`;
+    peindre();
+  }
+
+  PROPOSITIONS.forEach((p) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "option";
+    b.dataset.nom = p.nom;
+    b.textContent = p.nom;
+    b.addEventListener("click", () => choisir(p));
+    conteneur.appendChild(b);
+  });
+
+  document.querySelectorAll("[data-largeur]").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll("[data-largeur]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      scene.classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+    });
+  });
+
+  cadre.addEventListener("load", peindre);
+  choisir(courant);
+</script>
+</body>
+</html>
