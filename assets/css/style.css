@@ -5,10 +5,9 @@
    ========================================================= */
 
 /* ---------- Jetons ---------- */
-/* Une seule tenue, sombre : marine et creme, avec le vert du logo. La page
-   alterne deux fonds — le marine (--paper) et la creme (--ciel, voir
-   .section--ciel). Les aplats sombres (cartes, panneaux, en-tete) sont le
-   marine eclairci d'un ou deux crans. */
+/* Une seule tenue, sombre : un seul fond, le marine (--paper) du hero, sur
+   toute la page, avec le vert pomme. Pas de second fond : les aplats
+   (cartes, panneaux, en-tete) sont le marine eclairci d'un ou deux crans. */
 :root {
   color-scheme: dark;
 
@@ -25,12 +24,11 @@
   --ink-soft: var(--ink-soft-page);
   /* Le vert pomme, #6CC24A, choisi sur la maquette des verts a la place du
      vert du logo (#94C412) : moins jaune, plus franc. C'est le seul vert du
-     site. Sur le marine il porte aussi du texte ; sur la creme il n'en tient
-     pas, et ce qui y ecrirait en vert s'ecrit a l'encre (voir .section--ciel). */
+     site. Sur le marine il porte aussi du texte. */
   --vert: #6cc24a;
   --vert-texte-page: #6cc24a;
   --vert-texte: var(--vert-texte-page);
-  /* Ce qui s'ecrit SUR un aplat de vert : ni la creme ni le voile clair n'y
+  /* Ce qui s'ecrit SUR un aplat de vert : ni le blanc ni le voile clair n'y
      tiennent, l'encre bleu nuit si (7,5). */
   --sur-vert: #14243b;
   --lac: #74c6ea;
@@ -40,10 +38,7 @@
   --trait: #2d3a4b;
   /* Le titre pose sur un panneau. */
   --blanc: #fffdf9;
-  --surface: #172538;
-  /* Le fond des sections claires de l'alternance : une creme chaude, qui
-     accompagne le vert (lui-meme chaud) mieux qu'un clair froid. */
-  --ciel: #f0e2c2;
+  --surface: #1f2c3f;
   /* Le fond des panneaux et des cartes, un cran au-dessus du fond. */
   --panneau: #1f2c3f;
   /* Le texte pose sur un panneau. */
@@ -168,41 +163,6 @@ p:last-child { margin-bottom: 0; }
   --lien: var(--lac-clair);
   --lien-survol: var(--blanc);
 }
-/* Le ciel : la creme #f0e2c2, le second fond de l'alternance. Sur ce fond
-   clair, les jetons de texte s'inversent : encre bleu nuit, texte doux
-   gris-bleu, et tout le jeu qui va avec, pour que ses cartes (formulaire,
-   fiches) restent lisibles. Le vert du logo n'y tient que 1,8 : ce qui
-   ecrirait en vert s'ecrit a l'encre. Le lac courant y est assombri (5,2). */
-.section--ciel {
-  color-scheme: light;
-  /* Pas de blanc pur sur la creme : les cartes (fiches, formulaire) se
-     fondent dans le fond et ne se detachent que par leurs filets et leurs
-     equerres ; ce qui reposait sur --paper a l'interieur (lignes des fiches,
-     champs) prend une creme un cran plus sombre. --blanc, titre pose sur
-     les cartes marine, devient la creme elle-meme. */
-  --paper: #e7d6b2;
-  --paper-2: #e0cea8;
-  --ink: #14243b;
-  --ink-soft-page: #4a5872;
-  --ink-soft: var(--ink-soft-page);
-  --vert-texte-page: var(--ink);
-  --vert-texte: var(--vert-texte-page);
-  --lac: #22688c;
-  --trait: #d6c39c;
-  --blanc: var(--ciel);
-  --surface: var(--ciel);
-  --panneau: #14243b;
-  --lueur: 0 0 0 rgba(0, 0, 0, 0);
-  --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
-  --voile: rgba(20, 36, 59, 0.06);
-  --grille: rgba(20, 36, 59, 0.05);
-  --lien: var(--lac);
-  --lien-survol: var(--ink);
-  --equerre-neutre: color-mix(in srgb, var(--trait) 62%, var(--ink));
-  background: var(--ciel);
-  color: var(--ink);
-}
-
 .section-entete { max-width: 46ch; margin-bottom: clamp(2rem, 4vw, 3.25rem); }
 .section-entete h2 { font-size: var(--fs-h2); margin-bottom: 0.5rem; }
 .section-entete p { color: var(--ink-soft); font-size: 1.125rem; margin: 0; }
@@ -753,41 +713,6 @@ p:last-child { margin-bottom: 0; }
   justify-self: start;
 }
 
-/* ---------- Coutures : l'arc ---------- */
-/* Entre le marine et la creme, la section qui arrive monte en un seul arc
-   ample et regulier, au centre de la page. La couture porte la couleur
-   sortante ; son ::before, la couleur entrante, decoupe en demi-ellipse.
-   Pas de filet : l'arc marque seul la limite. */
-.couture {
-  position: relative;
-  display: block;
-  height: 60px;
-  background: var(--couture-sortant);
-  /* L'arc et la section suivante se touchent : sans ce pixel, un liseré
-     de la couleur sortante reste visible aux zooms fractionnaires. */
-  margin-bottom: -1px;
-  overflow: hidden;
-}
-.couture::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--couture-entrant);
-  clip-path: ellipse(75% 100% at 50% 100%);
-}
-
-.couture--clair-ciel {
-  --couture-sortant: var(--paper);
-  --couture-entrant: var(--ciel);
-}
-.couture--ciel-clair {
-  --couture-sortant: var(--ciel);
-  --couture-entrant: var(--paper);
-}
-/* Le pied garde son filet sur les pages sans couture (blog, mentions) ;
-   apres une couture, la courbe suffit. */
-.couture + .pied { border-top: 0; }
-
 /* ---------- L'ADN ---------- */
 /* Trois valeurs, chacune ouverte par un adage. La legende et les nouveautes
    viennent d'aligner six cartes a l'encre : une septieme rangee de tuiles
@@ -795,8 +720,6 @@ p:last-child { margin-bottom: 0; }
    intitule et du texte — la bande respire, et l'adage porte la section a lui
    seul. C'est le seul italique du site, et le seul endroit ou une phrase est
    citee pour elle-meme. */
-/* Le filet de pied disparait : la section est passee a l'aplat encre, et
-   c'est la couture qui marque desormais sa limite. */
 .adn { border-bottom: 0; }
 /* Sur l'encre, l'adage prend le lac eclairci et le texte la valeur claire
    de la famille : le lac sombre tombait a 3,1 de contraste, l'encre
@@ -1467,8 +1390,7 @@ p:last-child { margin-bottom: 0; }
    a meme le panneau. Depuis que l'appel a l'action y est un bouton vert, elle
    l'atteignait aussi — un lien est plus specifique qu'une classe de bouton —
    et son texte passait au creme sur le vert, a 1,9 dans les deux tenues.
-   Le bloc repose sur le ciel : encre, puis lac au survol (l'ambre n'y tient
-   que 1,8). */
+   Le bloc repose sur le marine : encre claire, puis lac au survol. */
 .coordonnees a:not(.bouton) { color: var(--ink); }
 .coordonnees a:not(.bouton):hover { color: var(--lac); }
 
@@ -1878,7 +1800,6 @@ p:last-child { margin-bottom: 0; }
   .fondatrice__portrait { width: 64px; height: 64px; }
   .fondatrice h3 { font-size: 1.25rem; }
   .fondatrice__valeur { font-size: 1.25rem; }
-  .couture { height: 32px; }
   .formule,
   .fondatrice,
   .legende__item,
@@ -1920,7 +1841,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 @media print {
-  .entete, .nav, .hero__fond, .formulaire, .couture { display: none; }
+  .entete, .nav, .hero__fond, .formulaire { display: none; }
   /* Sans l'en-tete, son retrait n'a plus lieu d'etre. */
   body { padding-top: 0; }
   /* Les navigateurs n'impriment pas les images de fond : sans cadre, les
@@ -2581,8 +2502,7 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- Jetons du panneau ---------- */
 /* Les panneaux et les cartes marine : le texte doux et le vert y sont ceux
-   qui se lisent sur un aplat sombre. Une carte posee sur la creme les
-   retrouve ainsi, au lieu d'heriter des jetons inverses de la section. */
+   qui se lisent sur un aplat sombre. */
 .entete,
 .formule,
 .pilier,
