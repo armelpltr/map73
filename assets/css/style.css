@@ -23,12 +23,12 @@
      panneau doit pouvoir revenir ici. */
   --ink-soft-page: #bac9de;
   --ink-soft: var(--ink-soft-page);
-  /* Le vert du logo, mesure sur assets/img/logo-480.webp : #94C412, une teinte
-     olive a 76 deg. C'est le seul vert du site. Sur le marine il porte aussi
-     du texte (8,5) ; sur la creme il n'en tient que 1,8, et ce qui y
-     ecrirait en vert s'ecrit a l'encre (voir .section--ciel). */
-  --vert: #94c412;
-  --vert-texte-page: #94c412;
+  /* Le vert pomme, #6CC24A, choisi sur la maquette des verts a la place du
+     vert du logo (#94C412) : moins jaune, plus franc. C'est le seul vert du
+     site. Sur le marine il porte aussi du texte ; sur la creme il n'en tient
+     pas, et ce qui y ecrirait en vert s'ecrit a l'encre (voir .section--ciel). */
+  --vert: #6cc24a;
+  --vert-texte-page: #6cc24a;
   --vert-texte: var(--vert-texte-page);
   /* Ce qui s'ecrit SUR un aplat de vert : ni la creme ni le voile clair n'y
      tiennent, l'encre bleu nuit si (7,5). */
@@ -51,7 +51,7 @@
   --sur-panneau-doux: #b9c3d4;
 
   /* Pas de halo vert : un halo est un vert qui s'estompe, et le site n'en
-     porte qu'un, #94c412, pur. La trame passe au trait, sans vert. Les
+     porte qu'un, #6cc24a, pur. La trame passe au trait, sans vert. Les
      jetons restent, a zero, pour les regles qui les lisent. */
   --lueur: 0 0 0 rgba(0, 0, 0, 0);
   --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
