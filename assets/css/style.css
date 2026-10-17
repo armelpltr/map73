@@ -286,15 +286,28 @@ p:last-child { margin-bottom: 0; }
   inset-inline: 0;
   top: 0;
   z-index: 50;
-  /* --panneau et non --ink : le bandeau doit rester sombre dans les deux
-     tenues, sinon le logo blanc qu'il porte disparait. --ink est l'encre du
-     texte courant, qui passe au voile clair en tenue sombre. */
-  background: var(--panneau);
-  border-bottom: 1px solid rgba(255, 253, 249, 0.14);
+  /* Le marine de la page : le bandeau ne fait plus bande a part au-dessus
+     du hero. Seul un liseré de lumiere, bleu puis vert comme les deux neons
+     du hero, l'en separe. */
+  background: var(--paper);
 }
+.entete::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2f8cff 25%, #e2ffd6 50%, #6cc24a 75%, transparent);
+  box-shadow: 0 0 8px #2f8cff, 0 0 18px rgba(47, 140, 255, 0.4);
+  pointer-events: none;
+}
+/* Des qu'on quitte le haut de page, le bandeau devient translucide et
+   floute le contenu qui passe dessous. */
 .entete[data-defile="oui"] {
-  border-bottom-color: rgba(255, 253, 249, 0.22);
-  box-shadow: 0 1px 12px rgba(20, 36, 59, 0.28);
+  background: rgba(11, 26, 46, 0.72);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 /* Le bandeau se compacte des qu'on quitte le haut de page : 18 px de
    hauteur rendus a la lecture, et le logo suit. C'est la seule mesure
