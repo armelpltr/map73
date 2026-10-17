@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : vagues</title>
+<style>
+  /* Maquette : la page d'accueil, chargee dans un cadre, avec cinq vagues
+     futuristes a la place du sol quadrille du hero. */
+  :root {
+    --nuit: #050b16;
+    --panneau: #12213c;
+    --trait: #1b2c47;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+    --choisi: #6cc24a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; white-space: nowrap; }
+  .choix { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .option {
+    padding: 0.45rem 0.9rem;
+    border: 2px solid var(--trait);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .option:hover { border-color: var(--doux); }
+  .option[aria-pressed="true"] { border-color: var(--choisi); }
+  .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
+  .reglage {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+  .fiche { width: 100%; margin: 0; color: var(--doux); font-size: 0.85rem; }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+  .scene { flex: 1; display: flex; justify-content: center; min-height: 0; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--nuit); }
+  .scene--mobile iframe { width: 390px; border-left: 1px solid var(--trait); border-right: 1px solid var(--trait); }
+  @media (max-width: 700px) { .reglages { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Cinq vagues futuristes</h1>
+  <div class="choix" id="choix"></div>
+  <div class="reglages">
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
+  </div>
+  <p class="fiche" id="fiche"></p>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="index.html" title="Page d'accueil avec les vagues choisies"></iframe>
+</div>
+
+<script>
+  /* Cinq vagues futuristes a la place du sol quadrille, sous les neons du
+     hero (qui restent tels qu'en ligne). Tout est dessine sur un canevas et
+     anime en JavaScript : la maquette bouge donc meme sur un poste en
+     « mouvement reduit » ; le site final, lui, s'arretera pour ceux qui
+     l'ont demande. */
+  const BLEU = [47, 140, 255], VERT = [108, 194, 74], LAC = [116, 198, 234];
+  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+  const mele = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+
+  const COMMUN = `
+    .hero__sol, .hero__horizon { display: none; }
+    .hero .mq-fond {
+      position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+      -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+      mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+    }
+    .hero .mq-fond canvas { position: absolute; inset: 0; width: 100%; height: 100%; }`;
+
+  /* 1. Trois tubes neon ondulants, bleu, vert, bleu. */
+  function neons(ctx, w, h, t) {
+    const lignes = [
+      { c: BLEU, y: 0.80, a: 26, f: 0.0042, v: 0.6, p: 0 },
+      { c: VERT, y: 0.86, a: 30, f: 0.0035, v: -0.45, p: 2 },
+      { c: BLEU, y: 0.92, a: 22, f: 0.0055, v: 0.8, p: 4 },
+    ];
+    for (const l of lignes) {
+      const chemin = new Path2D();
+      for (let x = -20; x <= w + 20; x += 6) {
+        const y = h * l.y + l.a * Math.sin(x * l.f + t * l.v + l.p) + l.a * 0.45 * Math.sin(x * l.f * 2.3 - t * l.v * 1.4);
+        x === -20 ? chemin.moveTo(x, y) : chemin.lineTo(x, y);
+      }
+      ctx.shadowColor = rgba(l.c, 1);
+      ctx.shadowBlur = 22;
+      ctx.strokeStyle = rgba(l.c, 0.75);
+      ctx.lineWidth = 3;
+      ctx.stroke(chemin);
+      ctx.shadowBlur = 6;
+      ctx.strokeStyle = rgba(mele(l.c, [255, 255, 255], 0.75), 0.9);
+      ctx.lineWidth = 1.2;
+      ctx.stroke(chemin);
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  /* Un terrain ondulant vu en perspective, commun aux propositions 2 et 3. */
+  function terrain(w, h, t, cols, rangs) {
+    const pts = [];
+    for (let r = 0; r < rangs; r++) {
+      const d = 1 + r * 0.32;
+      const ligne = [];
+      for (let c = 0; c < cols; c++) {
+        const X = (c / (cols - 1) - 0.5) * w * 2.4;
+        const Y = 34 * Math.sin(c * 0.22 + t * 0.9) * Math.cos(r * 0.35 - t * 0.6) + 22 * Math.sin(r * 0.5 + c * 0.08 - t);
+        ligne.push({ x: w / 2 + X / d, y: h * 0.6 + (190 - Y) / d, d, Y });
+      }
+      pts.push(ligne);
+    }
+    return pts;
+  }
+
+  /* 2. Une onde de particules. */
+  function particules(ctx, w, h, t) {
+    const pts = terrain(w, h, t, 90, 26);
+    for (const ligne of pts) {
+      for (const p of ligne) {
+        const k = Math.min(Math.max((p.Y + 50) / 100, 0), 1);
+        ctx.fillStyle = rgba(mele(BLEU, VERT, k), Math.min(1, 1.3 / p.d));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2.4 / p.d, 0, 7);
+        ctx.fill();
+      }
+    }
+  }
+
+  /* 3. Le meme terrain, en fil de fer. */
+  function filaire(ctx, w, h, t) {
+    const pts = terrain(w, h, t, 46, 20);
+    ctx.lineWidth = 1;
+    for (let r = 0; r < pts.length; r++) {
+      ctx.strokeStyle = rgba(BLEU, Math.min(0.8, 1 / pts[r][0].d));
+      ctx.beginPath();
+      pts[r].forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.stroke();
+    }
+    for (let c = 0; c < pts[0].length; c++) {
+      ctx.strokeStyle = rgba(LAC, 0.35);
+      ctx.beginPath();
+      pts.forEach((ligne, r) => (r ? ctx.lineTo(ligne[c].x, ligne[c].y) : ctx.moveTo(ligne[c].x, ligne[c].y)));
+      ctx.stroke();
+    }
+    /* Les sommets des vagues s'allument en vert. */
+    for (const ligne of pts) for (const p of ligne) {
+      if (p.Y > 38) {
+        ctx.fillStyle = rgba(VERT, Math.min(1, 1.4 / p.d));
+        ctx.beginPath(); ctx.arc(p.x, p.y, 2 / p.d + 0.6, 0, 7); ctx.fill();
+      }
+    }
+  }
+
+  /* 4. Des rubans de lumiere larges et flous. */
+  function rubans(ctx, w, h, t) {
+    const liste = [
+      { c: BLEU, y: 0.82, e: 60, a: 40, f: 0.003, v: 0.35, p: 0 },
+      { c: VERT, y: 0.92, e: 44, a: 34, f: 0.0042, v: -0.28, p: 1.5 },
+      { c: LAC, y: 0.87, e: 32, a: 46, f: 0.0026, v: 0.22, p: 3 },
+    ];
+    ctx.globalCompositeOperation = "lighter";
+    ctx.filter = "blur(18px)";
+    for (const r of liste) {
+      const haut = [], bas = [];
+      for (let x = -40; x <= w + 40; x += 10) {
+        const m = h * r.y + r.a * Math.sin(x * r.f + t * r.v + r.p);
+        const e = r.e * (0.6 + 0.4 * Math.sin(x * r.f * 1.7 - t * r.v * 1.3 + r.p));
+        haut.push([x, m - e]); bas.push([x, m + e]);
+      }
+      const g = ctx.createLinearGradient(0, 0, w, 0);
+      g.addColorStop(0, rgba(r.c, 0));
+      g.addColorStop(0.3, rgba(r.c, 0.35));
+      g.addColorStop(0.7, rgba(r.c, 0.35));
+      g.addColorStop(1, rgba(r.c, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      haut.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+      bas.reverse().forEach(([x, y]) => ctx.lineTo(x, y));
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.filter = "none";
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  /* 5. Un signal : des ondes fines qui s'entrecroisent, resserrees aux
+     deux bouts comme sur un oscilloscope. */
+  function signal(ctx, w, h, t) {
+    ctx.globalCompositeOperation = "lighter";
+    const n = 9;
+    for (let i = 0; i < n; i++) {
+      const k = i / (n - 1);
+      ctx.strokeStyle = rgba(mele(BLEU, VERT, k), 0.55);
+      ctx.lineWidth = 1.4;
+      ctx.shadowColor = rgba(mele(BLEU, VERT, k), 1);
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      for (let x = 0; x <= w; x += 4) {
+        const enveloppe = Math.sin((x / w) * Math.PI) ** 1.5;
+        const y = h * 0.85 + enveloppe * (40 + 22 * k) * Math.sin(x * (0.006 + k * 0.004) + t * (1 + k * 0.6) + i * 0.7);
+        x ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  const DESIGNS = [
+    { nom: "1 · Vagues néon", dessin: neons,
+      note: "Les anciennes vagues, devenues trois tubes néon (bleu, vert, bleu) qui ondulent lentement sous le titre, avec le même cœur clair et le même halo que la carte." },
+    { nom: "2 · Onde de particules", dessin: particules,
+      note: "Une nappe de points en perspective qui ondule comme une mer ; les crêtes passent du bleu au vert. Le plus « data », très futuriste." },
+    { nom: "3 · Terrain filaire", dessin: filaire,
+      note: "La même houle, tracée en fil de fer comme un paysage 3D synthwave ; les sommets s'allument en vert. La suite logique du sol quadrillé actuel, mais vivant." },
+    { nom: "4 · Rubans de lumière", dessin: rubans,
+      note: "Trois larges rubans flous (bleu, vert, lac) qui se croisent et respirent. Doux, premium : des vagues sans aucun trait dur." },
+    { nom: "5 · Signal", dessin: signal,
+      note: "Neuf ondes fines qui s'entrecroisent, resserrées aux deux bouts comme sur un oscilloscope : l'image d'un signal, d'une voix qui porte." },
+  ];
+
+  const cadre = document.getElementById("site");
+  const scene = document.getElementById("scene");
+  const fiche = document.getElementById("fiche");
+  const conteneur = document.getElementById("choix");
+  const depart = Math.min(Math.max(parseInt(location.hash.slice(1), 10) || 1, 1), DESIGNS.length) - 1;
+  let courant = DESIGNS[depart];
+  let tour = 0;
+
+  function peindre() {
+    const doc = cadre.contentDocument;
+    const win = cadre.contentWindow;
+    const hero = doc && doc.querySelector(".hero");
+    if (!hero) return;
+    let style = doc.getElementById("maquette-vagues");
+    if (!style) {
+      style = doc.createElement("style");
+      style.id = "maquette-vagues";
+      doc.head.appendChild(style);
+    }
+    style.textContent = COMMUN;
+    let calque = hero.querySelector(".mq-fond");
+    if (calque) calque.remove();
+    calque = doc.createElement("div");
+    calque.className = "mq-fond";
+    calque.setAttribute("aria-hidden", "true");
+    calque.innerHTML = "<canvas></canvas>";
+    hero.prepend(calque);
+
+    const toile = calque.querySelector("canvas");
+    const ctx = toile.getContext("2d");
+    const moi = ++tour;
+    const debut = performance.now();
+    function image(maintenant) {
+      if (moi !== tour || !toile.isConnected) return;
+      const r = calque.getBoundingClientRect();
+      const dpr = win.devicePixelRatio || 1;
+      if (toile.width !== Math.round(r.width * dpr) || toile.height !== Math.round(r.height * dpr)) {
+        toile.width = Math.round(r.width * dpr);
+        toile.height = Math.round(r.height * dpr);
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, r.width, r.height);
+      courant.dessin(ctx, r.width, r.height, (maintenant - debut) / 1000);
+      win.requestAnimationFrame(image);
+    }
+    win.requestAnimationFrame(image);
+  }
+
+  function choisir(d) {
+    courant = d;
+    history.replaceState(null, "", "#" + (DESIGNS.indexOf(d) + 1));
+    conteneur.querySelectorAll(".option").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.nom === d.nom)));
+    fiche.innerHTML = `<strong>${d.nom}.</strong> ${d.note}`;
+    peindre();
+  }
+
+  DESIGNS.forEach((d) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "option";
+    b.dataset.nom = d.nom;
+    b.textContent = d.nom;
+    b.addEventListener("click", () => choisir(d));
+    conteneur.appendChild(b);
+  });
+
+  document.querySelectorAll("[data-largeur]").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll("[data-largeur]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      scene.classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+    });
+  });
+
+  cadre.addEventListener("load", peindre);
+  choisir(courant);
+</script>
+</body>
+</html>
