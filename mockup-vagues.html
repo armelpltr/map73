@@ -72,7 +72,7 @@
 <body>
 
 <header class="barre">
-  <h1>Cinq vagues futuristes</h1>
+  <h1>Vagues néon : quel flou ?</h1>
   <div class="choix" id="choix"></div>
   <div class="reglages">
     <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
@@ -104,8 +104,16 @@
     }
     .hero .mq-fond canvas { position: absolute; inset: 0; width: 100%; height: 100%; }`;
 
-  /* 1. Trois tubes neon ondulants, bleu, vert, bleu. */
-  function neons(ctx, w, h, t) {
+  /* Trois tubes neon ondulants, bleu, vert, bleu. Le flou n'est pas
+     calcule dans le canevas, trop lent image par image : c'est un filtre
+     CSS pose sur le canevas entier, que la carte graphique applique. */
+  const neonsFlous = (flou) => {
+    const dessin = (ctx, w, h, t) => neons(ctx, w, h, t, flou);
+    dessin.flou = flou;
+    return dessin;
+  };
+
+  function neons(ctx, w, h, t, flou = 0) {
     const lignes = [
       { c: BLEU, y: 0.80, a: 26, f: 0.0042, v: 0.6, p: 0 },
       { c: VERT, y: 0.86, a: 30, f: 0.0035, v: -0.45, p: 2 },
@@ -120,137 +128,25 @@
       ctx.shadowColor = rgba(l.c, 1);
       ctx.shadowBlur = 22;
       ctx.strokeStyle = rgba(l.c, 0.75);
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3 + flou * 0.6;
       ctx.stroke(chemin);
       ctx.shadowBlur = 6;
-      ctx.strokeStyle = rgba(mele(l.c, [255, 255, 255], 0.75), 0.9);
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = rgba(mele(l.c, [255, 255, 255], 0.75), flou ? 0.6 : 0.9);
+      ctx.lineWidth = 1.2 + flou * 0.15;
       ctx.stroke(chemin);
     }
     ctx.shadowBlur = 0;
-  }
-
-  /* Un terrain ondulant vu en perspective, commun aux propositions 2 et 3. */
-  function terrain(w, h, t, cols, rangs) {
-    const pts = [];
-    for (let r = 0; r < rangs; r++) {
-      const d = 1 + r * 0.32;
-      const ligne = [];
-      for (let c = 0; c < cols; c++) {
-        const X = (c / (cols - 1) - 0.5) * w * 2.4;
-        const Y = 34 * Math.sin(c * 0.22 + t * 0.9) * Math.cos(r * 0.35 - t * 0.6) + 22 * Math.sin(r * 0.5 + c * 0.08 - t);
-        ligne.push({ x: w / 2 + X / d, y: h * 0.6 + (190 - Y) / d, d, Y });
-      }
-      pts.push(ligne);
-    }
-    return pts;
-  }
-
-  /* 2. Une onde de particules. */
-  function particules(ctx, w, h, t) {
-    const pts = terrain(w, h, t, 90, 26);
-    for (const ligne of pts) {
-      for (const p of ligne) {
-        const k = Math.min(Math.max((p.Y + 50) / 100, 0), 1);
-        ctx.fillStyle = rgba(mele(BLEU, VERT, k), Math.min(1, 1.3 / p.d));
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2.4 / p.d, 0, 7);
-        ctx.fill();
-      }
-    }
-  }
-
-  /* 3. Le meme terrain, en fil de fer. */
-  function filaire(ctx, w, h, t) {
-    const pts = terrain(w, h, t, 46, 20);
-    ctx.lineWidth = 1;
-    for (let r = 0; r < pts.length; r++) {
-      ctx.strokeStyle = rgba(BLEU, Math.min(0.8, 1 / pts[r][0].d));
-      ctx.beginPath();
-      pts[r].forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-      ctx.stroke();
-    }
-    for (let c = 0; c < pts[0].length; c++) {
-      ctx.strokeStyle = rgba(LAC, 0.35);
-      ctx.beginPath();
-      pts.forEach((ligne, r) => (r ? ctx.lineTo(ligne[c].x, ligne[c].y) : ctx.moveTo(ligne[c].x, ligne[c].y)));
-      ctx.stroke();
-    }
-    /* Les sommets des vagues s'allument en vert. */
-    for (const ligne of pts) for (const p of ligne) {
-      if (p.Y > 38) {
-        ctx.fillStyle = rgba(VERT, Math.min(1, 1.4 / p.d));
-        ctx.beginPath(); ctx.arc(p.x, p.y, 2 / p.d + 0.6, 0, 7); ctx.fill();
-      }
-    }
-  }
-
-  /* 4. Des rubans de lumiere larges et flous. */
-  function rubans(ctx, w, h, t) {
-    const liste = [
-      { c: BLEU, y: 0.82, e: 60, a: 40, f: 0.003, v: 0.35, p: 0 },
-      { c: VERT, y: 0.92, e: 44, a: 34, f: 0.0042, v: -0.28, p: 1.5 },
-      { c: LAC, y: 0.87, e: 32, a: 46, f: 0.0026, v: 0.22, p: 3 },
-    ];
-    ctx.globalCompositeOperation = "lighter";
-    ctx.filter = "blur(18px)";
-    for (const r of liste) {
-      const haut = [], bas = [];
-      for (let x = -40; x <= w + 40; x += 10) {
-        const m = h * r.y + r.a * Math.sin(x * r.f + t * r.v + r.p);
-        const e = r.e * (0.6 + 0.4 * Math.sin(x * r.f * 1.7 - t * r.v * 1.3 + r.p));
-        haut.push([x, m - e]); bas.push([x, m + e]);
-      }
-      const g = ctx.createLinearGradient(0, 0, w, 0);
-      g.addColorStop(0, rgba(r.c, 0));
-      g.addColorStop(0.3, rgba(r.c, 0.35));
-      g.addColorStop(0.7, rgba(r.c, 0.35));
-      g.addColorStop(1, rgba(r.c, 0));
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      haut.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
-      bas.reverse().forEach(([x, y]) => ctx.lineTo(x, y));
-      ctx.closePath();
-      ctx.fill();
-    }
-    ctx.filter = "none";
-    ctx.globalCompositeOperation = "source-over";
-  }
-
-  /* 5. Un signal : des ondes fines qui s'entrecroisent, resserrees aux
-     deux bouts comme sur un oscilloscope. */
-  function signal(ctx, w, h, t) {
-    ctx.globalCompositeOperation = "lighter";
-    const n = 9;
-    for (let i = 0; i < n; i++) {
-      const k = i / (n - 1);
-      ctx.strokeStyle = rgba(mele(BLEU, VERT, k), 0.55);
-      ctx.lineWidth = 1.4;
-      ctx.shadowColor = rgba(mele(BLEU, VERT, k), 1);
-      ctx.shadowBlur = 10;
-      ctx.beginPath();
-      for (let x = 0; x <= w; x += 4) {
-        const enveloppe = Math.sin((x / w) * Math.PI) ** 1.5;
-        const y = h * 0.85 + enveloppe * (40 + 22 * k) * Math.sin(x * (0.006 + k * 0.004) + t * (1 + k * 0.6) + i * 0.7);
-        x ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-      }
-      ctx.stroke();
-    }
-    ctx.shadowBlur = 0;
-    ctx.globalCompositeOperation = "source-over";
   }
 
   const DESIGNS = [
-    { nom: "1 · Vagues néon", dessin: neons,
-      note: "Les anciennes vagues, devenues trois tubes néon (bleu, vert, bleu) qui ondulent lentement sous le titre, avec le même cœur clair et le même halo que la carte." },
-    { nom: "2 · Onde de particules", dessin: particules,
-      note: "Une nappe de points en perspective qui ondule comme une mer ; les crêtes passent du bleu au vert. Le plus « data », très futuriste." },
-    { nom: "3 · Terrain filaire", dessin: filaire,
-      note: "La même houle, tracée en fil de fer comme un paysage 3D synthwave ; les sommets s'allument en vert. La suite logique du sol quadrillé actuel, mais vivant." },
-    { nom: "4 · Rubans de lumière", dessin: rubans,
-      note: "Trois larges rubans flous (bleu, vert, lac) qui se croisent et respirent. Doux, premium : des vagues sans aucun trait dur." },
-    { nom: "5 · Signal", dessin: signal,
-      note: "Neuf ondes fines qui s'entrecroisent, resserrées aux deux bouts comme sur un oscilloscope : l'image d'un signal, d'une voix qui porte." },
+    { nom: "1 · Net (avant)", dessin: neonsFlous(0),
+      note: "Les vagues néon telles que proposées : trois tubes nets, pour comparer." },
+    { nom: "2 · Flou léger", dessin: neonsFlous(3),
+      note: "Les tubes s'adoucissent : on lit encore trois lignes, mais sans arête nette, comme vues à travers une vitre." },
+    { nom: "3 · Flou moyen", dessin: neonsFlous(7),
+      note: "Les tubes deviennent des traînées de lumière ; la forme des vagues reste lisible, le trait a disparu." },
+    { nom: "4 · Flou fort", dessin: neonsFlous(14),
+      note: "Plus que des lueurs qui ondulent, bleu et vert, à la limite des rubans de lumière." },
   ];
 
   const cadre = document.getElementById("site");
@@ -282,6 +178,7 @@
     hero.prepend(calque);
 
     const toile = calque.querySelector("canvas");
+    toile.style.filter = courant.dessin.flou ? `blur(${courant.dessin.flou}px)` : "none";
     const ctx = toile.getContext("2d");
     const moi = ++tour;
     const debut = performance.now();
