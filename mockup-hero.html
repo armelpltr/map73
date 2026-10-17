@@ -74,7 +74,7 @@
 <body>
 
 <header class="barre">
-  <h1>Cinq heros futuristes</h1>
+  <h1>Heros futuristes</h1>
   <div class="choix" id="choix"></div>
   <div class="reglages">
     <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
@@ -226,7 +226,78 @@
         @keyframes mq-reflet { from { background-position: 100% 0; } to { background-position: 0 0; } }`,
       script: verreEtNeon,
     },
+    {
+      nom: "6 · Néon vert",
+      note: "Dans le style de l'enseigne : la carte du choix de classe et « un avenir. » deviennent des tubes néon verts (cœur presque blanc, halo vert), qui grésillent de temps en temps. Fond en carrelage sombre très discret.",
+      css: neon("#6cc24a", "#e2ffd6", "#6cc24a", "#e2ffd6"),
+      html: `<span class="mq-spot"></span>`,
+      script: verreEtNeon,
+    },
+    {
+      nom: "7 · Néon bleu",
+      note: "Le bleu électrique de l'image de référence, pour la carte comme pour « un avenir. ». Le vert ne reste que sur les boutons : plus spectaculaire, moins « MAP ».",
+      css: neon("#2f8cff", "#d6e9ff", "#2f8cff", "#d6e9ff"),
+      html: `<span class="mq-spot"></span>`,
+      script: verreEtNeon,
+    },
+    {
+      nom: "8 · Néon bicolore",
+      note: "La carte en tube bleu électrique, « un avenir. » en tube vert : le bleu de l'enseigne et le vert de la marque, chacun à sa place.",
+      css: neon("#2f8cff", "#d6e9ff", "#6cc24a", "#e2ffd6"),
+      html: `<span class="mq-spot"></span>`,
+      script: verreEtNeon,
+    },
   ];
+
+  /* Le neon : un tube a coeur presque blanc, entoure de halos de plus en
+     plus larges de sa couleur. La carte et « un avenir. » ont chacun leur
+     tube ; tous deux gresillent brievement, a des moments differents. */
+  function neon(tube, coeur, texte, coeurTexte) {
+    const halo = (c) => `0 0 2px ${c}, 0 0 8px ${c}, 0 0 22px ${c}, 0 0 48px ${c}88`;
+    return `
+      .hero__lucioles, .hero::after { display: none; }
+      .mq-spot {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(640px circle at var(--mx, 74%) var(--my, 32%), ${tube}22, transparent 70%),
+          linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 46px 46px,
+          linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 46px 46px;
+      }
+      .hero .hero__classe.mq-anime {
+        position: relative;
+        padding: 1.75rem;
+        border-radius: 26px;
+        border: 2px solid ${coeur};
+        background: rgba(5, 11, 22, .55);
+        box-shadow: ${halo(tube)}, inset 0 0 14px ${tube}88;
+        --d: 9s;
+        animation: mq-gresille steps(1);
+      }
+      .hero .hero__classe.mq-anime .hero__classe-rond {
+        border-color: ${coeur};
+        box-shadow: 0 0 2px ${tube}, 0 0 10px ${tube}, inset 0 0 8px ${tube}88;
+      }
+      .hero .hero__classe.mq-anime .hero__classe-bouton {
+        border-color: ${tube};
+        box-shadow: 0 0 10px ${tube}55;
+      }
+      .hero .hero__accent.mq-anime {
+        color: transparent;
+        -webkit-text-stroke: 2px ${coeurTexte};
+        filter: drop-shadow(0 0 2px ${texte}) drop-shadow(0 0 7px ${texte}) drop-shadow(0 0 18px ${texte});
+        --d: 7s;
+        animation: mq-gresille steps(1);
+        animation-delay: -4s;
+      }
+      @media (max-width: 700px) { .hero .hero__accent.mq-anime { -webkit-text-stroke-width: 1.5px; } }
+      @keyframes mq-gresille {
+        0%, 90%, 100% { opacity: 1; }
+        91% { opacity: .45; }
+        92% { opacity: 1; }
+        94% { opacity: .65; }
+        95% { opacity: 1; }
+      }`;
+  }
 
   /* La constellation : des points qui derivent, relies sous 140 px. */
   function constellation(doc, win, calque) {
