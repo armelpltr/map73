@@ -318,6 +318,106 @@
     }, { threshold: 0.4 }).observe(adnListe);
   }
 
+  /* ---- L'arrivee : le logo, puis la vague ----
+     Le script du <head> a decide s'il y a une arrivee (data-intro) et le
+     CSS affiche deja le logo en grand. Ici, passe un court instant, les
+     trois vagues neon du hero montent du bas comme une maree : le voile se
+     retire au-dessus d'elles et decouvre la page. retardHero dit au
+     balayage du hero d'attendre que la vague l'ait depasse. */
+  const PAUSE_INTRO = 1450;
+  const DUREE_VAGUE = 1500;
+  const voileIntro = document.getElementById("intro");
+  const avecIntro = document.documentElement.dataset.intro === "oui" && voileIntro;
+  // Le hero est decouvert a peu pres au tiers de la montee.
+  const retardHero = avecIntro ? Math.max(0, PAUSE_INTRO + DUREE_VAGUE * 0.35 - performance.now()) : 0;
+
+  if (avecIntro) {
+    const toile = voileIntro.querySelector(".intro__vague");
+    const logo = voileIntro.querySelector(".intro__logo");
+    const ctx = toile.getContext("2d");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const largeur = window.innerWidth;
+    const hauteur = window.innerHeight;
+    toile.width = largeur * dpr;
+    toile.height = hauteur * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // La meme famille de courbes que les vagues du hero, en plus vif.
+    const tubes = [
+      { c: "47,140,255", d: 0, a: 26, f: 0.0042, v: 0.6, p: 0 },
+      { c: "108,194,74", d: 34, a: 30, f: 0.0035, v: -0.45, p: 2 },
+      { c: "47,140,255", d: 70, a: 22, f: 0.0055, v: 0.8, p: 4 }
+    ];
+    const courbe = (l, x, t, base) =>
+      base + l.d + l.a * Math.sin(x * l.f + t * l.v * 3 + l.p) + l.a * 0.45 * Math.sin(x * l.f * 2.3 - t * l.v * 4);
+    const glisse = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    const paper = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim() || "#0b1a2e";
+
+    const terminer = () => {
+      voileIntro.remove();
+      document.documentElement.removeAttribute("data-intro");
+    };
+
+    const image = (maintenant) => {
+      const t = maintenant / 1000;
+      const u = Math.min(Math.max((maintenant - PAUSE_INTRO) / DUREE_VAGUE, 0), 1);
+      voileIntro.dataset.vague = "oui";
+      // Le bord de la vague monte du bas jusqu'au-dessus de l'ecran.
+      const base = hauteur + 40 - glisse(u) * (hauteur + 260);
+      ctx.clearRect(0, 0, largeur, hauteur);
+
+      // Le voile, au-dessus de la vague, avec le logo dedans.
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      for (let x = 0; x <= largeur + 8; x += 8) ctx.lineTo(x, courbe(tubes[0], x, t, base) - 10);
+      ctx.lineTo(largeur, 0);
+      ctx.closePath();
+      ctx.clip();
+      ctx.fillStyle = paper;
+      ctx.fillRect(0, 0, largeur, hauteur);
+      const lueur = ctx.createRadialGradient(largeur * 0.74, hauteur * 0.34, 0, largeur * 0.74, hauteur * 0.34, 480);
+      lueur.addColorStop(0, "rgba(47,140,255,.16)");
+      lueur.addColorStop(1, "rgba(47,140,255,0)");
+      ctx.fillStyle = lueur;
+      ctx.fillRect(0, 0, largeur, hauteur);
+      const cadre = logo.getBoundingClientRect();
+      // Le logo garde la lueur verte qu'il avait en CSS.
+      ctx.shadowColor = "rgba(108,194,74,.35)";
+      ctx.shadowBlur = 10;
+      ctx.drawImage(logo, cadre.left, cadre.top, cadre.width, cadre.height);
+      ctx.restore();
+
+      // Les trois tubes sur le bord : le halo en traits superposes, du
+      // plus large au coeur, bien moins couteux qu'une ombre floue.
+      for (const l of tubes) {
+        ctx.beginPath();
+        for (let x = -10; x <= largeur + 10; x += 6) {
+          const y = courbe(l, x, t, base);
+          if (x === -10) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        for (const [epaisseur, opacite] of [[18, 0.1], [10, 0.22], [5, 0.55]]) {
+          ctx.strokeStyle = "rgba(" + l.c + "," + opacite + ")";
+          ctx.lineWidth = epaisseur;
+          ctx.stroke();
+        }
+        ctx.strokeStyle = "rgba(235,248,255,.7)";
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+      }
+
+      if (u < 1) requestAnimationFrame(image);
+      else terminer();
+    };
+
+    // La vague part apres la pause, une fois le logo charge (il est
+    // recopie sur le canevas) ; rien ne tourne pendant l'attente.
+    const partir = () => setTimeout(() => requestAnimationFrame(image), Math.max(0, PAUSE_INTRO - performance.now()));
+    if (logo.complete) partir();
+    else logo.addEventListener("load", partir, { once: true });
+  }
+
   /* ---- Entree en balayage ----
      Un trait neon vert traverse chaque bloc de gauche a droite et devoile
      le contenu dans son sillage : le hero a l'ouverture, puis chaque titre
@@ -359,7 +459,7 @@
     /* Le hero, des l'ouverture. */
     [".hero h1", ".hero__chapo", ".hero__actions", ".hero__classe"].forEach((selecteur, i) => {
       const bloc = document.querySelector(selecteur);
-      if (bloc) preparerBalayage(bloc, 200 + i * 220, 1100)();
+      if (bloc) preparerBalayage(bloc, retardHero + 200 + i * 220, 1100)();
     });
 
     /* Le reste, a l'arrivee a l'ecran. Les cartes d'une meme rangee

@@ -22,11 +22,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
-<link rel="stylesheet" href="assets/css/style.css?v=20261018-1700">
+<!-- L'arrivee sur le site : le logo en grand, puis la vague. Decidee ici,
+     avant le premier affichage, pour que la page ne se montre pas une
+     fraction de seconde avant d'etre recouverte. Une fois par visite, et
+     jamais pour qui demande moins de mouvement. Filet de securite : si
+     main.js ne prend pas le relais, le voile s'en va seul. -->
+<script>
+  (function () {
+    try {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches || sessionStorage.getItem("map-intro")) return;
+      sessionStorage.setItem("map-intro", "vue");
+    } catch (e) { return; }
+    var racine = document.documentElement;
+    racine.setAttribute("data-intro", "oui");
+    setTimeout(function () { racine.removeAttribute("data-intro"); }, 7000);
+  })();
+</script>
+<link rel="stylesheet" href="assets/css/style.css?v=20261018-1845">
 </head>
 
 <body>
 <a class="saut-contenu" href="#contenu">Aller au contenu</a>
+<div class="intro" id="intro" aria-hidden="true">
+  <img class="intro__logo" src="assets/img/logo-blanc-480.webp" width="480" height="196" alt="">
+  <canvas class="intro__vague"></canvas>
+</div>
 
 <header class="entete" id="entete">
   <div class="enveloppe entete__barre">
@@ -1094,7 +1114,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20261018-0340" defer></script>
+<script src="assets/js/main.js?v=20261018-0401" defer></script>
 
 <script type="application/ld+json">
 {
