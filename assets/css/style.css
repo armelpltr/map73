@@ -11,6 +11,13 @@
 :root {
   color-scheme: dark;
 
+  /* Les deux neons du site : un coeur presque blanc et sa couleur de halo. */
+  --neon-bleu: #2f8cff;
+  --neon-bleu-coeur: #d6e9ff;
+  --neon-vert: #6cc24a;
+  --neon-vert-coeur: #e2ffd6;
+  --halo-tube: 0 0 2px var(--neon-vert), 0 0 8px var(--neon-vert), 0 0 20px rgba(108, 194, 74, .67);
+
   /* Couleurs */
   /* Le marine du fond, puis deux crans plus clairs pour les aplats. */
   --paper: #0b1a2e;
@@ -2582,3 +2589,53 @@ p:last-child { margin-bottom: 0; }
 .hero__reseaux a { border-color: color-mix(in srgb, var(--ink) 28%, transparent); }
 .hero__reseaux a:hover { background: var(--vert); color: var(--sur-vert); border-color: var(--vert); }
 @media (max-width: 900px) { .hero__reseaux { margin-top: 0.25rem; } }
+
+/* ---------- Le neon vert, partout ---------- */
+/* Le traitement de « un avenir. » repris dans tout le site : onglets des
+   formules et pictogrammes ronds en tube, filets allumes, mots verts des
+   titres et grands chiffres au trait. Le petit texte vert garde son
+   remplissage avec une lueur : au trait, il ne se lirait plus. */
+.onglet-niveau { border-color: rgba(108, 194, 74, .33); }
+.onglet-niveau:hover { border-color: var(--neon-vert); box-shadow: 0 0 10px rgba(108, 194, 74, .4); color: var(--ink); }
+.onglet-niveau[aria-selected="true"] {
+  background: rgba(108, 194, 74, .10);
+  color: var(--neon-vert-coeur);
+  border: 2px solid var(--neon-vert-coeur);
+  box-shadow: var(--halo-tube), inset 0 0 10px rgba(108, 194, 74, .53);
+  text-shadow: 0 0 6px var(--neon-vert);
+}
+.onglet-niveau[aria-selected="true"] .onglet-niveau__puce {
+  background: transparent;
+  color: var(--neon-vert-coeur);
+  border: 1.5px solid var(--neon-vert-coeur);
+  box-shadow: 0 0 6px var(--neon-vert), inset 0 0 6px rgba(108, 194, 74, .53);
+}
+
+.chiffre__rond, .pilier__rang, .classe-choix__rond, .fondatrice__portrait {
+  border-color: var(--neon-vert-coeur) !important;
+  box-shadow: var(--halo-tube), inset 0 0 10px rgba(108, 194, 74, .53) !important;
+}
+.chiffre__rond svg, .classe-choix__rond svg { filter: drop-shadow(0 0 4px var(--neon-vert)); }
+
+.hero__filet, .accompagnement__surtitre::before, .formules__hors-surtitre::before,
+.adn__tige, .adn__tige::before, .adn__filet, .nav__curseur, .temoignage::before, .pastille {
+  box-shadow: 0 0 6px var(--neon-vert), 0 0 16px rgba(108, 194, 74, .53) !important;
+}
+.adn__nom { box-shadow: 0 -6px 14px -6px var(--neon-vert); }
+.adn__arc { filter: drop-shadow(0 0 4px var(--neon-vert)) drop-shadow(0 0 12px var(--neon-vert)); }
+.temoignage::after { text-shadow: 0 0 8px var(--neon-vert), 0 0 20px var(--neon-vert); }
+
+.hero__classe-titre em, .modale-classe__titre em, .pilier__rang, .news__date,
+.formule__intitule, .adn__adage, .propos__acronyme b {
+  text-shadow: 0 0 8px rgba(108, 194, 74, .67), 0 0 22px rgba(108, 194, 74, .33);
+}
+.accompagnement__titre em, .adn--arc .section-entete h2 em, .chiffre__valeur {
+  color: transparent !important;
+  -webkit-text-stroke: 1.5px var(--neon-vert-coeur);
+  filter: drop-shadow(0 0 2px var(--neon-vert)) drop-shadow(0 0 7px var(--neon-vert)) drop-shadow(0 0 16px var(--neon-vert));
+}
+.bouton--plein { box-shadow: 0 0 10px rgba(108, 194, 74, .53), 0 0 26px rgba(108, 194, 74, .33); }
+/* Sur petit ecran le trait s'affine, comme pour « un avenir. ». */
+@media (max-width: 560px) {
+  .accompagnement__titre em, .adn--arc .section-entete h2 em, .chiffre__valeur { -webkit-text-stroke-width: 1.2px; }
+}
