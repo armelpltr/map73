@@ -653,10 +653,10 @@ p:last-child { margin-bottom: 0; }
 .legende__quoi { font-size: var(--fs-small); color: #b9c3d4; margin: 0; }
 
 /* ---------- MAP news ---------- */
-/* Les nouveautes du cabinet, posees entre la legende et « A propos ». Meme
-   traitement en cartes que la legende juste au-dessus, pour que les deux
-   bandes se lisent comme un seul haut de page, avec une date en vert en
-   guise de vignette plutot qu’un glyphe. */
+/* Les nouveautes du cabinet, posees sous la legende. Meme traitement en
+   cartes que la legende juste au-dessus, pour que les deux bandes se lisent
+   comme un seul haut de page, avec une date en vert en guise de vignette
+   plutot qu’un glyphe. */
 .news__titre {
   font-family: var(--display);
   font-size: var(--fs-small);
@@ -748,33 +748,6 @@ p:last-child { margin-bottom: 0; }
 }
 .adn__texte { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; }
 
-
-/* ---------- À propos ---------- */
-.propos {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: center;
-}
-.propos__titre { font-size: var(--fs-h2); }
-.propos__acronyme {
-  border-left: 3px solid var(--vert);
-  padding: 0 0 0 1.25rem;
-  margin: 0;
-  list-style: none;
-}
-.propos__acronyme li { font-family: var(--display); font-size: 1.05rem; padding: 0.35rem 0; }
-/* Les initiales M, A, P. Elles portent du texte sur le fond de page, donc le
-   vert du logo n'y suffit pas : il n'y tenait que 1,91, et les mots se
-   lisaient « aitriser », « venir », « arcours ». C'est la nuance assombrie du
-   meme vert qui ecrit, comme partout ailleurs sur un fond pale. */
-.propos__acronyme b {
-  font-weight: 800;
-  color: var(--vert-texte);
-  font-size: 1.35em;
-}
-.propos__media img { width: 100%; }
-.propos__legende { font-size: var(--fs-micro); color: var(--ink-soft); margin-top: 0.6rem; }
 
 /* ---------- Images agrandissables ---------- */
 /* Le signe est une loupe posee dans l'angle, du cote ou l'image touche la
@@ -1702,9 +1675,7 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  .propos,
   .contact { grid-template-columns: 1fr; }
-  .propos__media { order: -1; }
 
   /* Plus de colonne de blanc à droite : les preuves repassent sous les
      boutons, en rangée de trois, glyphe au-dessus du chiffre. */
@@ -2625,7 +2596,7 @@ p:last-child { margin-bottom: 0; }
 .temoignage::after { text-shadow: 0 0 8px var(--neon-vert), 0 0 20px var(--neon-vert); }
 
 .hero__classe-titre em, .modale-classe__titre em, .pilier__rang, .news__date,
-.formule__intitule, .adn__adage, .propos__acronyme b {
+.formule__intitule, .adn__adage {
   text-shadow: 0 0 8px rgba(108, 194, 74, .67), 0 0 22px rgba(108, 194, 74, .33);
 }
 .accompagnement__titre em, .adn--arc .section-entete h2 em, .chiffre__valeur {
