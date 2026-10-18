@@ -2621,7 +2621,6 @@ p:last-child { margin-bottom: 0; }
 .adn__tige, .adn__tige::before, .adn__filet, .nav__curseur, .temoignage::before, .pastille {
   box-shadow: 0 0 6px var(--neon-vert), 0 0 16px rgba(108, 194, 74, .53) !important;
 }
-.adn__nom { box-shadow: 0 -6px 14px -6px var(--neon-vert); }
 .adn__arc { filter: drop-shadow(0 0 4px var(--neon-vert)) drop-shadow(0 0 12px var(--neon-vert)); }
 .temoignage::after { text-shadow: 0 0 8px var(--neon-vert), 0 0 20px var(--neon-vert); }
 
