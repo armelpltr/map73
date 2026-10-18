@@ -7,7 +7,7 @@
 <title>Maquette : arrivée</title>
 <style>
   /* Maquette : la page d'accueil, chargee dans un cadre, avec quatre
-     arrivees spectaculaires autour du logo. */
+     arrivees dans la direction artistique du site. */
   :root {
     --nuit: #050b16;
     --panneau: #12213c;
@@ -86,120 +86,70 @@
 </div>
 
 <script>
-  /* Quatre arrivees plus spectaculaires, dessinees sur un canevas : le
-     logo est echantillonne pixel par pixel, ce qui permet de le faire
-     naitre de particules, de l'hyperespace, de l'ouvrir comme une fenetre
-     ou de le faire grésiller comme un signal. Tout est anime en JavaScript :
-     la maquette bouge meme sur un poste en « mouvement reduit ». La page
-     se devoile ensuite par le balayage neon deja en ligne. */
-  const VERT = [108, 194, 74], BLEU = [47, 140, 255], LAC = [116, 198, 234], BLANC = [232, 240, 251];
-  const COEUR = "#e2ffd6", NUIT = "#050b16";
+  /* Quatre arrivees dans la direction artistique du site : le marine de la
+     page, sa lumiere bleue et verte, et ses trois motifs (le tube neon, la
+     vague floue, le trait qui balaie). Le logo s'affiche d'abord en grand
+     un court instant, puis l'animation decouvre la page. Tout passe par
+     element.animate() ou un canevas : la maquette bouge meme sur un poste
+     en « mouvement reduit ». */
+  const MARINE = "#0b1a2e", VERT = "#6cc24a", VERT_COEUR = "#e2ffd6", BLEU = "#2f8cff", BLEU_COEUR = "#d6e9ff";
   const LOGO = "assets/img/logo-blanc-480.webp";
-  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+  const SORTIE = "cubic-bezier(.16,1,.3,1)";
+  const RIDEAU = "cubic-bezier(.77,0,.175,1)";
+  const PAUSE = 1450;
   const borne = (x) => Math.min(Math.max(x, 0), 1);
   const lisse = (x) => { x = borne(x); return x * x * (3 - 2 * x); };
-  const sortie = (x) => 1 - Math.pow(1 - borne(x), 3);
-  const entree = (x) => Math.pow(borne(x), 3);
-  const melange = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+  const glisse = (x) => { x = borne(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
 
-  /* ---- Outils communs ---- */
+  /* ---- Le premier temps, commun : le logo en grand ---- */
 
-  /* Le voile : un fond nuit et un canevas plein ecran. */
-  function scene(doc) {
+  /* Le voile reprend le fond du hero : le marine et la lumiere des deux
+     neons. Le logo y entre en se posant, sa fleche s'allume. */
+  function voile(doc) {
     const win = doc.defaultView;
+    const largeur = Math.round(Math.min(560, win.innerWidth * 0.8));
     const v = doc.createElement("div");
     v.style.cssText = "position:fixed;inset:0;z-index:9999;pointer-events:none";
-    v.innerHTML = `<div class="mq-fond" style="position:absolute;inset:0;background:${NUIT}"></div><canvas style="position:absolute;inset:0;width:100%;height:100%"></canvas>`;
+    v.innerHTML = `
+      <div class="mq-fond" style="position:absolute;inset:0;background:
+        radial-gradient(560px 380px at 74% 34%, rgba(47,140,255,.16), transparent 70%),
+        radial-gradient(520px 300px at 26% 62%, rgba(108,194,74,.10), transparent 70%), ${MARINE}"></div>
+      <img class="mq-logo" src="${LOGO}" alt="" style="position:absolute;left:50%;top:50%;width:${largeur}px;height:auto;transform:translate(-50%,-50%)">`;
     doc.body.appendChild(v);
-    const toile = v.querySelector("canvas");
-    const dpr = Math.min(win.devicePixelRatio || 1, 2);
-    const w = win.innerWidth, h = win.innerHeight;
-    toile.width = w * dpr;
-    toile.height = h * dpr;
-    const ctx = toile.getContext("2d");
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { win, v, fond: v.firstElementChild, toile, ctx, w, h };
+    const logo = v.querySelector(".mq-logo");
+    logo.animate([
+      { opacity: 0, transform: "translate(-50%,-50%) scale(.94)", filter: "blur(10px)" },
+      { opacity: 1, transform: "translate(-50%,-50%) scale(1)", filter: "blur(0)" },
+    ], { duration: 900, easing: SORTIE, fill: "both" });
+    /* La fleche verte s'allume : une lueur qui monte puis se pose. */
+    logo.animate([
+      { filter: "drop-shadow(0 0 0 rgba(108,194,74,0))" },
+      { filter: "drop-shadow(0 0 18px rgba(108,194,74,.55))", offset: .5 },
+      { filter: "drop-shadow(0 0 10px rgba(108,194,74,.35))" },
+    ], { duration: 900, delay: 500, easing: "ease-out", fill: "forwards", composite: "add" });
+    return { v, fond: v.querySelector(".mq-fond"), logo, largeur, win };
   }
 
-  function chargerLogo(win) {
-    return new Promise((ok) => {
-      const img = new win.Image();
-      img.onload = () => ok(img);
-      img.src = LOGO;
-    });
-  }
-
-  /* Le logo a la taille voulue, et ses pixels : la position de chacun par
-     rapport au centre, et sa couleur (blanc ou vert de la fleche). */
-  function echantillonner(doc, img, largeur, pas) {
-    const hauteur = Math.round(largeur * img.naturalHeight / img.naturalWidth);
-    const c = doc.createElement("canvas");
-    c.width = largeur;
-    c.height = hauteur;
-    const x = c.getContext("2d");
-    x.drawImage(img, 0, 0, largeur, hauteur);
-    const d = x.getImageData(0, 0, largeur, hauteur).data;
-    const pts = [];
-    for (let j = 0; j < hauteur; j += pas) {
-      for (let i = 0; i < largeur; i += pas) {
-        const k = (j * largeur + i) * 4;
-        if (d[k + 3] < 140) continue;
-        const vert = d[k + 1] > d[k] + 40;
-        pts.push({ x: i - largeur / 2, y: j - hauteur / 2, c: vert ? VERT : BLANC });
-      }
-    }
-    return { pts, largeur, hauteur, donnees: d, toile: c };
-  }
-
-  /* Une copie du logo teinte d'une couleur, pour l'aberration chromatique. */
-  function teinter(doc, img, largeur, hauteur, c) {
-    const t = doc.createElement("canvas");
-    t.width = largeur;
-    t.height = hauteur;
-    const x = t.getContext("2d");
-    x.drawImage(img, 0, 0, largeur, hauteur);
-    x.globalCompositeOperation = "source-in";
-    x.fillStyle = rgba(c, 1);
-    x.fillRect(0, 0, largeur, hauteur);
-    return t;
-  }
-
-  /* La boucle d'animation : appelle dessin(t) jusqu'a ce qu'il rende false. */
-  function boucle(win, dessin, fin) {
-    /* Pour les captures de verification : ?t=2.5 fige l'image a cet
-       instant. */
-    const fige = parseFloat(new URLSearchParams(location.search).get("t"));
-    if (!Number.isNaN(fige)) { dessin(fige); return; }
-    const debut = win.performance.now();
-    const image = (maintenant) => {
-      const t = (maintenant - debut) / 1000;
-      if (dessin(t) === false) { if (fin) fin(); return; }
-      win.requestAnimationFrame(image);
-    };
-    win.requestAnimationFrame(image);
-  }
-
-  /* Ou se trouve le logo de l'en-tete, en coordonnees d'ecran. */
-  function cibleEnTete(doc) {
-    const r = doc.querySelector(".entete__logo img").getBoundingClientRect();
-    return { x: r.left + r.width / 2, y: r.top + r.height / 2, largeur: r.width };
-  }
-
-  /* Le logo de l'en-tete reste cache pendant l'intro. */
   function cacherEnTete(doc) {
     const img = doc.querySelector(".entete__logo img");
     img.style.opacity = "0";
-    return () => img.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, fill: "forwards" }).onfinish = () => { img.style.opacity = ""; };
+    return () => { img.style.opacity = ""; };
   }
 
-  /* Le balayage du hero, rejoue une fois l'intro finie. */
-  function balayerHero(doc, depart) {
+  /* Le hero reste masque sous le voile, pour que le balayage le decouvre. */
+  function figerHero(doc) {
+    return [".hero h1", ".hero__chapo", ".hero__actions", ".hero__classe"].map((s) =>
+      doc.querySelector(s).animate([{ clipPath: "inset(-20px 100% -20px -20px)" }, { clipPath: "inset(-20px 100% -20px -20px)" }], { duration: 1e6, fill: "both" }));
+  }
+
+  /* Le balayage neon du hero, tel qu'en ligne. */
+  function balayerHero(doc, depart, gel) {
+    gel.forEach((g) => g.cancel());
     [".hero h1", ".hero__chapo", ".hero__actions", ".hero__classe"].forEach((s, i) => {
       const bloc = doc.querySelector(s);
-      if (!bloc) return;
       if (doc.defaultView.getComputedStyle(bloc).position === "static") bloc.style.position = "relative";
       const trait = doc.createElement("span");
-      trait.style.cssText = `position:absolute;top:-4px;bottom:-4px;left:0;width:2px;background:${COEUR};box-shadow:0 0 6px #6cc24a,0 0 16px #6cc24a,0 0 30px #6cc24a;pointer-events:none;z-index:5;opacity:0`;
+      trait.style.cssText = `position:absolute;top:-4px;bottom:-4px;left:0;width:2px;background:${VERT_COEUR};box-shadow:0 0 6px ${VERT},0 0 16px ${VERT},0 0 30px ${VERT};pointer-events:none;z-index:5;opacity:0`;
       bloc.appendChild(trait);
       const r = { duration: 1100, delay: depart + i * 200, easing: "cubic-bezier(.65,0,.35,1)", fill: "both" };
       const m = bloc.animate([{ clipPath: "inset(-20px 100% -20px -20px)" }, { clipPath: "inset(-20px -40px -20px -20px)" }], r);
@@ -208,304 +158,189 @@
     });
   }
 
-  /* Le hero et l'en-tete restent caches tant que le voile est la, pour que
-     le balayage les decouvre. */
-  function figerHero(doc) {
-    return [".hero h1", ".hero__chapo", ".hero__actions", ".hero__classe"].map((s) => {
-      const el = doc.querySelector(s);
-      return el.animate([{ clipPath: "inset(-20px 100% -20px -20px)" }, { clipPath: "inset(-20px 100% -20px -20px)" }], { duration: 1e6, fill: "both" });
-    });
-  }
-
-  /* ---- Les quatre propositions ---- */
+  /* ---- Les quatre suites ---- */
 
   const DESIGNS = [
     {
-      nom: "1 · Poussière d'étoiles",
-      note: "Des milliers de particules arrivent en tourbillon des bords de l'écran et se posent une à une pour former le logo, pixel par pixel, la flèche en vert. Le logo s'allume, une onde de choc part de lui, puis il s'envole à sa place dans l'en-tête et le balayage dévoile la page.",
-      async jouer(doc) {
-        const s = scene(doc);
+      nom: "1 · Atterrissage",
+      note: "Le logo s'affiche en grand sur le marine du site, sa flèche s'allume. Puis il rétrécit et glisse jusqu'à sa place dans l'en-tête ; comme le voile a la couleur de la page, celle-ci apparaît sans coupure autour de lui. À son arrivée, le liseré bleu-vert de l'en-tête se trace depuis le centre, et le balayage dévoile le hero.",
+      jouer(doc) {
         const montrer = cacherEnTete(doc);
         const gel = figerHero(doc);
-        const img = await chargerLogo(s.win);
-        const largeur = Math.min(520, s.w * 0.78);
-        const pas = s.w < 600 ? 3 : 3;
-        const e = echantillonner(doc, img, Math.round(largeur), pas);
-        const cx = s.w / 2, cy = s.h / 2;
-        const R = Math.hypot(s.w, s.h) * 0.6;
-        const parts = e.pts.map((p) => {
-          const at = Math.atan2(p.y, p.x), rt = Math.hypot(p.x, p.y);
-          return {
-            ...p, at, rt,
-            a0: at - Math.PI * (1 + Math.random() * 0.8),
-            r0: R * (0.7 + Math.random() * 0.6),
-            retard: Math.random() * 0.7 + (rt / largeur) * 0.4,
-            taille: 1 + Math.random() * 1.2,
-          };
-        });
-        const cible = cibleEnTete(doc);
-        const ctx = s.ctx;
-        boucle(s.win, (t) => {
-          ctx.clearRect(0, 0, s.w, s.h);
-          /* Phase 1 : le tourbillon. */
-          const vol = sortie((t - 2.75) / 0.85);
-          const lx = cx + (cible.x - cx) * vol, ly = cy + (cible.y - cy) * vol;
-          const k = 1 + (cible.largeur / largeur - 1) * vol;
-          const fondu = lisse((t - 2.05) / 0.45);
-          ctx.globalCompositeOperation = "lighter";
-          if (fondu < 1) {
-            for (const p of parts) {
-              const u = sortie((t - p.retard) / 1.35);
-              if (u <= 0) continue;
-              const a = p.a0 + (p.at - p.a0) * u;
-              const r = p.r0 + (p.rt - p.r0) * u;
-              const x = lx + Math.cos(a) * r * k, y = ly + Math.sin(a) * r * k;
-              const c = melange(u < 1 ? (p.c === VERT ? VERT : LAC) : p.c, p.c, u);
-              ctx.fillStyle = rgba(c, (0.35 + 0.65 * u) * (1 - fondu));
-              ctx.fillRect(x, y, p.taille, p.taille);
-            }
-          }
-          ctx.globalCompositeOperation = "source-over";
-          /* Phase 2 : le vrai logo s'allume a la place des particules. */
-          if (fondu > 0) {
-            const pulse = 1 - lisse((t - 2.4) / 0.6);
-            ctx.save();
-            ctx.globalAlpha = fondu;
-            ctx.shadowColor = rgba(VERT, 0.9);
-            ctx.shadowBlur = 28 * pulse;
-            ctx.drawImage(img, lx - largeur * k / 2, ly - e.hauteur * k / 2, largeur * k, e.hauteur * k);
-            ctx.restore();
-          }
-          /* L'onde de choc. */
-          const o = (t - 2.3) / 0.9;
-          if (o > 0 && o < 1) {
-            ctx.strokeStyle = rgba(VERT, 0.7 * (1 - o));
-            ctx.lineWidth = 2 + 6 * (1 - o);
-            ctx.shadowColor = rgba(VERT, 1);
-            ctx.shadowBlur = 20;
-            ctx.beginPath();
-            ctx.arc(cx, cy, sortie(o) * R * 1.4, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-          }
-          s.fond.style.opacity = String(1 - lisse((t - 2.75) / 0.7));
-          if (t > 2.75 && !s.lance) { s.lance = true; gel.forEach((g) => g.cancel()); balayerHero(doc, 300); }
-          return t < 3.65;
-        }, () => { montrer(); s.v.remove(); });
+        const s = voile(doc);
+        const cible = doc.querySelector(".entete__logo img").getBoundingClientRect();
+        const dx = cible.left + cible.width / 2 - s.win.innerWidth / 2;
+        const dy = cible.top + cible.height / 2 - s.win.innerHeight / 2;
+        const k = cible.width / s.largeur;
+        s.logo.animate([
+          { transform: "translate(-50%,-50%)" },
+          { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${k})` },
+        ], { duration: 1000, delay: PAUSE, easing: RIDEAU, fill: "forwards" }).onfinish = () => { montrer(); s.v.remove(); };
+        s.fond.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 800, delay: PAUSE + 150, easing: "ease-in-out", fill: "forwards" });
+        doc.querySelector(".entete").animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { pseudoElement: "::after", duration: 900, delay: PAUSE + 800, easing: SORTIE, fill: "both" });
+        balayerHero(doc, PAUSE + 950, gel);
       },
     },
     {
-      nom: "2 · Hyperespace",
-      note: "Un saut dans l'hyperespace : les étoiles s'étirent en traits bleus et verts de plus en plus vite vers vous, un éclair, et le logo surgit au centre en se recalant de ses couleurs décalées (rouge, cyan) comme une image qui fait la mise au point. Le voyage ralentit, le logo rejoint l'en-tête.",
-      async jouer(doc) {
-        const s = scene(doc);
+      nom: "2 · Grand balayage",
+      note: "Le logo en grand, puis le trait néon vert du site traverse tout l'écran de gauche à droite : le voile et le logo s'effacent dans son sillage et la page apparaît derrière lui. C'est le balayage des sections, à l'échelle de l'écran entier.",
+      jouer(doc) {
+        const montrer = cacherEnTete(doc);
+        const s = voile(doc);
+        const trait = doc.createElement("span");
+        trait.style.cssText = `position:absolute;top:0;bottom:0;left:0;width:3px;background:${VERT_COEUR};box-shadow:0 0 8px ${VERT},0 0 22px ${VERT},0 0 50px ${VERT},0 0 90px rgba(108,194,74,.5);opacity:0`;
+        s.v.appendChild(trait);
+        const r = { duration: 1300, delay: PAUSE, easing: "cubic-bezier(.65,0,.35,1)", fill: "both" };
+        trait.animate([{ left: "0%", opacity: 0 }, { left: "0%", opacity: 1, offset: .04 }, { left: "100%", opacity: 1, offset: .96 }, { left: "100%", opacity: 0 }], r);
+        s.fond.animate([{ clipPath: "inset(0 0 0 0)" }, { clipPath: "inset(0 0 0 100%)" }], r);
+        /* Le logo est centre : on le decoupe dans son propre repere, pour
+           que le bord de la coupe reste colle au trait. */
+        const box = s.logo.getBoundingClientRect();
+        const W = s.win.innerWidth;
+        s.logo.animate([
+          { clipPath: `inset(-40px -40px -40px ${-box.left}px)` },
+          { clipPath: `inset(-40px -40px -40px ${W - box.left}px)` },
+        ], r).onfinish = () => { montrer(); s.v.remove(); };
+        /* Le logo de l'en-tete apparait quand le trait passe sur lui. */
+        const enTete = doc.querySelector(".entete__logo img");
+        const passage = (enTete.getBoundingClientRect().left / W);
+        s.win.setTimeout(montrer, PAUSE + 1300 * glisseInverse(passage));
+      },
+    },
+    {
+      nom: "3 · Vague",
+      note: "Le logo en grand, puis les vagues néon floues du hero montent du bas de l'écran comme une marée : le voile se retire au-dessus d'elles et découvre la page, le logo s'efface sous la vague. Les vagues finissent leur course là où elles vivent, en bas du hero.",
+      jouer(doc) {
         const montrer = cacherEnTete(doc);
         const gel = figerHero(doc);
-        const img = await chargerLogo(s.win);
-        const largeur = Math.round(Math.min(520, s.w * 0.78));
-        const hauteur = Math.round(largeur * img.naturalHeight / img.naturalWidth);
-        const rouge = teinter(doc, img, largeur, hauteur, [255, 60, 90]);
-        const cyan = teinter(doc, img, largeur, hauteur, [60, 220, 255]);
-        const cx = s.w / 2, cy = s.h / 2;
-        const etoiles = Array.from({ length: 700 }, () => ({
-          a: Math.random() * Math.PI * 2, z: Math.random(), c: [BLEU, VERT, LAC, BLANC][Math.floor(Math.random() * 4)],
-        }));
-        const cible = cibleEnTete(doc);
-        const ctx = s.ctx;
-        const D = Math.hypot(s.w, s.h) / 2;
-        boucle(s.win, (t) => {
-          /* La vitesse monte jusqu'au saut, puis retombe. */
-          const v = t < 1.35 ? 0.15 + 2.6 * entree(t / 1.35) : 0.12 + 2.6 * (1 - sortie((t - 1.35) / 0.9));
-          ctx.globalCompositeOperation = "source-over";
-          ctx.clearRect(0, 0, s.w, s.h);
-          const fuite = 1 - lisse((t - 2.6) / 0.7);
-          ctx.globalCompositeOperation = "lighter";
-          ctx.lineCap = "round";
-          for (const e of etoiles) {
-            e.z += v * 0.016 * (0.4 + e.z);
-            if (e.z > 1) { e.z = 0.02 + Math.random() * 0.1; e.a = Math.random() * Math.PI * 2; }
-            const r1 = Math.pow(e.z, 2.2) * D * 1.3;
-            const r0 = Math.max(0, r1 - (8 + v * 160) * e.z);
-            ctx.strokeStyle = rgba(e.c, Math.min(1, e.z * 1.6) * fuite);
-            ctx.lineWidth = 0.6 + e.z * 2.2;
-            ctx.beginPath();
-            ctx.moveTo(cx + Math.cos(e.a) * r0, cy + Math.sin(e.a) * r0);
-            ctx.lineTo(cx + Math.cos(e.a) * r1, cy + Math.sin(e.a) * r1);
-            ctx.stroke();
-          }
-          /* Le logo surgit au saut, ses trois couches se recalent. */
-          const u = (t - 1.3) / 0.9;
+        const s = voile(doc);
+        const win = s.win;
+        const W = win.innerWidth, H = win.innerHeight;
+        const toile = doc.createElement("canvas");
+        const dpr = Math.min(win.devicePixelRatio || 1, 2);
+        toile.width = W * dpr;
+        toile.height = H * dpr;
+        toile.style.cssText = "position:absolute;inset:0;width:100%;height:100%";
+        s.v.appendChild(toile);
+        const ctx = toile.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        /* La meme famille de courbes que les vagues du hero. */
+        const tubes = [
+          { c: "47,140,255", d: 0, a: 26, f: .0042, v: .6, p: 0 },
+          { c: "108,194,74", d: 34, a: 30, f: .0035, v: -.45, p: 2 },
+          { c: "47,140,255", d: 70, a: 22, f: .0055, v: .8, p: 4 },
+        ];
+        const courbe = (l, x, t, base) => base + l.d + l.a * Math.sin(x * l.f + t * l.v * 3 + l.p) + l.a * .45 * Math.sin(x * l.f * 2.3 - t * l.v * 4);
+        let lance = false;
+        const debut = win.performance.now();
+        /* Pour les captures de verification : ?t=2.5 fige l'image. */
+        const fige = parseFloat(new URLSearchParams(location.search).get("t"));
+        const image = (maintenant) => {
+          const t = Number.isNaN(fige) ? (maintenant - debut) / 1000 : fige;
+          const u = glisse((t - PAUSE / 1000) / 1.5);
+          /* Le bord de la vague monte du bas jusqu'au-dessus de l'ecran. */
+          const base = H + 40 - u * (H + 260);
+          ctx.clearRect(0, 0, W, H);
           if (u > 0) {
-            const vol = sortie((t - 2.6) / 0.8);
-            const k = (0.55 + 0.45 * sortie(u)) * (1 + (cible.largeur / largeur - 1) * vol);
-            const lx = cx + (cible.x - cx) * vol, ly = cy + (cible.y - cy) * vol;
-            const ecart = 34 * (1 - sortie(u)) + (Math.random() < 0.08 ? 6 : 0) * (1 - vol);
-            const lw = largeur * k, lh = hauteur * k;
-            const a = Math.min(1, u * 3);
-            ctx.globalAlpha = a * 0.85 * (1 - vol);
-            ctx.drawImage(rouge, lx - lw / 2 - ecart, ly - lh / 2, lw, lh);
-            ctx.drawImage(cyan, lx - lw / 2 + ecart, ly - lh / 2, lw, lh);
-            ctx.globalAlpha = a;
-            ctx.globalCompositeOperation = "source-over";
-            ctx.drawImage(img, lx - lw / 2, ly - lh / 2, lw, lh);
-            ctx.globalAlpha = 1;
+            s.fond.style.opacity = "0";
+            s.logo.style.visibility = "hidden";
+            /* Le voile, au-dessus de la vague. */
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            for (let x = 0; x <= W + 8; x += 8) ctx.lineTo(x, courbe(tubes[0], x, t, base) - 10);
+            ctx.lineTo(W, 0);
+            ctx.closePath();
+            ctx.clip();
+            ctx.fillStyle = MARINE;
+            ctx.fillRect(0, 0, W, H);
+            const g = ctx.createRadialGradient(W * .74, H * .34, 0, W * .74, H * .34, 480);
+            g.addColorStop(0, "rgba(47,140,255,.16)");
+            g.addColorStop(1, "rgba(47,140,255,0)");
+            ctx.fillStyle = g;
+            ctx.fillRect(0, 0, W, H);
+            const b = s.logo.getBoundingClientRect();
+            ctx.drawImage(s.logo, b.left, b.top, b.width, b.height);
+            ctx.restore();
+            /* Les trois tubes, sur le bord. */
+            for (const l of tubes) {
+              ctx.beginPath();
+              for (let x = -10; x <= W + 10; x += 6) {
+                const y = courbe(l, x, t, base);
+                x === -10 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+              }
+              /* Le halo en traits superposes, du plus large au coeur :
+                 bien moins couteux qu'une ombre floue. */
+              for (const [ep, al] of [[18, .1], [10, .22], [5, .55]]) {
+                ctx.strokeStyle = `rgba(${l.c},${al})`;
+                ctx.lineWidth = ep;
+                ctx.stroke();
+              }
+              ctx.strokeStyle = "rgba(235,248,255,.7)";
+              ctx.lineWidth = 1.8;
+              ctx.stroke();
+            }
+            if (!lance && u > .35) { lance = true; balayerHero(doc, 0, gel); }
           }
-          /* L'eclair du saut. */
-          const f = 1 - Math.abs((t - 1.32) / 0.22);
-          if (f > 0) {
-            ctx.globalCompositeOperation = "lighter";
-            ctx.fillStyle = `rgba(226,255,214,${0.85 * f})`;
-            ctx.fillRect(0, 0, s.w, s.h);
-          }
-          s.fond.style.opacity = String(1 - lisse((t - 2.6) / 0.7));
-          if (t > 2.6 && !s.lance) { s.lance = true; gel.forEach((g) => g.cancel()); balayerHero(doc, 300); }
-          return t < 3.45;
-        }, () => { montrer(); s.v.remove(); });
+          if (u >= 1) { montrer(); s.v.remove(); return; }
+          if (!Number.isNaN(fige)) return;
+          win.requestAnimationFrame(image);
+        };
+        win.requestAnimationFrame(image);
       },
     },
     {
-      nom: "3 · À travers le logo",
-      note: "Un trait néon s'étire au milieu de l'écran et le logo se déplie à partir de lui. Puis le blanc des lettres s'efface : les lettres deviennent des fenêtres sur le site. La caméra plonge dans une lettre en accélérant, jusqu'à ce que la page remplisse tout l'écran.",
-      async jouer(doc) {
-        const win = doc.defaultView;
+      nom: "4 · Enseigne",
+      note: "Le logo en grand, puis un tube néon bleu — celui de la carte « En quelle classe est votre enfant ? » — s'allume autour de lui en grésillant, comme une enseigne. Le fond s'efface à l'intérieur du cadre, qui s'agrandit jusqu'aux bords de l'écran et découvre la page.",
+      jouer(doc) {
         const montrer = cacherEnTete(doc);
         const gel = figerHero(doc);
-        const img = await chargerLogo(win);
-        const w = win.innerWidth, h = win.innerHeight;
-        const largeur = Math.round(Math.min(560, w * 0.82));
-        const e = echantillonner(doc, img, largeur, 2);
-        const hauteur = e.hauteur;
-        const gauche = (w - largeur) / 2, haut = (h - hauteur) / 2;
-        /* Le point le plus « epais » du logo : la plongee s'y fait sans
-           jamais traverser de noir. */
-        const opaque = (i, j) => i >= 0 && j >= 0 && i < largeur && j < hauteur && e.donnees[(j * largeur + i) * 4 + 3] > 140;
-        let meilleur = { i: largeur / 2, j: hauteur / 2, r: 0 };
-        for (let j = 0; j < hauteur; j += 3) for (let i = 0; i < largeur; i += 3) {
-          if (!opaque(i, j)) continue;
-          let r = 1;
-          while (r < 40 && opaque(i + r, j) && opaque(i - r, j) && opaque(i, j + r) && opaque(i, j - r) && opaque(i + r * .7, j + r * .7) && opaque(i - r * .7, j - r * .7)) r++;
-          if (r > meilleur.r) meilleur = { i, j, r };
-        }
-        const ox = gauche + meilleur.i, oy = haut + meilleur.j;
-
-        const v = doc.createElement("div");
-        v.style.cssText = "position:fixed;inset:0;z-index:9999;pointer-events:none";
-        const masque = `url("${LOGO}") ${gauche}px ${haut}px / ${largeur}px ${hauteur}px no-repeat, linear-gradient(#000, #000)`;
-        v.innerHTML = `
-          <div class="mq-trou" style="position:absolute;inset:0;background:${NUIT};transform-origin:${ox}px ${oy}px;
-            -webkit-mask:${masque};-webkit-mask-composite:xor;mask:${masque};mask-composite:exclude"></div>
-          <img class="mq-plein" src="${LOGO}" alt="" style="position:absolute;left:${gauche}px;top:${haut}px;width:${largeur}px;height:${hauteur}px;transform-origin:${ox - gauche}px ${oy - haut}px">
-          <span class="mq-fil" style="position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:${COEUR};box-shadow:0 0 10px #6cc24a,0 0 26px #6cc24a;transform:scaleX(0)"></span>`;
-        doc.body.appendChild(v);
-        const trou = v.querySelector(".mq-trou"), plein = v.querySelector(".mq-plein"), fil = v.querySelector(".mq-fil");
-        const lueur = "drop-shadow(0 0 8px #6cc24a) drop-shadow(0 0 22px #6cc24a)";
-        fil.animate([{ transform: "scaleX(0)", opacity: 1 }, { transform: "scaleX(1)", opacity: 1, offset: .45 }, { transform: "scaleX(1)", opacity: 0 }], { duration: 1300, delay: 150, easing: "ease-in-out", fill: "both" });
-        plein.animate([{ clipPath: `inset(50% 0 50% 0)`, filter: lueur }, { clipPath: "inset(0 0 0 0)", filter: lueur }], { duration: 800, delay: 650, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" });
-        plein.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, delay: 1750, easing: "ease-in", fill: "forwards" });
-        /* La plongee : les deux couches grossissent ensemble. */
-        const plonge = [{ transform: "scale(1)" }, { transform: "scale(1.15)", offset: .25 }, { transform: `scale(${Math.max(w, h) / meilleur.r * 1.4})` }];
-        const opt = { duration: 1250, delay: 2150, easing: "cubic-bezier(.7,0,.84,0)", fill: "both" };
-        trou.animate(plonge, opt).onfinish = () => { montrer(); v.remove(); };
-        win.setTimeout(() => { gel.forEach((g) => g.cancel()); balayerHero(doc, 0); }, 2700);
-      },
-    },
-    {
-      nom: "4 · Signal capté",
-      note: "Comme une télé qui capte une chaîne : bruit, lignes de balayage, puis le logo arrive en morceaux décalés, ses couleurs séparées, qui se recalent par à-coups. Une fois net, l'écran se déchire en bandes horizontales lumineuses qui filent à gauche et à droite et révèlent la page.",
-      async jouer(doc) {
-        const s = scene(doc);
-        const montrer = cacherEnTete(doc);
-        const gel = figerHero(doc);
-        const img = await chargerLogo(s.win);
-        const largeur = Math.round(Math.min(520, s.w * 0.78));
-        const hauteur = Math.round(largeur * img.naturalHeight / img.naturalWidth);
-        const rouge = teinter(doc, img, largeur, hauteur, [255, 50, 90]);
-        const cyan = teinter(doc, img, largeur, hauteur, [40, 230, 255]);
-        const lx = (s.w - largeur) / 2, ly = (s.h - hauteur) / 2;
-        const ctx = s.ctx;
-        const BANDES = 16;
-        let derniere = -1, decalages = [];
-        boucle(s.win, (t) => {
-          if (t > 2.15) return false;
-          ctx.clearRect(0, 0, s.w, s.h);
-          /* Le bruit de fond, qui s'eteint. */
-          const bruit = 1 - lisse((t - 0.2) / 1.1);
-          if (bruit > 0) {
-            for (let n = 0; n < 900 * bruit; n++) {
-              const g = 80 + Math.random() * 175;
-              ctx.fillStyle = `rgba(${g},${g},${g + 20},${0.5 * bruit})`;
-              ctx.fillRect(Math.random() * s.w, Math.random() * s.h, 2, 2);
-            }
-          }
-          /* Le logo par bandes, decalees par a-coups (douze fois par seconde). */
-          const net = sortie((t - 0.35) / 1.2);
-          const tic = Math.floor(t * 12);
-          if (tic !== derniere) {
-            derniere = tic;
-            const sursaut = Math.random() < 0.25 ? 1 : 0.3;
-            decalages = Array.from({ length: BANDES }, () => (Math.random() - 0.5) * 120 * (1 - net) * sursaut);
-          }
-          if (t > 0.35 && !(Math.random() < 0.06 * (1 - net))) {
-            const bh = hauteur / BANDES;
-            const ecart = 18 * (1 - net) + (Math.random() < 0.1 ? 4 : 0);
-            for (let b = 0; b < BANDES; b++) {
-              const dx = decalages[b];
-              const sy = b * bh * (img.naturalHeight / hauteur), sh = bh * (img.naturalHeight / hauteur);
-              ctx.globalCompositeOperation = "lighter";
-              ctx.globalAlpha = 0.8;
-              ctx.drawImage(rouge, 0, b * bh, largeur, bh, lx + dx - ecart, ly + b * bh, largeur, bh);
-              ctx.drawImage(cyan, 0, b * bh, largeur, bh, lx + dx + ecart, ly + b * bh, largeur, bh);
-              ctx.globalCompositeOperation = "source-over";
-              ctx.globalAlpha = net;
-              ctx.drawImage(img, 0, sy, img.naturalWidth, sh, lx + dx, ly + b * bh, largeur, bh);
-            }
-            ctx.globalAlpha = 1;
-          }
-          /* Les lignes de balayage. */
-          ctx.fillStyle = "rgba(0,0,0,.28)";
-          for (let y = (t * 60) % 3; y < s.h; y += 3) ctx.fillRect(0, y, s.w, 1);
-          return true;
-        }, () => {
-          /* La dechirure : le voile part en bandes. */
-          const n = 12;
-          const bandes = doc.createElement("div");
-          bandes.style.cssText = "position:fixed;inset:0;z-index:9998;pointer-events:none";
-          for (let i = 0; i < n; i++) {
-            const b = doc.createElement("div");
-            b.style.cssText = `position:absolute;left:0;right:0;top:${(i * 100) / n}%;height:${100 / n + 0.3}%;background:${NUIT};border-top:1px solid rgba(226,255,214,.0)`;
-            bandes.appendChild(b);
-            const sens = i % 2 ? 1 : -1;
-            b.animate([
-              { transform: "translateX(0)", boxShadow: "0 0 0 transparent" },
-              { transform: "translateX(0)", boxShadow: "0 -2px 14px rgba(108,194,74,.9)", offset: .2 },
-              { transform: `translateX(${sens * 110}%)`, boxShadow: "0 -2px 14px rgba(108,194,74,.9)" },
-            ], { duration: 900, delay: Math.abs(i - n / 2) * 40, easing: "cubic-bezier(.77,0,.175,1)", fill: "both" });
-          }
-          /* Le logo net, qui part avec la bande du milieu. */
-          const logo = doc.createElement("img");
-          logo.src = LOGO;
-          logo.style.cssText = `position:absolute;left:${lx}px;top:${ly}px;width:${largeur}px;height:${hauteur}px`;
-          bandes.appendChild(logo);
-          logo.animate([{ opacity: 1, filter: "none" }, { opacity: 1, filter: "drop-shadow(0 0 14px #6cc24a)", offset: .25 }, { opacity: 0, transform: "scale(1.08)", filter: "drop-shadow(0 0 14px #6cc24a)" }], { duration: 700, delay: 150, easing: "ease-in", fill: "both" });
-          doc.body.appendChild(bandes);
-          s.v.remove();
-          gel.forEach((g) => g.cancel());
-          balayerHero(doc, 450);
-          s.win.setTimeout(() => { montrer(); bandes.remove(); }, 1500);
-        });
+        const s = voile(doc);
+        const W = s.win.innerWidth, H = s.win.innerHeight;
+        const lw = s.largeur + 120, lh = Math.round(s.largeur * 0.41) + 110;
+        s.fond.remove();
+        const cadre = doc.createElement("div");
+        const halo = `0 0 2px ${BLEU}, 0 0 8px ${BLEU}, 0 0 22px ${BLEU}, inset 0 0 14px rgba(47,140,255,.55)`;
+        cadre.style.cssText = `position:absolute;left:50%;top:50%;width:${lw}px;height:${lh}px;transform:translate(-50%,-50%);border-radius:26px;
+          border:2px solid ${BLEU_COEUR};box-shadow:${halo}, 0 0 0 200vmax ${MARINE};background:${MARINE}`;
+        s.v.prepend(cadre);
+        /* Le tube s'allume en grésillant : seuls le trait et le halo
+           clignotent, le fond reste noir. */
+        cadre.animate([
+          { borderColor: "rgba(214,233,255,.05)", boxShadow: `0 0 0 transparent, 0 0 0 200vmax ${MARINE}` },
+          { borderColor: "rgba(214,233,255,.05)", boxShadow: `0 0 0 transparent, 0 0 0 200vmax ${MARINE}`, offset: .3 },
+          { borderColor: BLEU_COEUR, boxShadow: `${halo}, 0 0 0 200vmax ${MARINE}`, offset: .38 },
+          { borderColor: "rgba(214,233,255,.1)", boxShadow: `0 0 0 transparent, 0 0 0 200vmax ${MARINE}`, offset: .45 },
+          { borderColor: BLEU_COEUR, boxShadow: `${halo}, 0 0 0 200vmax ${MARINE}`, offset: .6 },
+          { borderColor: "rgba(214,233,255,.3)", boxShadow: `0 0 0 transparent, 0 0 0 200vmax ${MARINE}`, offset: .66 },
+          { borderColor: BLEU_COEUR, boxShadow: `${halo}, 0 0 0 200vmax ${MARINE}` },
+        ], { duration: 1100, delay: 250, easing: "steps(1, end)", fill: "both" });
+        /* L'interieur devient transparent : la page apparait dans le cadre. */
+        cadre.animate([{ backgroundColor: MARINE }, { backgroundColor: "rgba(11,26,46,0)" }], { duration: 500, delay: PAUSE, easing: "ease-in", fill: "forwards" });
+        s.logo.animate([{ opacity: 1 }, { opacity: 0, transform: "translate(-50%,-50%) scale(1.06)" }], { duration: 450, delay: PAUSE, easing: "ease-in", fill: "forwards" });
+        cadre.animate([
+          { width: `${lw}px`, height: `${lh}px`, borderRadius: "26px" },
+          { width: `${W + 80}px`, height: `${H + 80}px`, borderRadius: "48px" },
+        ], { duration: 1000, delay: PAUSE + 350, easing: RIDEAU, fill: "forwards" }).onfinish = () => { montrer(); s.v.remove(); };
+        balayerHero(doc, PAUSE + 500, gel);
       },
     },
   ];
 
+  /* L'instant ou un trait qui suit glisse() passe a la fraction p. */
+  function glisseInverse(p) {
+    let a = 0, b = 1;
+    for (let i = 0; i < 20; i++) { const m = (a + b) / 2; glisse(m) < p ? (a = m) : (b = m); }
+    return a;
+  }
+
   const cadre = document.getElementById("site");
-  const scene_ = document.getElementById("scene");
+  const scene = document.getElementById("scene");
   const fiche = document.getElementById("fiche");
   const conteneur = document.getElementById("choix");
   const depart = Math.min(Math.max(parseInt(location.hash.slice(1), 10) || 1, 1), DESIGNS.length) - 1;
   let courant = DESIGNS[depart];
 
-  /* Le cadre reste cache pendant le chargement : on ne doit pas voir la
-     page avant l'intro. Il se montre des que le voile est pose. */
   function lancer() {
     const doc = cadre.contentDocument;
     if (!doc || !doc.querySelector(".hero")) return;
@@ -546,7 +381,7 @@
   document.querySelectorAll("[data-largeur]").forEach((b) => {
     b.addEventListener("click", () => {
       document.querySelectorAll("[data-largeur]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-      scene_.classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+      scene.classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
       choisir(courant);
     });
   });
