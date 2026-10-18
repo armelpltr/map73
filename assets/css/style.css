@@ -2983,3 +2983,22 @@ html[data-intro="oui"] .intro {
 /* La vague prend la main : le voile passe sur le canevas. */
 html[data-intro="oui"] .intro[data-vague] { background: none; }
 .intro[data-vague] .intro__logo { visibility: hidden; }
+
+/* Les cartes des classes : un pictogramme par niveau, dans un anneau
+   neon de la couleur de la carte, comme les ronds des chiffres. */
+.classe-carte__rond {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--c) 30%, #fff);
+  color: var(--c);
+  box-shadow:
+    0 0 2px var(--c),
+    0 0 8px var(--c),
+    0 0 18px color-mix(in srgb, var(--c) 60%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--c) 50%, transparent);
+}
+.classe-carte__rond svg { filter: drop-shadow(0 0 4px var(--c)); }
+@media (max-width: 560px) { .classe-carte__rond { width: 50px; height: 50px; } }
