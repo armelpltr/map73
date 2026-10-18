@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
-<link rel="stylesheet" href="assets/css/style.css?v=20261018-1520">
+<link rel="stylesheet" href="assets/css/style.css?v=20261018-1700">
 </head>
 
 <body>
@@ -218,80 +218,34 @@
           <p class="accompagnement__surtitre">Notre accompagnement</p>
           <h2 class="accompagnement__titre" id="accompagnement-titre">L’accompagnement scolaire avec <em>MAP Orientation</em></h2>
 
-          <ul class="accompagnement__faits" id="reperes-liste">
-            <li class="accompagnement__fait">
-              <strong>De la troisième à la terminale</strong>
-              <span>Un suivi personnalisé de la fin du collège jusqu’au bac.</span>
-            </li>
-            <li class="accompagnement__fait">
-              <strong>Deux expertes en orientation scolaire</strong>
-              <span>Une responsable ressources humaines et une enseignante certifiée.</span>
-            </li>
-            <li class="accompagnement__fait">
-              <strong>Chambéry</strong>
-              <span>Au cabinet à Chambéry en Savoie, ou en visio partout en France.</span>
-            </li>
-          </ul>
         </div>
 
-        <ul class="chiffres" id="hero-preuves">
-          <li class="chiffre">
-            <span class="chiffre__rond" aria-hidden="true">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" focusable="false"><path d="M12 19.6 4.9 12.5a4.3 4.3 0 1 1 6.1-6.1l1 1 1-1a4.3 4.3 0 1 1 6.1 6.1Z"/></svg>
-            </span>
-            <span class="chiffre__valeur">100 %</span>
-            <span class="chiffre__quoi">de parents satisfaits</span>
-          </li>
-          <li class="chiffre">
-            <span class="chiffre__rond" aria-hidden="true">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" focusable="false"><circle cx="12" cy="8" r="3.4"/><path d="M5.6 19.4a6.4 6.4 0 0 1 12.8 0"/></svg>
-            </span>
-            <span class="chiffre__valeur">+500</span>
-            <span class="chiffre__quoi">ados orientés</span>
-          </li>
-          <li class="chiffre">
-            <span class="chiffre__rond" aria-hidden="true">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" focusable="false"><path d="M3.4 8.6 12 4.6l8.6 4-8.6 4-8.6-4Z" stroke-linejoin="round"/><path d="M7.2 10.6v4.2c0 1.5 2.1 2.6 4.8 2.6s4.8-1.1 4.8-2.6v-4.2"/></svg>
-            </span>
-            <span class="chiffre__valeur">100 %</span>
-            <span class="chiffre__quoi">d’admission Parcoursup</span>
-          </li>
-        </ul>
+        <!-- Les chiffres en mosaique : la photo du cabinet, une carte pleine
+             pour le chiffre phare, une pour la satisfaction, et une barre de
+             reperes en bas. -->
+        <div class="bento" id="hero-preuves">
+          <figure class="bento__photo">
+            <img src="assets/img/bureaux-map73-640.webp" width="640" height="427" loading="lazy" decoding="async" alt="Le cabinet MAP Orientation à Chambéry">
+            <figcaption>Le cabinet, Chambéry</figcaption>
+          </figure>
+          <div class="bento__phare">
+            <svg class="bento__decor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 19 19 5M8 5h11v11"/></svg>
+            <div class="bento__haut"><span class="bento__etiquette">Références</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+            <span class="bento__gros">+500</span>
+            <p>ados orientés depuis l’ouverture</p>
+          </div>
+          <div class="bento__avis">
+            <span class="bento__etoiles" aria-hidden="true">★★★★★</span>
+            <span class="bento__gros">100 %</span>
+            <p>de parents satisfaits</p>
+          </div>
+          <ul class="bento__barre">
+            <li><strong class="bento__gros">100 %</strong><span>d’admission Parcoursup</span></li>
+            <li><strong>2</strong><span>expertes de l’orientation</span></li>
+            <li><strong>3<sup>e</sup> → T<sup>le</sup></strong><span>un suivi sur 4 ans</span></li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </section>
-
-
-  <!-- ============ MAP news ============ -->
-  <!-- Les nouveautes que le cabinet veut mettre en avant. Les trois cartes
-       ci-dessous sont un texte de depart, a remplacer depuis le panel : la
-       rubrique est en place des la premiere visite plutot que de rester
-       invisible en attendant une publication. Supprimer toutes les entrees
-       dans le panel fait disparaitre la section entiere. -->
-  <section class="section section--serre news" id="news" aria-labelledby="news-titre">
-    <div class="enveloppe">
-      <h2 class="news__titre" id="news-titre">MAP news</h2>
-      <ul class="news__liste" id="news-liste">
-        <li class="news__carte">
-          <p class="news__date">Rentrée 2026</p>
-          <h3 class="news__intitule">Les inscriptions sont ouvertes</h3>
-          <p class="news__texte">Les créneaux d’accompagnement de l’année scolaire se réservent dès maintenant, en présentiel ou à distance.</p>
-          <a class="news__lien" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
-        </li>
-        <li class="news__carte">
-          <p class="news__date">Nouveau</p>
-          <h3 class="news__intitule">Ateliers collectifs</h3>
-          <p class="news__texte">Des séances en petit groupe pour explorer les métiers autrement, en complément du suivi individuel.</p>
-          <a class="news__lien" href="#formules">Voir les formules</a>
-        </li>
-        <li class="news__carte">
-          <img class="news__portrait" src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt="Camille Dorel">
-          <p class="news__date">L’édito</p>
-          <h3 class="news__intitule">L’édito de Camille Dorel</h3>
-          <p class="news__texte">Camille vous explique Parcoursup.</p>
-          <a class="news__lien" href="blog/edito-parcoursup-camille-dorel/">Lire l’édito</a>
-        </li>
-      </ul>
     </div>
   </section>
 
@@ -399,24 +353,30 @@
 
       <div class="piliers">
         <article class="pilier">
+          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
           <span class="pilier__rang" aria-hidden="true">1</span>
           <span class="pilier__role">Se connaître</span>
           <h3>Comprendre qui tu es</h3>
           <p>En connaissant ton fonctionnement, tes valeurs, tes besoins et ta personnalité, tu pourras te créer une vie à ton image.</p>
+          <a class="carte-bouton" href="#formules">En savoir +</a>
         </article>
 
         <article class="pilier">
+          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
           <span class="pilier__rang" aria-hidden="true">2</span>
           <span class="pilier__role">Explorer</span>
           <h3>Construire ta stratégie d’orientation</h3>
           <p>Pour faire les bons choix, il faut disposer des bonnes informations. Quoi de mieux que l’expertise d’une enseignante pour choisir la filière qui te plaît.</p>
+          <a class="carte-bouton" href="#formules">En savoir +</a>
         </article>
 
         <article class="pilier">
+          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
           <span class="pilier__rang" aria-hidden="true">3</span>
           <span class="pilier__role">Choisir</span>
           <h3>Connaître le milieu professionnel</h3>
           <p>Perdu face au monde du travail : entretien, candidature, stage, état du marché ? La vision d’une responsable RH t’aidera à y voir plus clair.</p>
+          <a class="carte-bouton" href="#formules">En savoir +</a>
         </article>
       </div>
     </div>
@@ -429,6 +389,36 @@
       <div class="section-entete">
         <h2>Nos formules</h2>
       </div>
+
+      <!-- Une carte par classe : le parent se reconnait dans une question,
+           le clic ouvre la formule du niveau. Sans script, le lien mene a
+           la formule, deja affichee. -->
+      <ul class="classes-cartes">
+        <li><a class="classe-carte" href="#formule-map-troisieme" data-niveau="troisieme">
+          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+          <h3>Classe de 3<sup>e</sup></h3>
+          <p>Votre enfant termine le collège et hésite sur la voie à choisir après la 3<sup>e</sup>&nbsp;?</p>
+          <span class="classe-carte__lire">Lire plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a></li>
+        <li><a class="classe-carte" href="#formule-map-seconde" data-niveau="seconde">
+          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+          <h3>Classe de seconde</h3>
+          <p>Votre enfant est au lycée et doit choisir sa voie, ses spécialités ou son parcours&nbsp;?</p>
+          <span class="classe-carte__lire">Lire plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a></li>
+        <li><a class="classe-carte" href="#formule-map-premiere" data-niveau="premiere">
+          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+          <h3>Classe de première</h3>
+          <p>Votre enfant doit confirmer ses spécialités, envisager des options, se réorienter ou préciser son projet post-bac&nbsp;?</p>
+          <span class="classe-carte__lire">Lire plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a></li>
+        <li><a class="classe-carte" href="#formule-map-terminale" data-niveau="terminale">
+          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+          <h3>Classe de terminale</h3>
+          <p>Votre enfant prépare Parcoursup et doit définir une stratégie claire pour ses choix post-bac&nbsp;?</p>
+          <span class="classe-carte__lire">Lire plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a></li>
+      </ul>
 
       <!-- Le selecteur de niveau remplace les six cartes deroulees : on
            n'affiche que la formule de la classe choisie. Les onglets sont des
@@ -852,6 +842,40 @@
   </section>
 
 
+  <!-- ============ MAP news ============ -->
+  <!-- Les nouveautes que le cabinet veut mettre en avant. Les trois cartes
+       ci-dessous sont un texte de depart, a remplacer depuis le panel : la
+       rubrique est en place des la premiere visite plutot que de rester
+       invisible en attendant une publication. Supprimer toutes les entrees
+       dans le panel fait disparaitre la section entiere. -->
+  <section class="section section--serre news" id="news" aria-labelledby="news-titre">
+    <div class="enveloppe">
+      <h2 class="news__titre" id="news-titre">MAP news</h2>
+      <ul class="news__liste" id="news-liste">
+        <li class="news__carte">
+          <p class="news__date">Rentrée 2026</p>
+          <h3 class="news__intitule">Les inscriptions sont ouvertes</h3>
+          <p class="news__texte">Les créneaux d’accompagnement de l’année scolaire se réservent dès maintenant, en présentiel ou à distance.</p>
+          <a class="news__lien" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+        </li>
+        <li class="news__carte">
+          <p class="news__date">Nouveau</p>
+          <h3 class="news__intitule">Ateliers collectifs</h3>
+          <p class="news__texte">Des séances en petit groupe pour explorer les métiers autrement, en complément du suivi individuel.</p>
+          <a class="news__lien" href="#formules">Voir les formules</a>
+        </li>
+        <li class="news__carte">
+          <img class="news__portrait" src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt="Camille Dorel">
+          <p class="news__date">L’édito</p>
+          <h3 class="news__intitule">L’édito de Camille Dorel</h3>
+          <p class="news__texte">Camille vous explique Parcoursup.</p>
+          <a class="news__lien" href="blog/edito-parcoursup-camille-dorel/">Lire l’édito</a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+
   <!-- ============ Blog ============
        Les trois derniers billets, repris de blog/index.html. Pour en
        ajouter un : dupliquer un <li> ici et la-bas, et creer le dossier
@@ -1029,11 +1053,11 @@
       <div>
         <h3>Le site</h3>
         <ul>
-          <li><a href="#news">MAP news</a></li>
           <li><a href="#a-propos">À propos</a></li>
           <li><a href="#concept">Le concept</a></li>
           <li><a href="#formules">Formules</a></li>
           <li><a href="#temoignages">Témoignages</a></li>
+          <li><a href="#news">MAP news</a></li>
           <li><a href="blog/">Blog</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
@@ -1070,7 +1094,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20261018-0328" defer></script>
+<script src="assets/js/main.js?v=20261018-0340" defer></script>
 
 <script type="application/ld+json">
 {

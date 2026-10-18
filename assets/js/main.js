@@ -236,22 +236,66 @@
 
   }
 
-  /* ---- Témoignages : les cartes se posent ----
-     Une seule fois, a l'entree dans le champ. Le decalage est porte par
-     une variable sur chaque carte ; le reste — inclinaison, guillemet,
-     filet — est du CSS. */
+  /* ---- Témoignages : l'eventail ----
+     Les cartes se deploient en eventail : celle du milieu se lit, ses
+     voisines penchent sur les cotes. Les fleches font tourner, un clic sur
+     une voisine l'amene au centre. Sans script, les cartes restent en
+     colonnes, toutes lisibles. */
   const temoignages = document.getElementById("temoignages-liste");
 
   if (temoignages) {
-    [...temoignages.children].forEach((carte, i) => carte.style.setProperty("--i", i));
+    const cartes = [...temoignages.querySelectorAll(".temoignage")];
+    const total = cartes.length;
+    let actif = Math.min(1, total - 1);
 
-    new IntersectionObserver((entrees, oeil) => {
-      for (const entree of entrees) {
-        if (!entree.isIntersecting) continue;
-        temoignages.dataset.pose = "oui";
-        oeil.unobserve(entree.target);
-      }
-    }, { threshold: 0.15 }).observe(temoignages);
+    /* Le prenom en tete de carte, tire de la legende : « Maman de Clemence,
+       premiere generale » donne « Clemence ». */
+    cartes.forEach((carte) => {
+      const legende = carte.querySelector("figcaption");
+      if (!legende) return;
+      const nom = legende.textContent.split(",")[0].replace(/^Maman d(e |’)/, "").trim();
+      const initiale = document.createElement("span");
+      initiale.className = "temoin__initiale";
+      initiale.setAttribute("aria-hidden", "true");
+      initiale.textContent = nom.charAt(0);
+      const titre = document.createElement("span");
+      titre.className = "temoin__nom";
+      titre.setAttribute("aria-hidden", "true");
+      titre.textContent = nom;
+      carte.prepend(initiale, titre);
+    });
+
+    const placer = () => cartes.forEach((carte, i) => {
+      let ecart = i - actif;
+      if (ecart > total / 2) ecart -= total;
+      if (ecart < -total / 2) ecart += total;
+      carte.style.setProperty("--d", ecart);
+      carte.style.setProperty("--a", Math.abs(ecart));
+      carte.toggleAttribute("data-actif", ecart === 0);
+      carte.toggleAttribute("data-loin", Math.abs(ecart) > 1);
+    });
+
+    const tourner = (pas) => {
+      actif = (actif + pas + total) % total;
+      placer();
+    };
+
+    cartes.forEach((carte, i) => carte.addEventListener("click", () => {
+      actif = i;
+      placer();
+    }));
+
+    const fleches = document.createElement("div");
+    fleches.className = "temoins__fleches";
+    fleches.innerHTML = '<button type="button" aria-label="Témoignage précédent">←</button>' +
+      '<button type="button" aria-label="Témoignage suivant">→</button>';
+    const [precedent, suivant] = fleches.children;
+    precedent.addEventListener("click", () => tourner(-1));
+    suivant.addEventListener("click", () => tourner(1));
+    temoignages.after(fleches);
+
+    temoignages.dataset.eventail = "oui";
+    placer();
   }
 
   /* ---- ADN : les piliers se posent ----
@@ -324,7 +368,7 @@
     document.querySelectorAll(".section h2:not(.modale-classe__titre)").forEach((titre) => {
       aBalayer.set(titre, preparerBalayage(titre, 0, 1000));
     });
-    document.querySelectorAll(".chiffre, .news__carte, .adn__pilier, .pilier, .formule, .fondatrice, .temoignage, .billet")
+    document.querySelectorAll(".bento > *, .news__carte, .adn__pilier, .pilier, .classes-cartes > li, .formule, .fondatrice, .billet")
       .forEach((carte) => {
         const rang = [...carte.parentNode.children].indexOf(carte) % 4;
         aBalayer.set(carte, preparerBalayage(carte, rang * 140, 900));
@@ -362,7 +406,7 @@
         requestAnimationFrame(pas);
       }
     }, { rootMargin: "0px 0px -12% 0px" });
-    document.querySelectorAll(".chiffre__valeur, .fondatrice__valeur").forEach((valeur) => oeilChiffres.observe(valeur));
+    document.querySelectorAll(".bento__gros, .fondatrice__valeur").forEach((valeur) => oeilChiffres.observe(valeur));
   }
 
   /* ---- Visionneuse d'images ----

@@ -2655,3 +2655,289 @@ p:last-child { margin-bottom: 0; }
   z-index: 5;
   opacity: 0;
 }
+
+/* ---------- Cartes facon Blackmoon ---------- */
+/* Tete commune aux cartes du concept et des classes : les visages de
+   Camille et Julie a gauche, une fleche a droite. La couleur de la carte
+   passe par --c. */
+.carte-tete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  color: var(--c, var(--vert));
+}
+.carte-tete svg { transition: transform 0.35s ease; }
+.avatars { display: flex; }
+.avatars img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--c, var(--vert));
+  background: var(--paper);
+}
+.avatars img + img { margin-left: -12px; }
+
+/* Le concept : trois cartes cerclees, vert, bleu, lac. */
+#concept .piliers { background: none; border: 0; gap: clamp(1rem, 2vw, 1.5rem); }
+#concept .pilier {
+  --c: var(--vert);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
+  padding: 1.5rem 1.5rem 1.4rem;
+  border: 1.5px solid var(--c);
+  border-radius: 22px;
+  background: #0f1f35;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.35s ease;
+}
+#concept .pilier:nth-child(2) { --c: var(--neon-bleu); }
+#concept .pilier:nth-child(3) { --c: var(--lac); }
+#concept .pilier:hover { transform: translateY(-6px); box-shadow: 0 0 0 1px var(--c), 0 0 28px color-mix(in srgb, var(--c) 40%, transparent); }
+#concept .pilier:hover .carte-tete svg { transform: translate(3px, -3px); }
+#concept .pilier .pilier__rang { display: none; }
+#concept .pilier__role { color: var(--c); }
+#concept .pilier h3 { font-size: clamp(1.35rem, 2.2vw, 1.6rem); }
+.carte-bouton {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: var(--sur-panneau);
+  color: var(--paper);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.carte-bouton:hover { background: var(--c, var(--vert)); color: var(--paper); }
+@media (max-width: 560px) { #concept .pilier { min-height: 0; } }
+
+/* Les formules : une carte par classe, au-dessus des onglets. */
+.classes-cartes {
+  list-style: none;
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.85rem, 1.6vw, 1.25rem);
+}
+.classes-cartes li { display: flex; }
+.classes-cartes li:nth-child(1) { --c: var(--vert); }
+.classes-cartes li:nth-child(2) { --c: var(--lac); }
+.classes-cartes li:nth-child(3) { --c: var(--ambre); }
+.classes-cartes li:nth-child(4) { --c: var(--neon-bleu); }
+.classe-carte {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1.4rem 1.35rem 1.3rem;
+  border: 1.5px solid var(--c);
+  border-radius: 20px;
+  background: #0f1f35;
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.35s ease;
+}
+.classe-carte:hover,
+.classe-carte:focus-visible { transform: translateY(-6px); box-shadow: 0 0 0 1px var(--c), 0 0 28px color-mix(in srgb, var(--c) 40%, transparent); color: var(--ink); }
+.classe-carte:hover .carte-tete svg { transform: translate(3px, -3px); }
+.classe-carte h3 {
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--blanc);
+  margin: 0 0 0.9rem;
+}
+.classe-carte p { font-size: var(--fs-small); color: var(--ink-soft); margin: 0 0 1.4rem; }
+.classe-carte__lire {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.classe-carte__lire svg { transition: transform 0.3s ease; }
+.classe-carte:hover .classe-carte__lire svg { transform: translateX(4px); }
+@media (max-width: 1000px) { .classes-cartes { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .classes-cartes { grid-template-columns: 1fr; } }
+
+/* L'accompagnement : les chiffres en mosaique. */
+.bento {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "phare photo" "avis photo" "barre barre";
+  align-self: center;
+}
+.bento > * { border-radius: 22px; overflow: hidden; position: relative; margin: 0; }
+.bento__photo { grid-area: photo; min-height: 300px; }
+.bento__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bento__photo figcaption {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  background: var(--sur-panneau);
+  color: var(--paper);
+  font: 700 0.8rem var(--display);
+}
+.bento__phare {
+  grid-area: phare;
+  display: flex;
+  flex-direction: column;
+  min-height: 210px;
+  padding: 1.1rem 1.2rem 1.2rem;
+  background: var(--vert);
+  color: var(--paper);
+}
+.bento__haut { display: flex; justify-content: space-between; align-items: center; position: relative; }
+.bento__etiquette {
+  padding: 0.3rem 0.7rem;
+  border-radius: 7px;
+  background: var(--sur-panneau);
+  font: 700 0.72rem var(--display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.bento__phare .bento__gros { margin-top: auto; font: 800 clamp(2.6rem, 4.5vw, 3.4rem)/1 var(--display); letter-spacing: -0.02em; position: relative; }
+.bento__phare p { margin: 0.35rem 0 0; font: 600 0.95rem/1.25 var(--display); position: relative; }
+.bento__decor { position: absolute; right: -30px; bottom: -40px; width: 190px; height: 190px; color: rgba(255, 255, 255, 0.28); pointer-events: none; }
+.bento__avis {
+  grid-area: avis;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 1.1rem 1.2rem;
+  border: 1.5px solid rgba(232, 240, 251, 0.22);
+}
+.bento__avis .bento__gros { font: 800 2.4rem/1 var(--display); color: var(--ink); }
+.bento__etoiles { color: var(--vert); letter-spacing: 0.15em; font-size: 1.05rem; }
+.bento__avis p { margin: 0; color: var(--ink-soft); font: 600 0.9rem var(--display); }
+.bento__barre {
+  grid-area: barre;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 1rem 0.5rem;
+  text-align: center;
+  border: 1.5px solid rgba(232, 240, 251, 0.22);
+}
+.bento__barre li + li { border-left: 1px solid rgba(232, 240, 251, 0.22); }
+.bento__barre strong { display: block; font: 800 1.9rem/1.05 var(--display); color: var(--ink); }
+.bento__barre span { display: block; margin-top: 0.25rem; padding: 0 0.3rem; color: var(--ink-soft); font: 600 0.8rem/1.25 var(--display); }
+@media (max-width: 560px) {
+  .bento { grid-template-columns: 1fr; grid-template-areas: "photo" "phare" "avis" "barre"; }
+  .bento__photo { min-height: 220px; }
+  .bento__barre strong { font-size: 1.5rem; }
+}
+
+/* MAP news : cartes claires, la rubrique en etiquette posee de travers. */
+#news .news__liste { gap: clamp(1rem, 2vw, 1.5rem); }
+#news .news__carte {
+  background: var(--sur-panneau);
+  background-image: none;
+  color: var(--paper);
+  border-radius: 26px;
+  padding: 1.6rem 1.5rem 1.5rem;
+  gap: 0.7rem;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+#news .news__carte:hover { transform: translateY(-5px); }
+#news .news__date {
+  justify-self: start;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9px;
+  background: var(--vert);
+  color: var(--paper);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.8rem;
+  text-shadow: none;
+  transform: rotate(-6deg);
+  margin-bottom: 0.4rem;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#news .news__carte:nth-child(3n + 2) .news__date { background: var(--ambre); transform: rotate(5deg); }
+#news .news__carte:nth-child(3n) .news__date { background: var(--lac); transform: rotate(-4deg); }
+#news .news__carte:hover .news__date { transform: rotate(0); }
+#news .news__intitule { color: var(--paper); font-size: clamp(1.25rem, 2vw, 1.5rem); text-transform: uppercase; line-height: 1.1; }
+#news .news__texte { color: #3a4659; }
+#news .news__lien { color: var(--paper); font-family: var(--display); font-weight: 700; }
+#news .news__portrait { border-radius: 50%; border: 2px solid var(--vert); width: 56px; height: 56px; }
+
+/* Temoignages : l'eventail. main.js pose data-eventail et --d (l'ecart a
+   la carte du centre) ; sans script, les cartes restent en colonnes. */
+.temoignages[data-eventail] { columns: auto; position: relative; height: 600px; margin-top: 1rem; }
+#temoignages:has(.temoignages[data-eventail]) { overflow: hidden; }
+.temoignages[data-eventail] .temoignage {
+  --a: 0;
+  position: absolute !important;
+  left: 50%;
+  top: 20px;
+  width: min(340px, 76vw);
+  min-height: 440px;
+  margin: 0;
+  padding: 1.6rem 1.5rem;
+  border-radius: 24px;
+  background: var(--paper);
+  background-image: none;
+  color: var(--ink);
+  border: 1.5px solid rgba(232, 240, 251, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  transform: translateX(calc(-50% + var(--d, 0) * 92%)) translateY(calc(var(--a) * 26px)) rotate(calc(var(--d, 0) * 6deg));
+  opacity: calc(1 - var(--a) * 0.25);
+  z-index: calc(10 - var(--a));
+  cursor: pointer;
+  animation: none;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.6s ease, background-color 0.4s ease, color 0.4s ease;
+}
+.temoignages[data-eventail] .temoignage[data-loin] { opacity: 0; pointer-events: none; }
+.temoignages[data-eventail] .temoignage::before,
+.temoignages[data-eventail] .temoignage::after { display: none; }
+.temoignages[data-eventail] .temoignage[data-actif] {
+  background: var(--vert);
+  color: var(--paper);
+  border-color: var(--vert);
+  cursor: default;
+  box-shadow: 0 0 34px rgba(108, 194, 74, 0.35);
+}
+.temoignages[data-eventail] .temoignage blockquote { margin: 0; font-size: 1rem; line-height: 1.5; }
+.temoignages[data-eventail] .temoignage figcaption { margin-top: auto; font-weight: 700; color: inherit; }
+.temoin__initiale {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sur-panneau);
+  color: var(--paper);
+  font: 800 1.3rem var(--display);
+}
+.temoin__nom { font: 800 1.35rem/1.1 var(--display); text-transform: uppercase; }
+.temoins__fleches { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; }
+.temoins__fleches button {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(232, 240, 251, 0.4);
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+.temoins__fleches button:hover { border-color: var(--vert); color: var(--vert); }
+@media (max-width: 560px) { .temoignages[data-eventail] { height: 640px; } }
+/* L'exposant garde sa minuscule : « 3E » se lirait mal. */
+.classe-carte h3 sup { text-transform: none; }
+/* Sans la liste des reperes, le titre se centre face a la mosaique. */
+@media (min-width: 901px) { .accompagnement__grille > div:first-child { align-self: center; } }
