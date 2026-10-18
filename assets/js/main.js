@@ -274,6 +274,97 @@
     }, { threshold: 0.4 }).observe(adnListe);
   }
 
+  /* ---- Entree en balayage ----
+     Un trait neon vert traverse chaque bloc de gauche a droite et devoile
+     le contenu dans son sillage : le hero a l'ouverture, puis chaque titre
+     et chaque carte a son arrivee a l'ecran. Les chiffres comptent depuis
+     zero. Tout passe par element.animate() ; rien n'est cache sans script,
+     ni pour ceux qui ont demande moins de mouvement. Le ruban de presse
+     bouge deja, il n'est pas balaye. */
+  const sansMouvement = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!sansMouvement && "animate" in Element.prototype) {
+    const COURBE = "cubic-bezier(.65,0,.35,1)";
+
+    /* Prepare le balayage d'un bloc, fige a son debut ; la fonction rendue
+       le joue. Une fois fini, le masque s'en va : il couperait le halo des
+       neons. */
+    const preparerBalayage = (bloc, delai, duree) => {
+      if (getComputedStyle(bloc).position === "static") bloc.style.position = "relative";
+      const trait = document.createElement("span");
+      trait.className = "balayage";
+      trait.setAttribute("aria-hidden", "true");
+      bloc.append(trait);
+      const reglage = { duration: duree, delay: delai, easing: COURBE, fill: "both" };
+      const masque = bloc.animate([
+        { clipPath: "inset(-20px 100% -20px -20px)" },
+        { clipPath: "inset(-20px -40px -20px -20px)" },
+      ], reglage);
+      const passage = trait.animate([
+        { left: "0%", opacity: 0 },
+        { left: "0%", opacity: 1, offset: 0.05 },
+        { left: "100%", opacity: 1, offset: 0.95 },
+        { left: "100%", opacity: 0 },
+      ], reglage);
+      masque.pause();
+      passage.pause();
+      masque.onfinish = () => { masque.cancel(); trait.remove(); };
+      return () => { masque.play(); passage.play(); };
+    };
+
+    /* Le hero, des l'ouverture. */
+    [".hero h1", ".hero__chapo", ".hero__actions", ".hero__classe"].forEach((selecteur, i) => {
+      const bloc = document.querySelector(selecteur);
+      if (bloc) preparerBalayage(bloc, 200 + i * 220, 1100)();
+    });
+
+    /* Le reste, a l'arrivee a l'ecran. Les cartes d'une meme rangee
+       partent l'une apres l'autre. */
+    const aBalayer = new Map();
+    document.querySelectorAll(".section h2:not(.modale-classe__titre)").forEach((titre) => {
+      aBalayer.set(titre, preparerBalayage(titre, 0, 1000));
+    });
+    document.querySelectorAll(".chiffre, .news__carte, .adn__pilier, .pilier, .formule, .fondatrice, .temoignage, .billet")
+      .forEach((carte) => {
+        const rang = [...carte.parentNode.children].indexOf(carte) % 4;
+        aBalayer.set(carte, preparerBalayage(carte, rang * 140, 900));
+      });
+
+    const oeilBalayage = new IntersectionObserver((entrees) => {
+      for (const entree of entrees) {
+        if (!entree.isIntersecting) continue;
+        aBalayer.get(entree.target)();
+        oeilBalayage.unobserve(entree.target);
+      }
+    }, { rootMargin: "0px 0px -12% 0px" });
+    aBalayer.forEach((jouer, bloc) => oeilBalayage.observe(bloc));
+
+    /* Les chiffres comptent depuis zero, une fois a l'ecran. */
+    const oeilChiffres = new IntersectionObserver((entrees) => {
+      for (const entree of entrees) {
+        if (!entree.isIntersecting) continue;
+        oeilChiffres.unobserve(entree.target);
+        const valeur = entree.target;
+        const texte = valeur.textContent;
+        // Un seul nombre, en texte nu : « 1<sup>re</sup> » ou « 1 200 » ne
+        // comptent pas.
+        const nombres = texte.match(/\d+/g);
+        if (valeur.children.length || !nombres || nombres.length > 1) continue;
+        const cible = parseInt(nombres[0], 10);
+        if (cible < 2) continue;
+        const debut = performance.now() + 200;
+        const pas = (maintenant) => {
+          const k = Math.min(Math.max((maintenant - debut) / 1600, 0), 1);
+          valeur.textContent = texte.replace(/\d+/, String(Math.round(cible * (1 - Math.pow(1 - k, 3)))));
+          if (k < 1) requestAnimationFrame(pas);
+        };
+        valeur.textContent = texte.replace(/\d+/, "0");
+        requestAnimationFrame(pas);
+      }
+    }, { rootMargin: "0px 0px -12% 0px" });
+    document.querySelectorAll(".chiffre__valeur, .fondatrice__valeur").forEach((valeur) => oeilChiffres.observe(valeur));
+  }
+
   /* ---- Visionneuse d'images ----
      Le declencheur est un lien vers l'image : sans script, le clic ouvre le
      fichier, ce qui reste utilisable. Avec script, on ouvre le dialogue

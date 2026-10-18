@@ -2639,3 +2639,20 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 560px) {
   .accompagnement__titre em, .adn--arc .section-entete h2 em, .chiffre__valeur { -webkit-text-stroke-width: 1.2px; }
 }
+
+/* ---------- L'entree en balayage ---------- */
+/* Le trait neon que main.js fait courir sur chaque bloc a son entree ; il
+   disparait une fois passe. Sans script ou en mouvement reduit, il n'existe
+   pas. */
+.balayage {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 0;
+  width: 2px;
+  background: var(--neon-vert-coeur);
+  box-shadow: 0 0 6px var(--neon-vert), 0 0 16px var(--neon-vert), 0 0 30px var(--neon-vert);
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+}
