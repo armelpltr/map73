@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : visuels des classes</title>
+<style>
+  /* Maquette : la page d'accueil, chargee dans un cadre, avec quatre
+     visuels pour les cartes des classes. */
+  :root {
+    --nuit: #050b16;
+    --panneau: #12213c;
+    --trait: #1b2c47;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+    --choisi: #6cc24a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; white-space: nowrap; }
+  .choix { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .option {
+    padding: 0.45rem 0.9rem;
+    border: 2px solid var(--trait);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .option:hover { border-color: var(--doux); }
+  .option[aria-pressed="true"] { border-color: var(--choisi); }
+  .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
+  .reglage {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+  .fiche { width: 100%; margin: 0; color: var(--doux); font-size: 0.85rem; }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+  .scene { flex: 1; display: flex; justify-content: center; min-height: 0; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--nuit); }
+  .scene--mobile iframe { width: 390px; border-left: 1px solid var(--trait); border-right: 1px solid var(--trait); }
+  @media (max-width: 700px) { .reglages { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Cartes des classes : visuels</h1>
+  <div class="choix" id="choix"></div>
+  <div class="reglages">
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
+  </div>
+  <p class="fiche" id="fiche"></p>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="index.html" title="Page d’accueil, cartes des classes"></iframe>
+</div>
+
+<script>
+  /* Quatre visuels a la place des photos de Camille et Julie sur les
+     cartes des classes. Seule la tete des cartes change ; la page defile
+     jusqu'aux formules. */
+  const trait = (d) => `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const PICTOS = [
+    /* 3e : le college, un batiment a fronton. */
+    trait(`<path d="M3 10.5 12 5l9 5.5"/><path d="M5 10v8.5M19 10v8.5M9.5 18.5v-4.5h5v4.5M3.5 18.5h17"/><path d="M12 7.6v.01"/>`),
+    /* Seconde : le carrefour, un panneau a deux directions. */
+    trait(`<path d="M12 3v18"/><path d="M12 6h6.5l2 2-2 2H12"/><path d="M12 12H5.5l-2 2 2 2H12"/>`),
+    /* Premiere : les specialites, des livres empiles. */
+    trait(`<path d="M4 19.5h16"/><path d="M6 19.5V7.5h3v12M9 19.5V5h3v14.5"/><path d="m13.2 8 2.9-.8 3.2 11.6-2.9.8z"/>`),
+    /* Terminale : le diplome, la toque. */
+    trait(`<path d="M2.8 9 12 4.8 21.2 9 12 13.2Z"/><path d="M6.5 11v4.2c0 1.7 2.5 3 5.5 3s5.5-1.3 5.5-3V11"/><path d="M21.2 9v5"/>`),
+  ];
+  /* Des eleves dessines : tete et epaules, dans les couleurs du site. */
+  const eleve = (peau, cheveux, haut, coupe) => `<svg width="42" height="42" viewBox="0 0 42 42" aria-hidden="true">
+    <circle cx="21" cy="21" r="21" fill="#16294a"/>
+    <path d="M7 42c1-8.5 6.6-13 14-13s13 4.5 14 13Z" fill="${haut}"/>
+    <circle cx="21" cy="18" r="7.4" fill="${peau}"/>
+    ${coupe === "long" ? `<path d="M13.2 18.5c-.4-6 3.2-9.4 7.8-9.4s8.4 3.4 7.8 9.4c-.2 3 .4 6 1.6 8.2-3-.4-4.6-2.4-5-4.6 1.4-2.2 1.2-5.2-.6-6.6-3 1.8-7 2.2-9.4 1.6-.4 2.6.2 4.8 1.2 6.4-2.6 0-4.6-1.2-5.2-3.2.8-1.4 1.6-3.2 1.6-1.8Z" fill="${cheveux}"/>` :
+      `<path d="M13.6 17.4c-.2-5.2 3.2-8.4 7.4-8.4 4.6 0 7.8 3 7.4 8.2-1.4-2-3.8-3-7.2-3.2-3 .2-5.6 1.2-7.6 3.4Z" fill="${cheveux}"/>`}
+  </svg>`;
+  const TRIOS = [
+    [eleve("#f1c7a3", "#5a3a22", "#6cc24a", "court"), eleve("#c98e63", "#1d1410", "#74c6ea", "long"), eleve("#f6d2b4", "#c08a3e", "#2f8cff", "long")],
+    [eleve("#e8b48c", "#2a1b12", "#74c6ea", "long"), eleve("#f3cfb1", "#7a4a24", "#e8a33d", "court"), eleve("#a8714c", "#120c09", "#6cc24a", "court")],
+    [eleve("#f6d2b4", "#3b2516", "#e8a33d", "long"), eleve("#d39b72", "#1d1410", "#2f8cff", "court"), eleve("#f1c7a3", "#a8742f", "#74c6ea", "long")],
+    [eleve("#c98e63", "#1d1410", "#2f8cff", "court"), eleve("#f3cfb1", "#5a3a22", "#6cc24a", "long"), eleve("#e8b48c", "#2a1b12", "#e8a33d", "long")],
+  ];
+  const NIVEAUX = ["3<sup>e</sup>", "2<sup>de</sup>", "1<sup>re</sup>", "T<sup>le</sup>"];
+
+  const DESIGNS = [
+    {
+      nom: "1 · Pictogrammes néon",
+      note: "Un pictogramme par classe dans un anneau néon de la couleur de la carte, comme les ronds des chiffres : le collège pour la 3e, le panneau de carrefour pour la seconde, les livres des spécialités pour la première, la toque pour la terminale.",
+      css: `
+        .classe-carte .mq-rond {
+          display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
+          border: 2px solid color-mix(in srgb, var(--c) 30%, #fff); color: var(--c);
+          box-shadow: 0 0 2px var(--c), 0 0 8px var(--c), 0 0 18px color-mix(in srgb, var(--c) 60%, transparent), inset 0 0 10px color-mix(in srgb, var(--c) 50%, transparent);
+        }
+        .classe-carte .mq-rond svg { filter: drop-shadow(0 0 4px var(--c)); }`,
+      visuel: (i) => `<span class="mq-rond">${PICTOS[i]}</span>`,
+    },
+    {
+      nom: "2 · Élèves dessinés",
+      note: "Trois élèves dessinés, en avatars ronds superposés comme sur votre modèle : des visages différents à chaque carte, habillés aux couleurs du site. L'effet « vraies personnes » sans photos.",
+      css: `
+        .classe-carte .mq-trio { display: flex; }
+        .classe-carte .mq-trio svg { border-radius: 50%; border: 2px solid var(--c); background: #16294a; }
+        .classe-carte .mq-trio svg + svg { margin-left: -12px; }`,
+      visuel: (i) => `<span class="mq-trio">${TRIOS[i].join("")}</span>`,
+    },
+    {
+      nom: "3 · Niveau en néon",
+      note: "Pas d'image : le niveau lui-même, « 3e », « 2de », « 1re », « Tle », écrit en grand au trait néon de la couleur de la carte, comme « un avenir. » dans le hero.",
+      css: `
+        .classe-carte .mq-niveau {
+          font: 800 2.6rem/1 var(--display); letter-spacing: -.02em;
+          color: transparent; -webkit-text-stroke: 1.5px color-mix(in srgb, var(--c) 25%, #fff);
+          filter: drop-shadow(0 0 2px var(--c)) drop-shadow(0 0 7px var(--c)) drop-shadow(0 0 16px var(--c));
+        }
+        .classe-carte .mq-niveau sup { font-size: .5em; vertical-align: .9em; }`,
+      visuel: (i) => `<span class="mq-niveau">${NIVEAUX[i]}</span>`,
+    },
+    {
+      nom: "4 · Pictogramme + niveau",
+      note: "Le pictogramme dans son anneau néon, et le niveau à côté en petite pastille de la couleur de la carte : le plus lisible d'un coup d'œil.",
+      css: `
+        .classe-carte .mq-duo { display: flex; align-items: center; gap: .7rem; }
+        .classe-carte .mq-rond {
+          display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%;
+          border: 2px solid color-mix(in srgb, var(--c) 30%, #fff); color: var(--c);
+          box-shadow: 0 0 2px var(--c), 0 0 8px var(--c), inset 0 0 10px color-mix(in srgb, var(--c) 50%, transparent);
+        }
+        .classe-carte .mq-pastille { padding: .3rem .65rem; border-radius: 8px; background: var(--c); color: #0b1a2e; font: 800 .85rem var(--display); }`,
+      visuel: (i) => `<span class="mq-duo"><span class="mq-rond">${PICTOS[i]}</span><span class="mq-pastille">${NIVEAUX[i]}</span></span>`,
+    },
+  ];
+
+  /* L'arrivee du site ne se rejoue pas dans le cadre : elle masquerait
+     la page et bloquerait le defilement. */
+  try { sessionStorage.setItem("map-intro", "vue"); } catch (e) {}
+
+  const cadre = document.getElementById("site");
+  const scene = document.getElementById("scene");
+  const fiche = document.getElementById("fiche");
+  const conteneur = document.getElementById("choix");
+  const depart = Math.min(Math.max(parseInt(location.hash.slice(1), 10) || 1, 1), DESIGNS.length) - 1;
+  let courant = DESIGNS[depart];
+
+  function appliquer() {
+    const doc = cadre.contentDocument;
+    if (!doc || !doc.querySelector(".classes-cartes")) return;
+    let style = doc.getElementById("mq-classes");
+    if (!style) {
+      style = doc.createElement("style");
+      style.id = "mq-classes";
+      doc.head.appendChild(style);
+    }
+    style.textContent = courant.css;
+    doc.querySelectorAll(".classe-carte").forEach((carte, i) => {
+      const tete = carte.querySelector(".carte-tete");
+      const ancien = tete.querySelector(".avatars, .mq-visuel");
+      const neuf = doc.createElement("span");
+      neuf.className = "mq-visuel";
+      neuf.innerHTML = courant.visuel(i);
+      ancien.replaceWith(neuf);
+    });
+  }
+
+  /* Au chargement, on defile jusqu'aux formules. */
+  cadre.addEventListener("load", () => {
+    const doc = cadre.contentDocument;
+    if (!doc || !doc.querySelector(".classes-cartes")) return;
+    appliquer();
+    const s = doc.getElementById("formules");
+    cadre.contentWindow.scrollTo(0, s.getBoundingClientRect().top + cadre.contentWindow.scrollY - 70);
+  });
+
+  function choisir(d) {
+    courant = d;
+    history.replaceState(null, "", "#" + (DESIGNS.indexOf(d) + 1));
+    conteneur.querySelectorAll(".option").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.nom === d.nom)));
+    fiche.innerHTML = `<strong>${d.nom}.</strong> ${d.note}`;
+    appliquer();
+  }
+
+  DESIGNS.forEach((d) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "option";
+    b.dataset.nom = d.nom;
+    b.textContent = d.nom;
+    b.addEventListener("click", () => choisir(d));
+    conteneur.appendChild(b);
+  });
+
+  document.querySelectorAll("[data-largeur]").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll("[data-largeur]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      scene.classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+    });
+  });
+
+  choisir(courant);
+</script>
+</body>
+</html>
