@@ -318,14 +318,19 @@
     }, { threshold: 0.4 }).observe(adnListe);
   }
 
-  /* ---- L'arrivee : le logo, puis la vague ----
+  /* ---- L'arrivee : le logo, la phrase, puis la vague ----
      Le script du <head> a decide s'il y a une arrivee (data-intro) et le
-     CSS affiche deja le logo en grand. Ici, passe un court instant, les
-     trois vagues neon du hero montent du bas comme une maree : le voile se
-     retire au-dessus d'elles et decouvre la page. retardHero dit au
-     balayage du hero d'attendre que la vague l'ait depasse. */
-  const PAUSE_INTRO = 1450;
-  const DUREE_VAGUE = 1500;
+     CSS a deja joue les deux premiers temps : le logo se pose, reste seul,
+     puis la phrase s'ecrit sous lui. Ici, le troisieme : les trois vagues
+     neon du hero montent du bas comme une maree, le voile se fait decouper
+     au ras de leur bord et la page apparait dessous. retardHero dit au
+     balayage du hero d'attendre que la vague l'ait depasse.
+
+     PAUSE_INTRO est la fin des deux temps en CSS : 1 s de logo, 0,7 s seul,
+     0,8 s + 0,3 s de decalage pour les deux morceaux de la phrase, 0,6 s de
+     lecture. Toucher a l'un des deux sans l'autre desaccorde l'arrivee. */
+  const PAUSE_INTRO = 3400;
+  const DUREE_VAGUE = 1700;
   const voileIntro = document.getElementById("intro");
   const avecIntro = document.documentElement.dataset.intro === "oui" && voileIntro;
   // Le hero est decouvert a peu pres au tiers de la montee.
@@ -333,6 +338,7 @@
 
   if (avecIntro) {
     const toile = voileIntro.querySelector(".intro__vague");
+    const voile = voileIntro.querySelector(".intro__voile");
     const logo = voileIntro.querySelector(".intro__logo");
     const ctx = toile.getContext("2d");
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -351,7 +357,6 @@
     const courbe = (l, x, t, base) =>
       base + l.d + l.a * Math.sin(x * l.f + t * l.v * 3 + l.p) + l.a * 0.45 * Math.sin(x * l.f * 2.3 - t * l.v * 4);
     const glisse = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-    const paper = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim() || "#0b1a2e";
 
     const terminer = () => {
       voileIntro.remove();
@@ -361,32 +366,20 @@
     const image = (maintenant) => {
       const t = maintenant / 1000;
       const u = Math.min(Math.max((maintenant - PAUSE_INTRO) / DUREE_VAGUE, 0), 1);
-      voileIntro.dataset.vague = "oui";
       // Le bord de la vague monte du bas jusqu'au-dessus de l'ecran.
       const base = hauteur + 40 - glisse(u) * (hauteur + 260);
       ctx.clearRect(0, 0, largeur, hauteur);
 
-      // Le voile, au-dessus de la vague, avec le logo dedans.
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      for (let x = 0; x <= largeur + 8; x += 8) ctx.lineTo(x, courbe(tubes[0], x, t, base) - 10);
-      ctx.lineTo(largeur, 0);
-      ctx.closePath();
-      ctx.clip();
-      ctx.fillStyle = paper;
-      ctx.fillRect(0, 0, largeur, hauteur);
-      const lueur = ctx.createRadialGradient(largeur * 0.74, hauteur * 0.34, 0, largeur * 0.74, hauteur * 0.34, 480);
-      lueur.addColorStop(0, "rgba(47,140,255,.16)");
-      lueur.addColorStop(1, "rgba(47,140,255,0)");
-      ctx.fillStyle = lueur;
-      ctx.fillRect(0, 0, largeur, hauteur);
-      const cadre = logo.getBoundingClientRect();
-      // Le logo garde la lueur verte qu'il avait en CSS.
-      ctx.shadowColor = "rgba(108,194,74,.35)";
-      ctx.shadowBlur = 10;
-      ctx.drawImage(logo, cadre.left, cadre.top, cadre.width, cadre.height);
-      ctx.restore();
+      // Le voile est decoupe au ras de la vague : ce qui passe dessous a
+      // deja laisse place a la page. Le logo et la phrase restent du vrai
+      // DOM, donc le texte ne perd pas sa nettete.
+      const points = ["0px 0px"];
+      for (let i = 0; i <= 60; i++) {
+        const x = (largeur * i) / 60;
+        points.push(x.toFixed(1) + "px " + (courbe(tubes[0], x, t, base) - 10).toFixed(1) + "px");
+      }
+      points.push(largeur + "px 0px");
+      voile.style.clipPath = "polygon(" + points.join(",") + ")";
 
       // Les trois tubes sur le bord : le halo en traits superposes, du
       // plus large au coeur, bien moins couteux qu'une ombre floue.

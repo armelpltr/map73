@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : arrivée en trois temps</title>
+<script>
+  /* L'arrivee du site elle-meme ne doit pas jouer dans le cadre : la
+     maquette pose sa propre version. sessionStorage est partage avec
+     l'iframe (meme origine, meme onglet), donc le script du <head>
+     d'index.html croit l'arrivee deja vue. */
+  try { sessionStorage.setItem("map-intro", "vue"); } catch (e) {}
+</script>
+<style>
+  :root {
+    --nuit: #050b16;
+    --panneau: #12213c;
+    --trait: #1b2c47;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+    --choisi: #6cc24a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem 1.4rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; white-space: nowrap; }
+  .groupe { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .groupe > span { color: var(--doux); font-size: 0.78rem; text-transform: uppercase; letter-spacing: .06em; }
+  .option {
+    padding: 0.42rem 0.85rem;
+    border: 2px solid var(--trait);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .option:hover { border-color: var(--doux); }
+  .option[aria-pressed="true"] { border-color: var(--choisi); }
+  .reglage {
+    padding: 0.38rem 0.75rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.84rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+  .reglage--fort { color: var(--texte); border-color: var(--choisi); font-weight: 600; }
+  .fin { margin-left: auto; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .fiche { width: 100%; margin: 0; color: var(--doux); font-size: 0.85rem; }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+  .fiche em { color: var(--choisi); font-style: normal; font-weight: 600; }
+  .scene { flex: 1; display: flex; justify-content: center; min-height: 0; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--nuit); }
+  .scene--mobile iframe { width: 390px; border-left: 1px solid var(--trait); border-right: 1px solid var(--trait); }
+  @media (max-width: 980px) { .fin { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Arrivée en trois temps</h1>
+
+  <div class="groupe" id="choix-variante"><span>Tempo</span></div>
+  <div class="groupe" id="choix-phrase"><span>Phrase</span></div>
+
+  <div class="fin">
+    <button class="reglage" type="button" data-vitesse="0.8">Plus vif</button>
+    <button class="reglage" type="button" data-vitesse="1" aria-pressed="true">Normal</button>
+    <button class="reglage" type="button" data-vitesse="1.3">Plus lent</button>
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile">Mobile</button>
+    <button class="reglage reglage--fort" type="button" id="rejouer">↻ Rejouer</button>
+  </div>
+
+  <p class="fiche" id="fiche"></p>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="index.html" title="Page d’accueil avec l’arrivée choisie"></iframe>
+</div>
+
+<script>
+/* =========================================================
+   Maquette de l'arrivee : le logo, puis la phrase, puis la page.
+
+   Le voile est du vrai DOM — le logo et la phrase sont du texte, pas un
+   dessin — decoupe a chaque image par un clip-path qui suit le bord de la
+   vague. Le canevas, au-dessus, ne porte plus que les tubes neon. C'est
+   plus simple que de recopier le contenu sur le canevas comme le fait
+   l'arrivee actuelle, et le texte reste net.
+   ========================================================= */
+
+const LOGO = "assets/img/logo-blanc-480.webp";
+const SORTIE = "cubic-bezier(.16,1,.3,1)";
+const borne = (x) => Math.min(Math.max(x, 0), 1);
+const glisse = (x) => { x = borne(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+
+/* ---- Les phrases candidates ---- */
+const PHRASES = {
+  map: {
+    nom: "M·A·P",
+    segments: ["<b>M</b>aîtriser", "son <b>A</b>venir", "et son <b>P</b>arcours"],
+    liant: " "
+  },
+  avenir: {
+    nom: "Un avenir",
+    segments: ["Plus qu’un choix,", "<em>un avenir.</em>"],
+    liant: " "
+  },
+  complet: {
+    nom: "Accroche du hero",
+    segments: ["L’orientation scolaire.", "Plus qu’un choix, <em>un avenir.</em>"],
+    liant: "<br>"
+  }
+};
+
+/* ---- Les quatre tempos ----
+   Tous sont plus lents que l'arrivee actuelle (0,9 s de logo, 0,55 s de
+   pause, 1,5 s de vague : 2,9 s en tout). Durees en millisecondes, avant
+   le coefficient de vitesse. */
+const VARIANTES = {
+  pose: {
+    nom: "Pose",
+    fiche: "Le logo se pose et <em>reste seul une bonne seconde</em>, la phrase monte en fondu sous lui, un dernier temps, puis la vague. Le plus sobre des quatre.",
+    logo: 1000, tenue1: 700, phrase: 700, tenue2: 700, vague: 1700
+  },
+  motAMot: {
+    nom: "Mot à mot",
+    fiche: "Même tempo, mais la phrase <em>s’écrit segment par segment</em> : les trois morceaux arrivent l’un après l’autre, ce qui fait ressortir le M, le A et le P.",
+    logo: 1000, tenue1: 700, phrase: 1100, tenue2: 600, vague: 1700, parSegment: 300
+  },
+  filet: {
+    nom: "Filet",
+    fiche: "Le logo posé, <em>un trait néon se tire sous lui</em> et la phrase apparaît dans son sillage — le même geste que les filets du reste du site.",
+    logo: 1000, tenue1: 650, filet: 550, phrase: 650, tenue2: 650, vague: 1700
+  },
+  enchaine: {
+    nom: "Enchaîné",
+    fiche: "Les trois temps sont là, mais <em>la vague part avant la fin de la pause</em> : on a le temps de lire et l’ensemble se termine plus tôt.",
+    logo: 950, tenue1: 650, phrase: 700, tenue2: 650, vague: 1800, recouvre: 550
+  }
+};
+
+let variante = "pose";
+let phrase = "map";
+let vitesse = 1;
+
+const cadre = document.getElementById("site");
+const fiche = document.getElementById("fiche");
+let enCours = null;
+
+/* ---- Le voile ---- */
+function construire(doc, v, p) {
+  const voile = doc.createElement("div");
+  voile.className = "mq-voile";
+  voile.style.cssText =
+    "position:fixed;inset:0;z-index:9998;pointer-events:none;" +
+    "background:" +
+      "radial-gradient(560px 380px at 74% 34%, rgba(47,140,255,.16), transparent 70%)," +
+      "radial-gradient(520px 300px at 26% 62%, rgba(108,194,74,.10), transparent 70%)," +
+      "var(--paper,#0b1a2e)";
+
+  const pile = doc.createElement("div");
+  pile.style.cssText =
+    "position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,88vw);" +
+    "display:grid;justify-items:center;gap:clamp(1.1rem,3vw,1.9rem);text-align:center";
+
+  const logo = doc.createElement("img");
+  logo.src = LOGO;
+  logo.alt = "";
+  logo.style.cssText = "width:min(480px,72vw);height:auto;display:block";
+
+  const trait = doc.createElement("span");
+  trait.className = "mq-filet";
+  trait.style.cssText =
+    "display:block;width:min(260px,40vw);height:2px;transform:scaleX(0);opacity:0;" +
+    "background:var(--vert,#6cc24a);box-shadow:0 0 2px #6cc24a,0 0 10px #6cc24a,0 0 22px rgba(108,194,74,.6)";
+
+  const texte = doc.createElement("p");
+  texte.style.cssText =
+    "margin:0;font-family:var(--display,system-ui);font-weight:600;" +
+    "font-size:clamp(1.05rem,2.5vw,1.6rem);line-height:1.35;letter-spacing:.01em;color:var(--ink,#e8f0fb)";
+  texte.innerHTML = p.segments
+    .map((s) => '<span class="mq-seg" style="display:inline-block;opacity:0">' + s + "</span>")
+    .join(p.liant);
+  texte.querySelectorAll("b, em").forEach((fort) => {
+    fort.style.cssText =
+      "font-style:normal;font-weight:800;color:var(--vert,#6cc24a);" +
+      "text-shadow:0 0 8px rgba(108,194,74,.67),0 0 22px rgba(108,194,74,.33)";
+  });
+
+  pile.append(logo);
+  if (v.filet) pile.append(trait);
+  pile.append(texte);
+  voile.append(pile);
+
+  const toile = doc.createElement("canvas");
+  toile.className = "mq-toile";
+  toile.style.cssText = "position:fixed;inset:0;width:100%;height:100%;z-index:9999;pointer-events:none";
+
+  doc.body.append(voile, toile);
+  return { voile, toile, logo, trait, segments: [...texte.querySelectorAll(".mq-seg")] };
+}
+
+/* ---- Le jeu ---- */
+function jouer() {
+  const doc = cadre.contentDocument;
+  if (!doc || !doc.body) return;
+  if (enCours) { cancelAnimationFrame(enCours); enCours = null; }
+  doc.querySelectorAll(".mq-voile, .mq-toile").forEach((n) => n.remove());
+
+  const v = VARIANTES[variante];
+  const p = PHRASES[phrase];
+  const k = vitesse;
+  const dLogo = v.logo * k;
+  const dFilet = (v.filet || 0) * k;
+  const dPhrase = v.phrase * k;
+  const dVague = v.vague * k;
+  const tFilet = dLogo + v.tenue1 * k;
+  const tPhrase = tFilet + dFilet;
+  const tVague = tPhrase + dPhrase + v.tenue2 * k - (v.recouvre || 0) * k;
+  const total = tVague + dVague;
+
+  const { voile, toile, logo, trait, segments } = construire(doc, v, p);
+  doc.documentElement.style.overflow = "hidden";
+
+  /* Le logo se pose en sortant d'un flou, puis sa flèche s'allume. */
+  logo.animate([
+    { opacity: 0, transform: "scale(.94)", filter: "blur(10px) drop-shadow(0 0 0 rgba(108,194,74,0))" },
+    { opacity: 1, offset: .6, transform: "scale(1)", filter: "blur(0) drop-shadow(0 0 18px rgba(108,194,74,.55))" },
+    { opacity: 1, transform: "scale(1)", filter: "blur(0) drop-shadow(0 0 10px rgba(108,194,74,.35))" }
+  ], { duration: dLogo, easing: SORTIE, fill: "both" });
+
+  if (v.filet) {
+    trait.animate(
+      [{ opacity: 0, transform: "scaleX(0)" }, { opacity: 1, transform: "scaleX(1)" }],
+      { duration: dFilet, delay: tFilet, easing: SORTIE, fill: "both" }
+    );
+  }
+
+  /* La phrase : d'un bloc, ou segment par segment. */
+  const pas = v.parSegment ? v.parSegment * k : 0;
+  const duree = v.parSegment ? dPhrase - pas * (segments.length - 1) : dPhrase;
+  segments.forEach((seg, i) => {
+    seg.animate(
+      [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
+      { duration: duree, delay: tPhrase + i * pas, easing: SORTIE, fill: "both" }
+    );
+  });
+
+  /* ---- La vague ---- */
+  const win = doc.defaultView;
+  const largeur = win.innerWidth;
+  const hauteur = win.innerHeight;
+  const dpr = Math.min(win.devicePixelRatio || 1, 2);
+  const ctx = toile.getContext("2d");
+  toile.width = largeur * dpr;
+  toile.height = hauteur * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const tubes = [
+    { c: "47,140,255", d: 0, a: 26, f: 0.0042, v: 0.6, p: 0 },
+    { c: "108,194,74", d: 34, a: 30, f: 0.0035, v: -0.45, p: 2 },
+    { c: "47,140,255", d: 70, a: 22, f: 0.0055, v: 0.8, p: 4 }
+  ];
+  const courbe = (l, x, t, base) =>
+    base + l.d + l.a * Math.sin(x * l.f + t * l.v * 3 + l.p) + l.a * 0.45 * Math.sin(x * l.f * 2.3 - t * l.v * 4);
+
+  const depart = performance.now();
+
+  const image = (maintenant) => {
+    const t = maintenant / 1000;
+    const u = borne((maintenant - depart - tVague) / dVague);
+    const base = hauteur + 40 - glisse(u) * (hauteur + 260);
+
+    /* Le voile est découpé au ras de la vague : ce qui passe dessous a
+       déjà laissé place à la page. */
+    const pts = ["0px 0px"];
+    for (let i = 0; i <= 60; i++) {
+      const x = (largeur * i) / 60;
+      pts.push(x.toFixed(1) + "px " + (courbe(tubes[0], x, t, base) - 10).toFixed(1) + "px");
+    }
+    pts.push(largeur + "px 0px");
+    voile.style.clipPath = "polygon(" + pts.join(",") + ")";
+
+    /* Les trois tubes sur le bord : le halo en traits superposés, du plus
+       large au cœur, bien moins coûteux qu'une ombre floue. */
+    ctx.clearRect(0, 0, largeur, hauteur);
+    for (const l of tubes) {
+      ctx.beginPath();
+      for (let x = -10; x <= largeur + 10; x += 6) {
+        const y = courbe(l, x, t, base);
+        if (x === -10) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      for (const [epaisseur, opacite] of [[18, .1], [10, .22], [5, .55]]) {
+        ctx.strokeStyle = "rgba(" + l.c + "," + opacite + ")";
+        ctx.lineWidth = epaisseur;
+        ctx.stroke();
+      }
+      ctx.strokeStyle = "rgba(235,248,255,.7)";
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+    }
+
+    if (u < 1) enCours = requestAnimationFrame(image);
+    else {
+      voile.remove();
+      toile.remove();
+      doc.documentElement.style.overflow = "";
+      enCours = null;
+    }
+  };
+
+  /* Rien ne tourne pendant les deux premiers temps : la vague ne démarre
+     qu'au moment dit, une fois le logo chargé. */
+  const partir = () => setTimeout(() => { enCours = requestAnimationFrame(image); }, tVague);
+  if (logo.complete) partir(); else logo.addEventListener("load", partir, { once: true });
+
+  ecrireFiche(total);
+}
+
+function ecrireFiche(total) {
+  const v = VARIANTES[variante];
+  fiche.innerHTML =
+    "<strong>" + v.nom + "</strong> · " + v.fiche +
+    " — <strong>" + (total / 1000).toFixed(1) + "&nbsp;s</strong> en tout, contre 2,9&nbsp;s aujourd’hui." +
+    " <span style=\"opacity:.6\">Dans la maquette le balayage du hero joue derrière le voile ; sur le site il attendrait la vague.</span>";
+}
+
+/* ---- Les boutons ---- */
+function boutons(hote, source, actif, choisir) {
+  Object.entries(source).forEach(([cle, val]) => {
+    const b = document.createElement("button");
+    b.className = "option";
+    b.type = "button";
+    b.textContent = val.nom;
+    b.setAttribute("aria-pressed", String(cle === actif));
+    b.addEventListener("click", () => {
+      [...hote.querySelectorAll(".option")].forEach((o) => o.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+      choisir(cle);
+      jouer();
+    });
+    hote.append(b);
+  });
+}
+
+boutons(document.getElementById("choix-variante"), VARIANTES, variante, (c) => { variante = c; });
+boutons(document.getElementById("choix-phrase"), PHRASES, phrase, (c) => { phrase = c; });
+
+function reglages(selecteur, agir) {
+  document.querySelectorAll(selecteur).forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(selecteur).forEach((o) => o.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+      agir(b);
+      jouer();
+    });
+  });
+}
+
+reglages("[data-vitesse]", (b) => { vitesse = Number(b.dataset.vitesse); });
+reglages("[data-largeur]", (b) => {
+  document.getElementById("scene").classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+});
+
+document.getElementById("rejouer").addEventListener("click", jouer);
+cadre.addEventListener("load", jouer);
+</script>
+</body>
+</html>

@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
-<!-- L'arrivee sur le site : le logo en grand, puis la vague. Decidee ici,
+<!-- L'arrivee sur le site : le logo, la phrase, puis la vague. Decidee ici,
      avant le premier affichage, pour que la page ne se montre pas une
      fraction de seconde avant d'etre recouverte. Une fois par visite, et
      jamais pour qui demande moins de mouvement. Filet de securite : si
@@ -35,16 +35,22 @@
     } catch (e) { return; }
     var racine = document.documentElement;
     racine.setAttribute("data-intro", "oui");
-    setTimeout(function () { racine.removeAttribute("data-intro"); }, 7000);
+    setTimeout(function () { racine.removeAttribute("data-intro"); }, 9000);
   })();
 </script>
-<link rel="stylesheet" href="assets/css/style.css?v=20261018-1915">
+<link rel="stylesheet" href="assets/css/style.css?v=20261018-2308">
 </head>
 
 <body>
 <a class="saut-contenu" href="#contenu">Aller au contenu</a>
+<!-- Le voile et la vague sont deux couches soeurs : le voile se fait
+     decouper au ras de la vague, le canevas ne porte que les tubes neon et
+     doit donc rester entier. -->
 <div class="intro" id="intro" aria-hidden="true">
-  <img class="intro__logo" src="assets/img/logo-blanc-480.webp" width="480" height="196" alt="">
+  <div class="intro__voile">
+    <img class="intro__logo" src="assets/img/logo-blanc-480.webp" width="480" height="196" alt="">
+    <p class="intro__phrase"><span class="intro__mot">Plus qu’un choix,</span> <span class="intro__mot"><em>un avenir.</em></span></p>
+  </div>
   <canvas class="intro__vague"></canvas>
 </div>
 
@@ -1073,7 +1079,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20261018-0401" defer></script>
+<script src="assets/js/main.js?v=20261018-2308" defer></script>
 
 <script type="application/ld+json">
 {
