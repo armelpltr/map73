@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette : arrivée</title>
+<style>
+  /* Maquette : la page d'accueil, chargee dans un cadre, avec trois
+     arrivees sur le site autour du logo. */
+  :root {
+    --nuit: #050b16;
+    --panneau: #12213c;
+    --trait: #1b2c47;
+    --texte: #e8f0fb;
+    --doux: #b9c3d4;
+    --choisi: #6cc24a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--nuit);
+    color: var(--texte);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--trait);
+    background: var(--panneau);
+  }
+  .barre h1 { margin: 0; font-size: 1rem; font-weight: 700; white-space: nowrap; }
+  .choix { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .option {
+    padding: 0.45rem 0.9rem;
+    border: 2px solid var(--trait);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .option:hover { border-color: var(--doux); }
+  .option[aria-pressed="true"] { border-color: var(--choisi); }
+  .reglages { display: flex; gap: 0.5rem; margin-left: auto; }
+  .reglage {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--trait);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--doux);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reglage[aria-pressed="true"] { color: var(--texte); border-color: var(--doux); }
+  .fiche { width: 100%; margin: 0; color: var(--doux); font-size: 0.85rem; }
+  .fiche strong { color: var(--texte); font-weight: 600; }
+  .scene { flex: 1; display: flex; justify-content: center; min-height: 0; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--nuit); }
+  .scene--mobile iframe { width: 390px; border-left: 1px solid var(--trait); border-right: 1px solid var(--trait); }
+  @media (max-width: 700px) { .reglages { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <h1>Arrivée avec le logo</h1>
+  <div class="choix" id="choix"></div>
+  <div class="reglages">
+    <button class="reglage" type="button" data-largeur="bureau" aria-pressed="true">Bureau</button>
+    <button class="reglage" type="button" data-largeur="mobile" aria-pressed="false">Mobile</button>
+  </div>
+  <p class="fiche" id="fiche"></p>
+</header>
+
+<div class="scene" id="scene">
+  <iframe id="site" src="about:blank" title="Page d’accueil avec l’arrivée choisie"></iframe>
+</div>
+
+<script>
+  /* Trois arrivees sur le site avec le logo, puis la page telle qu'en
+     ligne, que le balayage neon devoile. Tout passe par element.animate() :
+     la regle « mouvement reduit » du site ne touche que les animations
+     CSS, la maquette bouge donc meme sur un poste qui les fige.
+     « Rejouer » recharge la page dans le cadre. */
+  const VERT = "#6cc24a", COEUR = "#e2ffd6", BLEU = "#2f8cff", NUIT = "#050b16";
+  const SORTIE = "cubic-bezier(.16,1,.3,1)";
+  const RIDEAU = "cubic-bezier(.77,0,.175,1)";
+  const LOGO = "assets/img/logo-blanc-480.webp";
+
+  /* Le voile plein ecran et le logo au centre. */
+  function voile(doc) {
+    const v = doc.createElement("div");
+    v.style.cssText = `position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none`;
+    v.innerHTML = `<div class="mq-fond" style="position:absolute;inset:0;background:${NUIT}"></div>
+      <div class="mq-centre" style="position:relative;display:grid;justify-items:center;gap:26px">
+        <img class="mq-logo" src="${LOGO}" alt="" style="width:min(300px,62vw);height:auto;display:block">
+      </div>`;
+    doc.body.appendChild(v);
+    return v;
+  }
+
+  /* Le balayage du hero, rejoue une fois l'intro finie. */
+  function balayerHero(doc, depart) {
+    [".hero h1", ".hero__chapo", ".hero__actions", ".hero__classe"].forEach((s, i) => {
+      const bloc = doc.querySelector(s);
+      if (!bloc) return;
+      if (doc.defaultView.getComputedStyle(bloc).position === "static") bloc.style.position = "relative";
+      const trait = doc.createElement("span");
+      trait.style.cssText = `position:absolute;top:-4px;bottom:-4px;left:0;width:2px;background:${COEUR};box-shadow:0 0 6px ${VERT},0 0 16px ${VERT},0 0 30px ${VERT};pointer-events:none;z-index:5;opacity:0`;
+      bloc.appendChild(trait);
+      const r = { duration: 1100, delay: depart + i * 220, easing: "cubic-bezier(.65,0,.35,1)", fill: "both" };
+      const m = bloc.animate([{ clipPath: "inset(-20px 100% -20px -20px)" }, { clipPath: "inset(-20px -40px -20px -20px)" }], r);
+      trait.animate([{ left: "0%", opacity: 0 }, { left: "0%", opacity: 1, offset: .05 }, { left: "100%", opacity: 1, offset: .95 }, { left: "100%", opacity: 0 }], r);
+      m.onfinish = () => { m.cancel(); trait.remove(); };
+    });
+  }
+
+  /* Le logo du voile vole jusqu'a sa place dans l'en-tete. */
+  function voler(doc, logo, delai, duree) {
+    const cible = doc.querySelector(".entete__logo img").getBoundingClientRect();
+    const depart = logo.getBoundingClientRect();
+    const dx = cible.left + cible.width / 2 - (depart.left + depart.width / 2);
+    const dy = cible.top + cible.height / 2 - (depart.top + depart.height / 2);
+    const k = cible.width / depart.width;
+    return logo.animate([
+      { transform: "none" },
+      { transform: `translate(${dx}px, ${dy}px) scale(${k})` },
+    ], { duration: duree, delay: delai, easing: RIDEAU, fill: "both" });
+  }
+
+  const DESIGNS = [
+    {
+      nom: "1 · Enseigne néon",
+      note: "L'écran reste noir, puis le logo s'allume en grésillant comme une enseigne, avec son halo vert. Il s'envole ensuite à sa place dans l'en-tête pendant que le noir se dissipe, et le balayage néon dévoile le hero.",
+      duree: 3300,
+      jouer(doc) {
+        const v = voile(doc);
+        const logo = v.querySelector(".mq-logo");
+        const enTete = doc.querySelector(".entete__logo img");
+        enTete.animate([{ opacity: 0 }, { opacity: 0, offset: .99 }, { opacity: 1 }], { duration: 2500, fill: "both" });
+        logo.style.filter = `drop-shadow(0 0 6px ${VERT}) drop-shadow(0 0 22px ${VERT}88)`;
+        logo.animate([
+          { opacity: 0, offset: 0 }, { opacity: .85, offset: .12 }, { opacity: .1, offset: .18 },
+          { opacity: .95, offset: .34 }, { opacity: .3, offset: .4 }, { opacity: 1, offset: .55 },
+          { opacity: .7, offset: .62 }, { opacity: 1, offset: 1 },
+        ], { duration: 1300, delay: 250, easing: "steps(1, end)", fill: "both" });
+        logo.animate([{ filter: `drop-shadow(0 0 6px ${VERT}) drop-shadow(0 0 22px ${VERT}88)` }, { filter: "drop-shadow(0 0 0 transparent)" }], { duration: 700, delay: 1800, fill: "both" });
+        voler(doc, logo, 1800, 900);
+        v.querySelector(".mq-fond").animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, delay: 1800, easing: "ease-in-out", fill: "both" });
+        v.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1, delay: 2700, fill: "both" }).onfinish = () => v.remove();
+        balayerHero(doc, 2300);
+      },
+    },
+    {
+      nom: "2 · Chargement + rideau",
+      note: "Le logo monte au centre, un trait néon se remplit dessous comme une barre de chargement, puis tout le rideau se lève d'un coup sec et découvre la page, comme sur White Coffee.",
+      duree: 3000,
+      jouer(doc) {
+        const v = voile(doc);
+        const centre = v.querySelector(".mq-centre");
+        const logo = v.querySelector(".mq-logo");
+        centre.insertAdjacentHTML("beforeend", `<span style="display:block;width:min(240px,50vw);height:2px;background:rgba(226,255,214,.15);border-radius:2px;overflow:hidden"><span class="mq-barre" style="display:block;height:100%;background:${COEUR};box-shadow:0 0 6px ${VERT},0 0 14px ${VERT};transform-origin:left"></span></span>`);
+        logo.animate([{ opacity: 0, transform: "translateY(24px)" }, { opacity: 1, transform: "none" }], { duration: 800, easing: SORTIE, fill: "both" });
+        v.querySelector(".mq-barre").animate([{ transform: "scaleX(0)" }, { transform: "scaleX(.35)", offset: .3 }, { transform: "scaleX(.6)", offset: .65 }, { transform: "scaleX(1)" }], { duration: 1300, delay: 300, easing: "ease-in-out", fill: "both" });
+        centre.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(-30px)" }], { duration: 400, delay: 1650, easing: "ease-in", fill: "both" });
+        v.animate([{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], { duration: 1000, delay: 1800, easing: RIDEAU, fill: "both" }).onfinish = () => v.remove();
+        balayerHero(doc, 2300);
+      },
+    },
+    {
+      nom: "3 · Tracé et portes",
+      note: "Un trait néon traverse l'écran et dessine le logo dans son sillage, comme le balayage du reste du site. Le noir s'ouvre ensuite en deux portes, vers le haut et vers le bas, sur la page.",
+      duree: 3200,
+      jouer(doc) {
+        const v = voile(doc);
+        v.querySelector(".mq-fond").remove();
+        v.insertAdjacentHTML("afterbegin", `
+          <div class="mq-haut" style="position:absolute;left:0;right:0;top:0;height:50.5%;background:${NUIT}"></div>
+          <div class="mq-bas" style="position:absolute;left:0;right:0;bottom:0;height:50.5%;background:${NUIT}"></div>`);
+        const centre = v.querySelector(".mq-centre");
+        const logo = v.querySelector(".mq-logo");
+        centre.style.position = "relative";
+        centre.insertAdjacentHTML("beforeend", `<span class="mq-trait" style="position:absolute;top:-14px;bottom:-14px;left:0;width:2px;background:${COEUR};box-shadow:0 0 8px ${VERT},0 0 20px ${VERT},0 0 40px ${VERT};opacity:0"></span>`);
+        const r = { duration: 1200, delay: 250, easing: "cubic-bezier(.65,0,.35,1)", fill: "both" };
+        logo.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], r);
+        v.querySelector(".mq-trait").animate([{ left: "0%", opacity: 0 }, { left: "0%", opacity: 1, offset: .05 }, { left: "100%", opacity: 1, offset: .95 }, { left: "100%", opacity: 0 }], r);
+        /* La ligne d'ouverture, au milieu, juste avant les portes. */
+        v.insertAdjacentHTML("beforeend", `<span class="mq-fente" style="position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:${COEUR};box-shadow:0 0 10px ${VERT},0 0 26px ${VERT};transform:scaleX(0)"></span>`);
+        centre.animate([{ opacity: 1 }, { opacity: 0, transform: "scale(.94)" }], { duration: 350, delay: 1650, easing: "ease-in", fill: "both" });
+        v.querySelector(".mq-fente").animate([{ transform: "scaleX(0)", opacity: 1 }, { transform: "scaleX(1)", opacity: 1, offset: .5 }, { transform: "scaleX(1)", opacity: 0 }], { duration: 900, delay: 1750, easing: "ease-in-out", fill: "both" });
+        v.querySelector(".mq-haut").animate([{ transform: "none" }, { transform: "translateY(-100%)" }], { duration: 950, delay: 2150, easing: RIDEAU, fill: "both" });
+        v.querySelector(".mq-bas").animate([{ transform: "none" }, { transform: "translateY(100%)" }], { duration: 950, delay: 2150, easing: RIDEAU, fill: "both" }).onfinish = () => v.remove();
+        balayerHero(doc, 2500);
+      },
+    },
+  ];
+
+  const cadre = document.getElementById("site");
+  const scene = document.getElementById("scene");
+  const fiche = document.getElementById("fiche");
+  const conteneur = document.getElementById("choix");
+  const depart = Math.min(Math.max(parseInt(location.hash.slice(1), 10) || 1, 1), DESIGNS.length) - 1;
+  let courant = DESIGNS[depart];
+
+  /* Le cadre reste cache pendant le chargement : on ne doit pas voir la
+     page avant l'intro. */
+  function lancer() {
+    const doc = cadre.contentDocument;
+    if (!doc || !doc.querySelector(".hero")) return;
+    courant.jouer(doc);
+    cadre.style.visibility = "visible";
+  }
+  function recharger() {
+    cadre.style.visibility = "hidden";
+    cadre.src = "index.html?mq=" + Date.now();
+  }
+  cadre.addEventListener("load", lancer);
+
+  function choisir(d) {
+    courant = d;
+    history.replaceState(null, "", "#" + (DESIGNS.indexOf(d) + 1));
+    conteneur.querySelectorAll(".option").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.nom === d.nom)));
+    fiche.innerHTML = `<strong>${d.nom}.</strong> ${d.note} <em>Durée : ${(d.duree / 1000).toLocaleString("fr-FR")} s. « Rejouer » relance l'arrivée.</em>`;
+    recharger();
+  }
+
+  DESIGNS.forEach((d) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "option";
+    b.dataset.nom = d.nom;
+    b.textContent = d.nom;
+    b.addEventListener("click", () => choisir(d));
+    conteneur.appendChild(b);
+  });
+
+  const rejouer = document.createElement("button");
+  rejouer.type = "button";
+  rejouer.className = "reglage";
+  rejouer.textContent = "↻ Rejouer";
+  rejouer.addEventListener("click", () => choisir(courant));
+  document.querySelector(".reglages").prepend(rejouer);
+
+  document.querySelectorAll("[data-largeur]").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll("[data-largeur]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      scene.classList.toggle("scene--mobile", b.dataset.largeur === "mobile");
+      choisir(courant);
+    });
+  });
+
+  choisir(courant);
+</script>
+</body>
+</html>
