@@ -50,81 +50,6 @@
     ).observe(sentinelle);
   }
 
-  /* ---- Les vagues néon du hero ----
-     Trois tubes, bleu, vert, bleu, qui ondulent sous le texte. Le canevas
-     ne dessine que net : le flou est un filtre CSS posé sur lui. Le
-     dessin s'arrête quand le hero sort de l'écran, et se fige sur une
-     seule image pour qui a demandé moins de mouvement. */
-  const vagues = document.querySelector(".hero__vagues");
-  if (vagues && vagues.getContext) {
-    const ctx = vagues.getContext("2d");
-    const blanchir = (c) => c.map((v) => Math.round(v + (255 - v) * 0.75));
-    const tubes = [
-      { c: [47, 140, 255], y: 0.80, a: 26, f: 0.0042, v: 0.6, p: 0 },
-      { c: [108, 194, 74], y: 0.86, a: 30, f: 0.0035, v: -0.45, p: 2 },
-      { c: [47, 140, 255], y: 0.92, a: 22, f: 0.0055, v: 0.8, p: 4 }
-    ];
-    const immobile = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let largeur = 0;
-    let hauteur = 0;
-    let visible = true;
-    let demande = 0;
-
-    const dimensionner = () => {
-      const r = vagues.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      largeur = r.width;
-      hauteur = r.height;
-      vagues.width = Math.round(largeur * dpr);
-      vagues.height = Math.round(hauteur * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-
-    const dessiner = (t) => {
-      ctx.clearRect(0, 0, largeur, hauteur);
-      for (const l of tubes) {
-        const chemin = new Path2D();
-        for (let x = -20; x <= largeur + 20; x += 6) {
-          const y = hauteur * l.y +
-            l.a * Math.sin(x * l.f + t * l.v + l.p) +
-            l.a * 0.45 * Math.sin(x * l.f * 2.3 - t * l.v * 1.4);
-          if (x === -20) chemin.moveTo(x, y); else chemin.lineTo(x, y);
-        }
-        ctx.shadowColor = `rgb(${l.c})`;
-        ctx.shadowBlur = 22;
-        ctx.strokeStyle = `rgba(${l.c}, 0.75)`;
-        ctx.lineWidth = 7.2;
-        ctx.stroke(chemin);
-        ctx.shadowBlur = 6;
-        ctx.strokeStyle = `rgba(${blanchir(l.c)}, 0.6)`;
-        ctx.lineWidth = 2.25;
-        ctx.stroke(chemin);
-      }
-      ctx.shadowBlur = 0;
-    };
-
-    const image = (maintenant) => {
-      demande = 0;
-      dessiner(maintenant / 1000);
-      if (visible && !immobile.matches) demande = requestAnimationFrame(image);
-    };
-    const relancer = () => {
-      if (!demande) demande = requestAnimationFrame(image);
-    };
-
-    dimensionner();
-    relancer();
-    window.addEventListener("resize", () => {
-      dimensionner();
-      relancer();
-    });
-    immobile.addEventListener("change", relancer);
-    new IntersectionObserver(([entree]) => {
-      visible = entree.isIntersecting;
-      if (visible) relancer();
-    }).observe(vagues);
-  }
-
   /* ---- Le lien de la section lue ----
      Un filet vert glisse d'un intitulé à l'autre selon la section à
      l'écran. Deux partis pris :
@@ -318,114 +243,46 @@
     }, { threshold: 0.4 }).observe(adnListe);
   }
 
-  /* ---- L'arrivee : le logo, la phrase, puis la vague ----
-     Le script du <head> a decide s'il y a une arrivee (data-intro) et le
-     CSS a deja joue les deux premiers temps : le logo se pose, reste seul,
-     puis la phrase s'ecrit sous lui. Ici, le troisieme : les trois vagues
-     neon du hero montent du bas comme une maree, le voile se fait decouper
-     au ras de leur bord et la page apparait dessous. retardHero dit au
-     balayage du hero d'attendre que la vague l'ait depasse.
+  /* ---- L'arrivee sur le site ----
+     Tout se joue en CSS (voir « L'arrivee sur le site » dans la feuille de
+     style) : le logo, puis la phrase, puis le voile qui se dissout. Il ne
+     reste ici que deux choses. Retirer le voile une fois l'arrivee passee,
+     parce qu'une couche fixe en plein ecran, meme invisible, continue
+     d'etre composee. Et dire au laser des titres de patienter : balayer un
+     titre cache ne se verrait pas.
 
-     PAUSE_INTRO est la fin des deux temps en CSS : 1 s de logo, 0,7 s seul,
-     0,8 s + 0,3 s de decalage pour les deux morceaux de la phrase, 0,6 s de
-     lecture. Toucher a l'un des deux sans l'autre desaccorde l'arrivee. */
-  const PAUSE_INTRO = 3400;
-  const DUREE_VAGUE = 1700;
+     INTRO_FIN est la fin de la minuterie CSS ; les deux doivent bouger
+     ensemble, sans quoi le voile s'attarde ou part trop tot. */
+  const INTRO_FIN = 5400;
   const voileIntro = document.getElementById("intro");
   const avecIntro = document.documentElement.dataset.intro === "oui" && voileIntro;
-  // Le hero est decouvert a peu pres au tiers de la montee.
-  const retardHero = avecIntro ? Math.max(0, PAUSE_INTRO + DUREE_VAGUE * 0.35 - performance.now()) : 0;
+  // Le titre d'accueil est a nu une fois le voile parti.
+  const retardHero = avecIntro ? Math.max(0, INTRO_FIN - performance.now()) : 0;
 
   if (avecIntro) {
-    const toile = voileIntro.querySelector(".intro__vague");
-    const voile = voileIntro.querySelector(".intro__voile");
-    const logo = voileIntro.querySelector(".intro__logo");
-    const ctx = toile.getContext("2d");
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const largeur = window.innerWidth;
-    const hauteur = window.innerHeight;
-    toile.width = largeur * dpr;
-    toile.height = hauteur * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    // La meme famille de courbes que les vagues du hero, en plus vif.
-    const tubes = [
-      { c: "47,140,255", d: 0, a: 26, f: 0.0042, v: 0.6, p: 0 },
-      { c: "108,194,74", d: 34, a: 30, f: 0.0035, v: -0.45, p: 2 },
-      { c: "47,140,255", d: 70, a: 22, f: 0.0055, v: 0.8, p: 4 }
-    ];
-    const courbe = (l, x, t, base) =>
-      base + l.d + l.a * Math.sin(x * l.f + t * l.v * 3 + l.p) + l.a * 0.45 * Math.sin(x * l.f * 2.3 - t * l.v * 4);
-    const glisse = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-
-    const terminer = () => {
+    setTimeout(() => {
       voileIntro.remove();
       document.documentElement.removeAttribute("data-intro");
-    };
-
-    const image = (maintenant) => {
-      const t = maintenant / 1000;
-      const u = Math.min(Math.max((maintenant - PAUSE_INTRO) / DUREE_VAGUE, 0), 1);
-      // Le bord de la vague monte du bas jusqu'au-dessus de l'ecran.
-      const base = hauteur + 40 - glisse(u) * (hauteur + 260);
-      ctx.clearRect(0, 0, largeur, hauteur);
-
-      // Le voile est decoupe au ras de la vague : ce qui passe dessous a
-      // deja laisse place a la page. Le logo et la phrase restent du vrai
-      // DOM, donc le texte ne perd pas sa nettete.
-      const points = ["0px 0px"];
-      for (let i = 0; i <= 60; i++) {
-        const x = (largeur * i) / 60;
-        points.push(x.toFixed(1) + "px " + (courbe(tubes[0], x, t, base) - 10).toFixed(1) + "px");
-      }
-      points.push(largeur + "px 0px");
-      voile.style.clipPath = "polygon(" + points.join(",") + ")";
-
-      // Les trois tubes sur le bord : le halo en traits superposes, du
-      // plus large au coeur, bien moins couteux qu'une ombre floue.
-      for (const l of tubes) {
-        ctx.beginPath();
-        for (let x = -10; x <= largeur + 10; x += 6) {
-          const y = courbe(l, x, t, base);
-          if (x === -10) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        for (const [epaisseur, opacite] of [[18, 0.1], [10, 0.22], [5, 0.55]]) {
-          ctx.strokeStyle = "rgba(" + l.c + "," + opacite + ")";
-          ctx.lineWidth = epaisseur;
-          ctx.stroke();
-        }
-        ctx.strokeStyle = "rgba(235,248,255,.7)";
-        ctx.lineWidth = 1.8;
-        ctx.stroke();
-      }
-
-      if (u < 1) requestAnimationFrame(image);
-      else terminer();
-    };
-
-    // La vague part apres la pause, une fois le logo charge (il est
-    // recopie sur le canevas) ; rien ne tourne pendant l'attente.
-    const partir = () => setTimeout(() => requestAnimationFrame(image), Math.max(0, PAUSE_INTRO - performance.now()));
-    if (logo.complete) partir();
-    else logo.addEventListener("load", partir, { once: true });
+    }, retardHero);
   }
 
-  /* ---- Entree en balayage ----
-     Un trait neon vert traverse chaque bloc de gauche a droite et devoile
-     le contenu dans son sillage : le hero a l'ouverture, puis chaque titre
-     et chaque carte a son arrivee a l'ecran. Les chiffres comptent depuis
-     zero. Tout passe par element.animate() ; rien n'est cache sans script,
-     ni pour ceux qui ont demande moins de mouvement. Le ruban de presse
-     bouge deja, il n'est pas balaye. */
+  /* ---- Le laser des titres ----
+     Un trait neon vert entre par la droite, traverse le titre et le devoile
+     dans son sillage : le titre d'accueil a l'ouverture, puis le titre de
+     chaque section a son arrivee a l'ecran. Les titres seulement : passe sur
+     chaque carte et chaque paragraphe, le trait se rencontrait dix fois par
+     ecran et ne surprenait plus personne.
+
+     Tout passe par element.animate() ; rien n'est cache sans script, ni
+     pour ceux qui ont demande moins de mouvement. */
   const sansMouvement = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (!sansMouvement && "animate" in Element.prototype) {
     const COURBE = "cubic-bezier(.65,0,.35,1)";
 
-    /* Prepare le balayage d'un bloc, fige a son debut ; la fonction rendue
-       le joue. Une fois fini, le masque s'en va : il couperait le halo des
-       neons. */
+    /* Prepare le balayage d'un titre, fige a son debut ; la fonction rendue
+       le joue. Le masque s'ouvre depuis la droite, le trait le precede.
+       Une fois fini, le masque s'en va : il couperait le halo du neon. */
     const preparerBalayage = (bloc, delai, duree) => {
       if (getComputedStyle(bloc).position === "static") bloc.style.position = "relative";
       const trait = document.createElement("span");
@@ -434,14 +291,14 @@
       bloc.append(trait);
       const reglage = { duration: duree, delay: delai, easing: COURBE, fill: "both" };
       const masque = bloc.animate([
-        { clipPath: "inset(-20px 100% -20px -20px)" },
-        { clipPath: "inset(-20px -40px -20px -20px)" },
+        { clipPath: "inset(-20px -20px -20px 100%)" },
+        { clipPath: "inset(-20px -20px -20px -40px)" },
       ], reglage);
       const passage = trait.animate([
-        { left: "0%", opacity: 0 },
-        { left: "0%", opacity: 1, offset: 0.05 },
-        { left: "100%", opacity: 1, offset: 0.95 },
         { left: "100%", opacity: 0 },
+        { left: "100%", opacity: 1, offset: 0.05 },
+        { left: "0%", opacity: 1, offset: 0.95 },
+        { left: "0%", opacity: 0 },
       ], reglage);
       masque.pause();
       passage.pause();
@@ -449,23 +306,15 @@
       return () => { masque.play(); passage.play(); };
     };
 
-    /* Le hero, des l'ouverture. */
-    [".hero h1", ".hero__chapo", ".hero__actions", ".hero__classe"].forEach((selecteur, i) => {
-      const bloc = document.querySelector(selecteur);
-      if (bloc) preparerBalayage(bloc, retardHero + 200 + i * 220, 1100)();
-    });
+    /* Le titre d'accueil, des que le voile de l'arrivee est parti. */
+    const titreHero = document.querySelector(".hero h1");
+    if (titreHero) preparerBalayage(titreHero, retardHero + 200, 1100)();
 
-    /* Le reste, a l'arrivee a l'ecran. Les cartes d'une meme rangee
-       partent l'une apres l'autre. */
+    /* Les titres de section, a leur arrivee a l'ecran. */
     const aBalayer = new Map();
     document.querySelectorAll(".section h2:not(.modale-classe__titre)").forEach((titre) => {
       aBalayer.set(titre, preparerBalayage(titre, 0, 1000));
     });
-    document.querySelectorAll(".bento > *, .news__carte, .adn__pilier, .pilier, .classes-cartes > li, .formule, .fondatrice, .billet")
-      .forEach((carte) => {
-        const rang = [...carte.parentNode.children].indexOf(carte) % 4;
-        aBalayer.set(carte, preparerBalayage(carte, rang * 140, 900));
-      });
 
     const oeilBalayage = new IntersectionObserver((entrees) => {
       for (const entree of entrees) {
@@ -542,133 +391,142 @@
     });
   }
 
-  /* ---- Formules : le selecteur de niveau ----
-     Les onglets sont caches dans le HTML et reveles ici : sans script, les
-     sept formules restent affichees a la suite, ce qui vaut mieux qu'une
-     rangee de boutons inertes. */
-  const onglets = document.getElementById("formules-onglets");
-  const formules = document.querySelectorAll(".formule[data-niveau]");
+  /* ---- Formules : un panneau par classe ----
+     Les sept fiches etaient deroulees a la suite sous les quatre cartes de
+     classe : qui venait pour la seconde traversait six fiches qui ne le
+     concernaient pas, et l'ensemble se lisait comme un catalogue. Desormais
+     la section ne montre que les quatre cartes, et un clic ouvre un panneau
+     plein ecran qui ne contient que les fiches du niveau — la fiche de la
+     classe, et celles qui l'englobent (« integrale » pour la seconde,
+     « premium » pour la premiere et la terminale, « a la map » partout).
 
-  /* Le libelle du bouton du hero n'est repris que sur un choix explicite :
-     mis a jour au chargement, il aurait annonce « Troisieme » a un visiteur
-     qui n'a rien demande, alors que ce niveau n'est qu'un etat de depart. */
-  const nomDuNiveau = {
+     Le panneau n'est pas un double de la liste : la liste y est deplacee,
+     une fois, au chargement. Deux copies auraient voulu deux jeux d'« id »,
+     et les liens profonds n'auraient plus su auquel des deux aller.
+
+     Sans script, rien de tout cela : la liste reste dans la section, les
+     sept fiches sont lisibles a la suite et les cartes de classe sont de
+     simples liens vers l'ancre de leur fiche. */
+  const NOM_DU_NIVEAU = {
     troisieme: "Troisième",
     seconde: "Seconde",
     premiere: "Première",
     terminale: "Terminale"
   };
 
-  const choisirNiveau = (niveau, options) => {
-    if (!onglets) return;
-    const reglages = options || {};
+  const listeFormules = document.getElementById("formules-liste");
+  const modaleFormules = document.getElementById("modale-formules");
+  const corpsFormules = document.getElementById("modale-formules-corps");
 
-    onglets.querySelectorAll(".onglet-niveau").forEach((onglet) => {
-      const actif = onglet.dataset.niveau === niveau;
-      onglet.setAttribute("aria-selected", String(actif));
-      onglet.tabIndex = actif ? 0 : -1;
-      if (actif && reglages.focus) onglet.focus();
+  if (listeFormules && modaleFormules && corpsFormules && typeof modaleFormules.showModal === "function") {
+    corpsFormules.append(listeFormules);
+
+    const titreFormules = document.getElementById("modale-formules-titre");
+    const quoiFormules = document.getElementById("modale-formules-quoi");
+    const fiches = listeFormules.querySelectorAll("[data-niveaux]");
+    const cartes = document.querySelectorAll(".classe-carte[data-niveau]");
+
+    /* L'intitule du panneau est repris de la carte cliquee, mot pour mot :
+       le visiteur retrouve en tete du panneau la phrase sur laquelle il
+       vient de cliquer. En innerHTML pour garder l'exposant de « 3e », et
+       sans risque : la source est notre propre page. */
+    const intitules = {};
+    cartes.forEach((carte) => {
+      const nom = carte.querySelector("h3");
+      const quoi = carte.querySelector("p");
+      intitules[carte.dataset.niveau] = {
+        nom: nom ? nom.innerHTML : NOM_DU_NIVEAU[carte.dataset.niveau] || "",
+        quoi: quoi ? quoi.innerHTML : ""
+      };
     });
 
-    formules.forEach((formule) => {
-      formule.hidden = formule.dataset.niveau !== niveau;
+    const ouvrirFormules = (niveau) => {
+      const intitule = intitules[niveau];
+      if (!intitule) return;
+
+      titreFormules.innerHTML = intitule.nom;
+      quoiFormules.innerHTML = intitule.quoi;
+
+      fiches.forEach((fiche) => {
+        fiche.hidden = !fiche.dataset.niveaux.split(" ").includes(niveau);
+      });
+
+      /* Le bouton du hero annonce la classe retenue : le panneau se ferme,
+         le choix doit rester visible quelque part. */
+      const etiquette = document.getElementById("classe-choisie");
+      if (etiquette && NOM_DU_NIVEAU[niveau]) etiquette.textContent = NOM_DU_NIVEAU[niveau];
+
+      if (!modaleFormules.open) modaleFormules.showModal();
+      /* Deux classes de suite : la seconde s'ouvrirait la ou la premiere
+         avait ete laissee. */
+      corpsFormules.scrollTop = 0;
+    };
+
+    cartes.forEach((carte) => {
+      carte.addEventListener("click", (e) => {
+        e.preventDefault();
+        ouvrirFormules(carte.dataset.niveau);
+      });
     });
 
-    const etiquette = document.getElementById("classe-choisie");
-    if (etiquette && reglages.nommer && nomDuNiveau[niveau]) {
-      etiquette.textContent = nomDuNiveau[niveau];
-    }
-  };
-
-  if (onglets && formules.length) {
-    onglets.hidden = false;
-    const conteneurFormules = document.getElementById("formules-liste");
-    if (conteneurFormules) conteneurFormules.classList.add("formules--filtre");
-
-    /* Chaque formule devient le panneau de son onglet : sans ce lien, un
-       lecteur d'ecran annonce des onglets qui ne commandent rien. */
-    formules.forEach((formule) => {
-      const onglet = onglets.querySelector('[data-niveau="' + formule.dataset.niveau + '"]');
-      if (!onglet) return;
-      if (!onglet.id) onglet.id = "onglet-" + formule.dataset.niveau;
-      formule.setAttribute("role", "tabpanel");
-      formule.setAttribute("aria-labelledby", onglet.id);
-      onglet.setAttribute("aria-controls", formule.id);
+    const fermerFormules = () => modaleFormules.close();
+    const bouton = document.getElementById("fermer-formules");
+    if (bouton) bouton.addEventListener("click", fermerFormules);
+    modaleFormules.querySelectorAll("[data-fermer-formules]").forEach((b) => {
+      b.addEventListener("click", fermerFormules);
     });
 
-    onglets.addEventListener("click", (e) => {
-      const onglet = e.target.closest(".onglet-niveau");
-      if (onglet) choisirNiveau(onglet.dataset.niveau, { nommer: true });
+    /* Le panneau occupe tout l'ecran : la cible du clic n'est le dialogue
+       lui-meme que dans sa marge. */
+    modaleFormules.addEventListener("click", (e) => {
+      if (e.target === modaleFormules) fermerFormules();
     });
 
-    /* Fleches, Origine et Fin : le parcours clavier attendu d'un tablist. */
-    onglets.addEventListener("keydown", (e) => {
-      const liste = [...onglets.querySelectorAll(".onglet-niveau")];
-      const courant = liste.indexOf(document.activeElement);
-      if (courant < 0) return;
-
-      const pas = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-      let cible = null;
-
-      if (pas) cible = (courant + pas + liste.length) % liste.length;
-      else if (e.key === "Home") cible = 0;
-      else if (e.key === "End") cible = liste.length - 1;
-      else return;
-
-      e.preventDefault();
-      choisirNiveau(liste[cible].dataset.niveau, { focus: true, nommer: true });
-    });
-
-    /* Un lien profond vers une formule doit ouvrir le bon onglet, sinon il
-       mene a une carte masquee. Vaut au chargement et sur changement de
-       fragment. */
+    /* Un lien profond vers une fiche — #formule-map-seconde, une adresse
+       deja partagee — ouvre le panneau sur sa classe, sinon il ne menerait
+       plus a rien maintenant que la liste a quitte la page. Au premier
+       affichage on attend que le voile de l'arrivee soit parti : un panneau
+       qui s'ouvre derriere lui ne se verrait pas. */
     const suivreFragment = () => {
       let vise = null;
       try {
         /* Un fragment qui n'est pas un selecteur valide (#1abc) ferait lever
-           querySelector : on retombe sur le niveau par defaut. */
-        vise = document.querySelector('.formule[data-niveau]' + (location.hash || "#aucun"));
+           querySelector : on ne fait alors rien. */
+        vise = listeFormules.querySelector("[data-niveaux]" + (location.hash || "#aucun"));
       } catch (e) {}
-      choisirNiveau(vise ? vise.dataset.niveau : "troisieme", { nommer: Boolean(vise) });
+      if (vise) ouvrirFormules(vise.dataset.niveaux.split(" ")[0]);
     };
 
     window.addEventListener("hashchange", suivreFragment);
-    suivreFragment();
-  }
+    if (location.hash) setTimeout(suivreFragment, retardHero);
 
-  /* ---- Le dialogue « en quelle classe est votre enfant ? » ----
-     Le declencheur est un lien vers les formules : sans script, le clic y
-     mene et les sept formules sont la. Avec script, il ouvre le dialogue. */
-  const modaleClasse = document.getElementById("modale-classe");
-  const ouvrirClasses = document.getElementById("ouvrir-classes");
+    /* ---- Le dialogue « en quelle classe est votre enfant ? » ----
+       Le declencheur est un lien vers les formules : sans script, le clic y
+       mene et les sept fiches sont la. Avec script, il ouvre le choix des
+       quatre classes, qui enchaine sur le panneau du niveau retenu. */
+    const modaleClasse = document.getElementById("modale-classe");
+    const ouvrirClasses = document.getElementById("ouvrir-classes");
 
-  if (modaleClasse && ouvrirClasses && typeof modaleClasse.showModal === "function") {
-    ouvrirClasses.addEventListener("click", (e) => {
-      e.preventDefault();
-      modaleClasse.showModal();
-    });
+    if (modaleClasse && ouvrirClasses && typeof modaleClasse.showModal === "function") {
+      ouvrirClasses.addEventListener("click", (e) => {
+        e.preventDefault();
+        modaleClasse.showModal();
+      });
 
-    const fermer = document.getElementById("fermer-classes");
-    if (fermer) fermer.addEventListener("click", () => modaleClasse.close());
+      const fermer = document.getElementById("fermer-classes");
+      if (fermer) fermer.addEventListener("click", () => modaleClasse.close());
 
-    /* Le dialogue occupe tout l'ecran : la cible du clic n'est le dialogue
-       lui-meme que dans la marge, hors du panneau. */
-    modaleClasse.addEventListener("click", (e) => {
-      if (e.target === modaleClasse) modaleClasse.close();
-    });
+      modaleClasse.addEventListener("click", (e) => {
+        if (e.target === modaleClasse) modaleClasse.close();
+      });
 
-    modaleClasse.addEventListener("click", (e) => {
-      const choix = e.target.closest(".classe-choix");
-      if (!choix) return;
-
-      modaleClasse.close();
-      choisirNiveau(choix.dataset.niveau, { nommer: true });
-
-      /* On amene le visiteur sur la formule qu'il vient de demander : la
-           laisser sous le pli reviendrait a ne rien afficher. */
-      const cible = document.getElementById("formules");
-      if (cible) cible.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+      modaleClasse.addEventListener("click", (e) => {
+        const choix = e.target.closest(".classe-choix");
+        if (!choix) return;
+        modaleClasse.close();
+        ouvrirFormules(choix.dataset.niveau);
+      });
+    }
   }
 
   /* ---- Année du copyright ---- */

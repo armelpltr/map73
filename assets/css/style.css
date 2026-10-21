@@ -11,12 +11,13 @@
 :root {
   color-scheme: dark;
 
-  /* Les deux neons du site : un coeur presque blanc et sa couleur de halo. */
+  /* Le neon : un coeur presque blanc et sa couleur de halo. Il ne sert plus
+     qu'a « un avenir. » dans le titre d'accueil et dans l'arrivee sur le
+     site ; le bleu, lui, ne colore plus que le panneau du selecteur de
+     classe, sans halo. */
   --neon-bleu: #2f8cff;
-  --neon-bleu-coeur: #d6e9ff;
   --neon-vert: #6cc24a;
   --neon-vert-coeur: #e2ffd6;
-  --halo-tube: 0 0 2px var(--neon-vert), 0 0 8px var(--neon-vert), 0 0 20px rgba(108, 194, 74, .67);
 
   /* Couleurs */
   /* Le marine du fond, puis deux crans plus clairs pour les aplats. */
@@ -1821,18 +1822,16 @@ p:last-child { margin-bottom: 0; }
    ========================================================= */
 
 /* ---------- Hero ---------- */
-/* Le fond du hero est le marine de toute la page. Trois vagues neon
-   floues, bleu, vert, bleu, y ondulent sous le texte (dessinees par
-   main.js). Le decor s'efface sur le bas du hero : rien ne marque sa fin,
-   il se poursuit dans la section suivante.
-   Deux enseignes au neon s'y detachent : le selecteur de classe en tube
-   bleu, « un avenir. » en tube vert. */
+/* Le fond du hero est le marine de toute la page, avec pour tout decor une
+   lueur posee dessus. Elle s'efface sur le bas du hero : rien ne marque sa
+   fin, elle se poursuit dans la section suivante. Une seule enseigne au
+   neon s'y detache, « un avenir. » dans le titre ; c'est le seul neon du
+   site. */
 .hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   --neon-bleu: #2f8cff;
-  --neon-bleu-coeur: #d6e9ff;
   --neon-vert: #6cc24a;
   --neon-vert-coeur: #e2ffd6;
 }
@@ -1846,18 +1845,7 @@ p:last-child { margin-bottom: 0; }
   -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
 }
-/* Le flou est un filtre CSS sur le canevas entier, applique par la carte
-   graphique : calcule dans le canevas, image par image, il etait trop
-   lent. */
-.hero__vagues {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  filter: blur(7px);
-}
-/* La lumiere des deux neons sur le fond : bleue autour du selecteur,
-   verte sous le titre. */
+/* La lumiere sur le fond : bleue a droite, verte sous le titre. */
 .hero__lueur {
   position: absolute;
   inset: 0;
@@ -1866,22 +1854,10 @@ p:last-child { margin-bottom: 0; }
     radial-gradient(520px 300px at 26% 52%, color-mix(in srgb, var(--neon-vert) 8%, transparent), transparent 70%);
 }
 
-/* Le gresillement : de temps en temps, un tube vacille une fraction de
-   seconde, comme une vraie enseigne. */
-@keyframes neon-gresille {
-  0%, 90%, 100% { opacity: 1; }
-  91% { opacity: 0.45; }
-  92% { opacity: 1; }
-  94% { opacity: 0.65; }
-  95% { opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero__classe,
-  .hero__accent { animation: none; }
-}
-
 /* Le titre : « un avenir. » en tube neon vert, dessine au trait, sans
-   remplissage. La classe est posee dans le HTML sur le dernier segment. */
+   remplissage. La classe est posee dans le HTML sur le dernier segment.
+   Le tube ne gresille pas : un clignotement sous les yeux du visiteur, le
+   temps qu'il lise la premiere phrase, se remarque plus qu'il n'habille. */
 .hero__accent {
   color: transparent;
   -webkit-text-stroke: 2px var(--neon-vert-coeur);
@@ -1889,7 +1865,6 @@ p:last-child { margin-bottom: 0; }
     drop-shadow(0 0 2px var(--neon-vert))
     drop-shadow(0 0 7px var(--neon-vert))
     drop-shadow(0 0 18px var(--neon-vert));
-  animation: neon-gresille 7s steps(1) -4s infinite;
 }
 @media (max-width: 700px) {
   .hero__accent { -webkit-text-stroke-width: 1.5px; }
@@ -1921,24 +1896,18 @@ p:last-child { margin-bottom: 0; }
 /* Camille le veut a droite du titre, puis en grand au clic. C'est donc un
    bouton, pas un <select> : il ouvre un dialogue. Le <select> reste dans le
    formulaire de contact, ou il n'a pas ce role. */
-/* Une enseigne au neon bleu : un tube a coeur presque blanc, entoure de
-   halos de plus en plus larges. */
+/* Un panneau pose sur le fond du hero, souligne d'un filet bleu : le tube
+   au neon et son clignotement sont partis, seule la couleur reste pour le
+   distinguer du discours a sa gauche. */
 .hero__classe {
   position: relative;
   display: grid;
   gap: 1.25rem;
   align-content: start;
   padding: 1.75rem;
-  border: 2px solid var(--neon-bleu-coeur);
+  border: 1px solid color-mix(in srgb, var(--neon-bleu) 40%, transparent);
   border-radius: 26px;
   background: rgba(5, 11, 22, 0.6);
-  box-shadow:
-    0 0 2px var(--neon-bleu),
-    0 0 8px var(--neon-bleu),
-    0 0 22px var(--neon-bleu),
-    0 0 48px color-mix(in srgb, var(--neon-bleu) 53%, transparent),
-    inset 0 0 14px color-mix(in srgb, var(--neon-bleu) 53%, transparent);
-  animation: neon-gresille 9s steps(1) infinite;
 }
 @media (max-width: 900px) {
   .hero__classe { padding: 1.5rem 1.25rem; border-radius: 22px; }
@@ -1952,13 +1921,9 @@ p:last-child { margin-bottom: 0; }
   width: 62px;
   height: 62px;
   flex: none;
-  border: 2px solid var(--neon-bleu-coeur);
+  border: 1.5px solid color-mix(in srgb, var(--neon-bleu) 45%, transparent);
   border-radius: 50%;
   color: var(--vert-texte);
-  box-shadow:
-    0 0 2px var(--neon-bleu),
-    0 0 10px var(--neon-bleu),
-    inset 0 0 8px color-mix(in srgb, var(--neon-bleu) 53%, transparent);
 }
 
 .hero__classe-titre {
@@ -1982,9 +1947,8 @@ p:last-child { margin-bottom: 0; }
   font-size: 1.05rem;
   color: var(--ink);
   background: var(--voile);
-  border: 1px solid var(--neon-bleu);
+  border: 1px solid color-mix(in srgb, var(--neon-bleu) 55%, transparent);
   border-radius: 999px;
-  box-shadow: 0 0 10px color-mix(in srgb, var(--neon-bleu) 33%, transparent);
   cursor: pointer;
   text-align: left;
   text-decoration: none;
@@ -2383,64 +2347,111 @@ p:last-child { margin-bottom: 0; }
   .adn__pilier:focus-within .adn__filet { transform: none; }
 }
 
-/* ---------- Formules : le selecteur remplace les six cartes ---------- */
-.formules__onglets {
+/* ---------- Formules : le panneau d'une classe ---------- */
+/* La section ne montre plus que ses quatre cartes de classe ; les sept
+   fiches vivent dans ce panneau, ou main.js les a emportees. Les onglets de
+   niveau ont disparu avec le catalogue : la carte de classe fait le meme
+   travail, en disant pour qui elle est. */
+.modale-formules {
+  width: min(100% - 1.5rem, 46rem);
+  max-height: min(100% - 1.5rem, 54rem);
+  padding: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
-}
-
-.onglet-niveau {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.6rem 1.15rem;
-  font-family: var(--display);
-  font-size: var(--fs-small);
-  font-weight: 600;
-  color: var(--ink-soft);
-  background: transparent;
-  border: 1px solid var(--trait);
-  border-radius: 999px;
-  cursor: pointer;
-}
-.onglet-niveau:hover { color: var(--ink); border-color: var(--ink-soft); }
-
-.onglet-niveau[aria-selected="true"] {
-  color: var(--sur-vert);
-  border-color: var(--vert);
-  background: var(--vert);
-}
-
-.onglet-niveau__puce {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  flex: none;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  font-size: 0.72rem;
-}
-
-/* Le filtrage se fait sur l'attribut hidden : le panneau garde toutes les
-   formules dans le HTML, ce qui laisse les liens profonds fonctionner, et
-   n'en montre qu'une famille a la fois. */
-.formule[hidden] { display: none; }
-
-/* Les formules qui ne se rangent pas dans une classe : mises a part, sous un
-   filet, plutot que noyees dans le selecteur. */
-/* Le bloc longue duree. Il est mis a part dans la section plutot que promu en
-   section a lui : la page alterne un ton sur deux, et une section de plus
-   inverserait toutes celles qui suivent. L'encadre et le surtitre suffisent a
-   le detacher. */
-.formules__hors {
-  margin-top: clamp(3rem, 6vw, 5rem);
-  padding: clamp(1.75rem, 3.5vw, 2.75rem);
-  border: 1px solid var(--trait);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--vert);
   border-radius: var(--rayon-l);
-  background: var(--voile);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+}
+.modale-formules::backdrop {
+  background: color-mix(in srgb, #0b1a2e 72%, transparent);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+.modale-formules[open] { animation: modale-entree 0.22s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .modale-formules[open] { animation: none; }
+}
+
+/* L'en-tete et le pied restent en place, seules les fiches defilent : sur
+   un telephone, le titre de la classe sortait de l'ecran des la premiere
+   fiche et on ne savait plus quel niveau on lisait. */
+.modale-formules__entete {
+  flex: none;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border-bottom: 1px solid var(--trait);
+}
+.modale-formules__surtitre {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 0.5rem;
+}
+.modale-formules__surtitre::before { content: ""; width: 34px; height: 2px; background: var(--vert); }
+.modale-formules__titre {
+  font-family: var(--display);
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+/* L'exposant garde sa minuscule, comme sur la carte d'ou vient le titre. */
+.modale-formules__titre sup { text-transform: none; }
+.modale-formules__quoi {
+  margin: 0.4rem 0 0;
+  max-width: 54ch;
+  color: var(--ink-soft);
+  font-size: var(--fs-small);
+}
+.modale-formules__fermer { align-self: start; }
+
+.modale-formules__corps {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+.modale-formules__pied {
+  flex: none;
+  padding: 1rem clamp(1.25rem, 3vw, 1.75rem);
+  border-top: 1px solid var(--trait);
+}
+.modale-formules__pied .bouton { width: 100%; justify-content: center; }
+
+/* Une seule colonne, une fiche sous l'autre. Sur deux colonnes, la fiche de
+   la classe — la seule de sa rangee, puisque les autres suivent l'intertitre
+   — laissait une moitie de panneau vide a sa droite, et la troisieme, qui
+   n'a que deux fiches en tout, deux demi-rangees. Une colonne se lit comme
+   la page de la classe, ce qu'elle est. */
+.modale-formules .formules { grid-template-columns: minmax(0, 1fr); }
+
+/* Le filtrage se fait sur l'attribut hidden : le panneau garde les sept
+   fiches, ce qui laisse les liens profonds fonctionner, et n'en montre
+   qu'une famille a la fois. */
+.formule[hidden],
+.formules__plus[hidden] { display: none; }
+
+/* L'intertitre des fiches qui depassent la classe. Il occupe toute la
+   largeur de la grille : il annonce ce qui le suit, pas une colonne. Un
+   filet le separe de la fiche du niveau, qui est la vraie reponse a la
+   question posee par la carte. */
+.formules__plus {
+  grid-column: 1 / -1;
+  margin-top: clamp(0.75rem, 2vw, 1.5rem);
+  padding-top: clamp(1.25rem, 2.5vw, 1.75rem);
+  border-top: 1px solid var(--trait);
 }
 .formules__hors-surtitre {
   display: flex;
@@ -2457,29 +2468,11 @@ p:last-child { margin-bottom: 0; }
 .formules__hors-surtitre::before { content: ""; width: 34px; height: 2px; background: var(--vert); }
 .formules__hors-titre {
   font-family: var(--display);
-  font-size: var(--fs-h2);
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
   margin-bottom: 0.4rem;
 }
-.formules__hors-note { color: var(--ink-soft); font-size: var(--fs-small); margin-bottom: 1.75rem; max-width: 62ch; }
+.formules__hors-note { color: var(--ink-soft); font-size: var(--fs-small); margin: 0; max-width: 62ch; }
 
-/* Les deux forfaits, cote a cote et a egalite : c'est la paire que le bloc
-   annonce. Bornes a 420 px pour qu'ils ne s'etirent pas sur toute la page. */
-.formules--duo { grid-template-columns: repeat(auto-fit, minmax(260px, 420px)); }
-
-/* La seance a l'unite : sous les deux forfaits, separee par un filet, et sur
-   une seule colonne — elle n'est pas de la meme nature qu'eux. */
-.formules__unite {
-  margin-top: clamp(1.75rem, 3vw, 2.5rem);
-  padding-top: clamp(1.5rem, 2.5vw, 2rem);
-  border-top: 1px solid var(--trait);
-}
-.formules__unite-intro {
-  font-family: var(--display);
-  font-size: 1.05rem;
-  color: var(--ink);
-  margin: 0 0 1.1rem;
-}
-.formule--unite { max-width: 420px; }
 .formule--unite h4 {
   font-family: var(--display);
   font-size: 1.2rem;
@@ -2501,12 +2494,6 @@ p:last-child { margin-bottom: 0; }
   --vert-texte: var(--vert);
 }
 
-/* Les onglets restent caches tant que le script n'a pas pris la main : sans
-   lui, les sept formules sont affichees a la suite et une rangee de boutons
-   inertes ne ferait qu'egarer. L'attribut seul ne suffit pas contre le
-   display: flex de la regle. */
-.formules__onglets[hidden] { display: none; }
-
 /* La grille du hero remplace l'ancienne mise en page a trois rangees, qui
    calait le chapo et les boutons en premiere colonne pour laisser la place
    aux preuves chiffrees. Ces preuves sont parties dans l'accompagnement :
@@ -2514,12 +2501,6 @@ p:last-child { margin-bottom: 0; }
    emplacement. */
 .hero__grille .hero__chapo,
 .hero__grille .hero__actions { grid-column: auto; }
-
-/* Sous le selecteur, une seule formule est visible a la fois. Sans borne,
-   elle occuperait les 1180 px de la page et redeviendrait l'enorme carte que
-   le selecteur devait supprimer. La classe est posee par le script : sans
-   lui, les quatre formules restent affichees et gardent leurs colonnes. */
-.formules--filtre { grid-template-columns: minmax(0, 620px); }
 
 /* ---------- Une carte posee dans un panneau inverse ---------- */
 /* Le formulaire de contact repose son propre fond, --surface, au milieu de la
@@ -2561,64 +2542,26 @@ p:last-child { margin-bottom: 0; }
 .hero__reseaux a:hover { background: var(--vert); color: var(--sur-vert); border-color: var(--vert); }
 @media (max-width: 900px) { .hero__reseaux { margin-top: 0.25rem; } }
 
-/* ---------- Le neon vert, partout ---------- */
-/* Le traitement de « un avenir. » repris dans tout le site : onglets des
-   formules et pictogrammes ronds en tube, filets allumes, mots verts des
-   titres et grands chiffres au trait. Le petit texte vert garde son
-   remplissage avec une lueur : au trait, il ne se lirait plus. */
-.onglet-niveau { border-color: rgba(108, 194, 74, .33); }
-.onglet-niveau:hover { border-color: var(--neon-vert); box-shadow: 0 0 10px rgba(108, 194, 74, .4); color: var(--ink); }
-.onglet-niveau[aria-selected="true"] {
-  background: rgba(108, 194, 74, .10);
-  color: var(--neon-vert-coeur);
-  border: 2px solid var(--neon-vert-coeur);
-  box-shadow: var(--halo-tube), inset 0 0 10px rgba(108, 194, 74, .53);
-  text-shadow: 0 0 6px var(--neon-vert);
-}
-.onglet-niveau[aria-selected="true"] .onglet-niveau__puce {
-  background: transparent;
-  color: var(--neon-vert-coeur);
-  border: 1.5px solid var(--neon-vert-coeur);
-  box-shadow: 0 0 6px var(--neon-vert), inset 0 0 6px rgba(108, 194, 74, .53);
-}
+/* ---------- Le vert, partout ---------- */
+/* Le neon reste au titre d'accueil et nulle part ailleurs : etendu au site
+   entier, il allumait tout a la fois et plus rien ne ressortait. Les ronds,
+   les filets et les mots verts des titres gardent donc le vert plein, sans
+   halo ni tube. Les regles de base portent deja « color: var(--vert-texte) »
+   pour les mots verts et les grands chiffres, il n'y a rien a y remettre. */
+/* Les regles de base portent deja « color: var(--vert-texte) » pour les
+   mots verts des titres et les grands chiffres : en retirant le tube, il n'y
+   a rien a remettre a leur place. */
 
-.chiffre__rond, .pilier__rang, .classe-choix__rond, .fondatrice__portrait {
-  border-color: var(--neon-vert-coeur) !important;
-  box-shadow: var(--halo-tube), inset 0 0 10px rgba(108, 194, 74, .53) !important;
-}
-.chiffre__rond svg, .classe-choix__rond svg { filter: drop-shadow(0 0 4px var(--neon-vert)); }
-
-.hero__filet, .accompagnement__surtitre::before, .formules__hors-surtitre::before,
-.adn__tige, .adn__tige::before, .adn__filet, .nav__curseur, .temoignage::before, .pastille {
-  box-shadow: 0 0 6px var(--neon-vert), 0 0 16px rgba(108, 194, 74, .53) !important;
-}
-.adn__arc { filter: drop-shadow(0 0 4px var(--neon-vert)) drop-shadow(0 0 12px var(--neon-vert)); }
-.temoignage::after { text-shadow: 0 0 8px var(--neon-vert), 0 0 20px var(--neon-vert); }
-
-.hero__classe-titre em, .modale-classe__titre em, .pilier__rang, .news__date,
-.formule__intitule, .adn__adage {
-  text-shadow: 0 0 8px rgba(108, 194, 74, .67), 0 0 22px rgba(108, 194, 74, .33);
-}
-.accompagnement__titre em, .adn--arc .section-entete h2 em, .chiffre__valeur {
-  color: transparent !important;
-  -webkit-text-stroke: 1.5px var(--neon-vert-coeur);
-  filter: drop-shadow(0 0 2px var(--neon-vert)) drop-shadow(0 0 7px var(--neon-vert)) drop-shadow(0 0 16px var(--neon-vert));
-}
-.bouton--plein { box-shadow: 0 0 10px rgba(108, 194, 74, .53), 0 0 26px rgba(108, 194, 74, .33); }
-/* Sur petit ecran le trait s'affine, comme pour « un avenir. ». */
-@media (max-width: 560px) {
-  .accompagnement__titre em, .adn--arc .section-entete h2 em, .chiffre__valeur { -webkit-text-stroke-width: 1.2px; }
-}
-
-/* ---------- L'entree en balayage ---------- */
-/* Le trait neon que main.js fait courir sur chaque bloc a son entree ; il
-   disparait une fois passe. Sans script ou en mouvement reduit, il n'existe
-   pas. */
+/* ---------- Le laser des titres ---------- */
+/* Le trait neon que main.js fait entrer par la droite et courir sur chaque
+   titre a son arrivee ; il disparait une fois passe. Sans script ou en
+   mouvement reduit, il n'existe pas. C'est le seul endroit du site, avec
+   « un avenir. », ou le vert s'allume encore. */
 .balayage {
   position: absolute;
   top: -4px;
   bottom: -4px;
-  left: 0;
+  left: 100%;
   width: 2px;
   background: var(--neon-vert-coeur);
   box-shadow: 0 0 6px var(--neon-vert), 0 0 16px var(--neon-vert), 0 0 30px var(--neon-vert);
@@ -2738,16 +2681,25 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 1000px) { .classes-cartes { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .classes-cartes { grid-template-columns: 1fr; } }
 
-/* L'accompagnement : les chiffres en mosaique. */
+/* L'accompagnement : les chiffres en mosaique.
+   Deux encadres cote a cote dans la colonne de gauche, et c'est leur
+   contraste qui les distingue : le chiffre phare sur un aplat de vert, la
+   satisfaction sur du blanc. La photo du cabinet est cernee d'un filet
+   blanc, assez clair pour la detacher du fond marine sans l'encadrer
+   lourdement. */
 .bento {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   grid-template-columns: 1fr 1fr;
   grid-template-areas: "phare photo" "avis photo" "barre barre";
   align-self: center;
 }
 .bento > * { border-radius: 22px; overflow: hidden; position: relative; margin: 0; }
-.bento__photo { grid-area: photo; min-height: 300px; }
+.bento__photo {
+  grid-area: photo;
+  min-height: 340px;
+  border: 2px solid rgba(255, 253, 249, 0.55);
+}
 .bento__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .bento__photo figcaption {
   position: absolute;
@@ -2763,8 +2715,8 @@ p:last-child { margin-bottom: 0; }
   grid-area: phare;
   display: flex;
   flex-direction: column;
-  min-height: 210px;
-  padding: 1.1rem 1.2rem 1.2rem;
+  min-height: 262px;
+  padding: 1.4rem 1.5rem 1.5rem;
   background: var(--vert);
   color: var(--paper);
 }
@@ -2777,37 +2729,41 @@ p:last-child { margin-bottom: 0; }
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.bento__phare .bento__gros { margin-top: auto; font: 800 clamp(2.6rem, 4.5vw, 3.4rem)/1 var(--display); letter-spacing: -0.02em; position: relative; }
-.bento__phare p { margin: 0.35rem 0 0; font: 600 0.95rem/1.25 var(--display); position: relative; }
+.bento__phare .bento__gros { margin-top: auto; font: 800 clamp(3rem, 5vw, 4rem)/1 var(--display); letter-spacing: -0.02em; position: relative; }
+.bento__phare p { margin: 0.4rem 0 0; font: 600 1.02rem/1.25 var(--display); position: relative; }
 .bento__decor { position: absolute; right: -30px; bottom: -40px; width: 190px; height: 190px; color: rgba(255, 255, 255, 0.28); pointer-events: none; }
 .bento__avis {
   grid-area: avis;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.3rem;
-  padding: 1.1rem 1.2rem;
-  border: 1.5px solid rgba(232, 240, 251, 0.22);
+  gap: 0.35rem;
+  min-height: 190px;
+  padding: 1.4rem 1.5rem;
+  background: var(--blanc);
+  border: 2px solid rgba(255, 253, 249, 0.55);
 }
-.bento__avis .bento__gros { font: 800 2.4rem/1 var(--display); color: var(--ink); }
-.bento__etoiles { color: var(--vert); letter-spacing: 0.15em; font-size: 1.05rem; }
-.bento__avis p { margin: 0; color: var(--ink-soft); font: 600 0.9rem var(--display); }
+.bento__avis .bento__gros { font: 800 3rem/1 var(--display); color: var(--sur-vert); }
+.bento__etoiles { color: var(--vert); letter-spacing: 0.15em; font-size: 1.15rem; }
+.bento__avis p { margin: 0; color: color-mix(in srgb, var(--sur-vert) 80%, var(--blanc)); font: 600 0.98rem var(--display); }
 .bento__barre {
   grid-area: barre;
   list-style: none;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  padding: 1rem 0.5rem;
+  padding: 1.4rem 0.6rem;
   text-align: center;
   border: 1.5px solid rgba(232, 240, 251, 0.22);
 }
 .bento__barre li + li { border-left: 1px solid rgba(232, 240, 251, 0.22); }
-.bento__barre strong { display: block; font: 800 1.9rem/1.05 var(--display); color: var(--ink); }
-.bento__barre span { display: block; margin-top: 0.25rem; padding: 0 0.3rem; color: var(--ink-soft); font: 600 0.8rem/1.25 var(--display); }
+.bento__barre strong { display: block; font: 800 2.1rem/1.05 var(--display); color: var(--ink); }
+.bento__barre span { display: block; margin-top: 0.3rem; padding: 0 0.3rem; color: var(--ink-soft); font: 600 0.85rem/1.25 var(--display); }
 @media (max-width: 560px) {
   .bento { grid-template-columns: 1fr; grid-template-areas: "photo" "phare" "avis" "barre"; }
-  .bento__photo { min-height: 220px; }
-  .bento__barre strong { font-size: 1.5rem; }
+  .bento__photo { min-height: 240px; }
+  .bento__phare { min-height: 0; }
+  .bento__avis { min-height: 0; }
+  .bento__barre strong { font-size: 1.6rem; }
 }
 
 /* MAP news : cartes claires, la rubrique en etiquette posee de travers. */
@@ -2880,7 +2836,6 @@ p:last-child { margin-bottom: 0; }
   color: var(--paper);
   border-color: var(--vert);
   cursor: default;
-  box-shadow: 0 0 34px rgba(108, 194, 74, 0.35);
 }
 .temoignages[data-eventail] .temoignage blockquote { margin: 0; font-size: 1rem; line-height: 1.5; }
 .temoignages[data-eventail] .temoignage figcaption { margin-top: auto; font-weight: 700; color: inherit; }
@@ -2914,90 +2869,92 @@ p:last-child { margin-bottom: 0; }
 @media (min-width: 901px) { .accompagnement__grille > div:first-child { align-self: center; } }
 
 /* ---------- L'arrivee sur le site ---------- */
-/* Trois temps sur le fond du hero : le logo se pose et reste seul, la
-   phrase s'ecrit sous lui en deux morceaux, puis main.js fait monter les
-   vagues neon qui decouvrent la page. Le voile n'existe que si le script
-   du <head> a pose data-intro : sans script, une fois deja vue, ou en
-   mouvement reduit, la page s'affiche directement.
+/* Trois temps en fondu sur le bleu nuit : le logo apparait puis s'efface,
+   la phrase du titre d'accueil prend sa place, puis le voile se dissout et
+   decouvre la page. Que des opacites : pas de canevas, pas de decoupe, rien
+   que le navigateur ne compose sans peine sur un telephone.
 
-   Les deux premiers temps sont en CSS et non en JavaScript : ils doivent
-   jouer des le premier affichage, sans attendre le chargement de main.js. */
+   Le voile n'existe que si le script du <head> a pose data-intro : sans
+   script, une fois deja vue, ou en mouvement reduit, la page s'affiche
+   directement. Tout est en CSS et non en JavaScript : l'arrivee doit jouer
+   des le premier affichage, sans attendre le chargement de main.js.
+
+   La minuterie, a tenir d'un seul tenant (main.js lit INTRO_FIN, le <head>
+   garde le filet de securite) :
+     0,15 s  le logo apparait        2,60 s  il a fini de s'effacer
+     2,50 s  la phrase apparait      4,60 s  le voile commence a partir
+     5,40 s  la page est a nu. */
 .intro { display: none; }
 html[data-intro="oui"] { overflow: hidden; }
 html[data-intro="oui"] .intro {
-  display: block;
+  display: grid;
+  place-items: center;
   position: fixed;
   inset: 0;
   z-index: 1000;
+  padding: 6vw;
   pointer-events: none;
-}
-/* Le voile, seul decoupe par la vague. */
-.intro__voile {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: clamp(1.1rem, 3vw, 1.9rem);
-  text-align: center;
   background:
     radial-gradient(560px 380px at 74% 34%, rgba(47, 140, 255, 0.16), transparent 70%),
     radial-gradient(520px 300px at 26% 62%, rgba(108, 194, 74, 0.1), transparent 70%),
     var(--paper);
+  animation: intro-sortie 0.8s ease 4.6s both;
 }
+/* Les deux temps se superposent dans la meme case : l'un s'efface avant
+   que l'autre arrive, ils ne se croisent donc jamais a l'ecran. */
+.intro__temps { grid-area: 1 / 1; margin: 0; text-align: center; opacity: 0; }
 .intro__logo {
   width: min(480px, 72vw);
   height: auto;
-  animation: intro-logo 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: intro-passage 2.45s ease 0.15s both;
 }
 .intro__phrase {
-  margin: 0;
+  max-width: 22ch;
   font-family: var(--display);
-  font-weight: 600;
-  font-size: clamp(1.05rem, 2.5vw, 1.6rem);
-  line-height: 1.35;
+  font-weight: 700;
+  font-size: clamp(1.75rem, 7vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   color: var(--ink);
+  animation: intro-entree 0.8s ease 2.5s both;
 }
+/* Le seul neon du site, comme dans le titre d'accueil. */
 .intro__phrase em {
   font-style: normal;
-  font-weight: 800;
-  color: var(--vert);
-  text-shadow: 0 0 8px rgba(108, 194, 74, .67), 0 0 22px rgba(108, 194, 74, .33);
+  color: transparent;
+  -webkit-text-stroke: 2px var(--neon-vert-coeur);
+  filter:
+    drop-shadow(0 0 2px var(--neon-vert))
+    drop-shadow(0 0 7px var(--neon-vert))
+    drop-shadow(0 0 18px var(--neon-vert));
 }
-/* Les deux morceaux montent l'un apres l'autre, une fois le logo pose. */
-.intro__mot {
-  display: inline-block;
-  animation: intro-mot 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.7s both;
+@media (max-width: 700px) {
+  .intro__phrase em { -webkit-text-stroke-width: 1.5px; }
 }
-.intro__mot + .intro__mot { animation-delay: 2s; }
-.intro__vague { position: absolute; inset: 0; width: 100%; height: 100%; }
-/* Le logo se pose en sortant d'un flou, et sa fleche s'allume dans le
-   meme geste : deux animations sur « filter » se remplaceraient. */
-@keyframes intro-logo {
-  from { opacity: 0; transform: scale(0.94); filter: blur(10px) drop-shadow(0 0 0 rgba(108, 194, 74, 0)); }
-  60% { opacity: 1; transform: scale(1); filter: blur(0) drop-shadow(0 0 18px rgba(108, 194, 74, 0.55)); }
-  to { opacity: 1; transform: scale(1); filter: blur(0) drop-shadow(0 0 10px rgba(108, 194, 74, 0.35)); }
+/* Le logo apparait, tient, puis repart : un seul passage. */
+@keyframes intro-passage {
+  0% { opacity: 0; transform: scale(0.97); }
+  29%, 71% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: scale(1.015); }
 }
-@keyframes intro-mot {
-  from { opacity: 0; transform: translateY(14px); }
+@keyframes intro-entree {
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: none; }
 }
+@keyframes intro-sortie {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 
-/* Les cartes des classes : un pictogramme par niveau, dans un anneau
-   neon de la couleur de la carte, comme les ronds des chiffres. */
+/* Les cartes des classes : un pictogramme par niveau, dans un anneau fin
+   de la couleur de la carte, comme les ronds des chiffres. */
 .classe-carte__rond {
   display: grid;
   place-items: center;
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: 2px solid color-mix(in srgb, var(--c) 30%, #fff);
+  border: 1.5px solid color-mix(in srgb, var(--c) 50%, transparent);
   color: var(--c);
-  box-shadow:
-    0 0 2px var(--c),
-    0 0 8px var(--c),
-    0 0 18px color-mix(in srgb, var(--c) 60%, transparent),
-    inset 0 0 10px color-mix(in srgb, var(--c) 50%, transparent);
 }
-.classe-carte__rond svg { filter: drop-shadow(0 0 4px var(--c)); }
 @media (max-width: 560px) { .classe-carte__rond { width: 50px; height: 50px; } }

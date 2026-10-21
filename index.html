@@ -22,8 +22,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;display=swap">
-<!-- L'arrivee sur le site : le logo, la phrase, puis la vague. Decidee ici,
-     avant le premier affichage, pour que la page ne se montre pas une
+<!-- L'arrivee sur le site : trois temps en fondu sur le bleu nuit. Decidee
+     ici, avant le premier affichage, pour que la page ne se montre pas une
      fraction de seconde avant d'etre recouverte. Une fois par visite, et
      jamais pour qui demande moins de mouvement. Filet de securite : si
      main.js ne prend pas le relais, le voile s'en va seul. -->
@@ -35,23 +35,21 @@
     } catch (e) { return; }
     var racine = document.documentElement;
     racine.setAttribute("data-intro", "oui");
-    setTimeout(function () { racine.removeAttribute("data-intro"); }, 9000);
+    setTimeout(function () { racine.removeAttribute("data-intro"); }, 6500);
   })();
 </script>
-<link rel="stylesheet" href="assets/css/style.css?v=20261018-2308">
+<link rel="stylesheet" href="assets/css/style.css?v=20261021-1400">
 </head>
 
 <body>
 <a class="saut-contenu" href="#contenu">Aller au contenu</a>
-<!-- Le voile et la vague sont deux couches soeurs : le voile se fait
-     decouper au ras de la vague, le canevas ne porte que les tubes neon et
-     doit donc rester entier. -->
+<!-- Les deux temps de l'arrivee occupent la meme case au centre du voile :
+     ils ne sont jamais visibles ensemble, le logo s'efface avant que la
+     phrase arrive, puis le voile se dissout sur la page. Tout est en CSS,
+     pour que ca joue des le premier affichage. -->
 <div class="intro" id="intro" aria-hidden="true">
-  <div class="intro__voile">
-    <img class="intro__logo" src="assets/img/logo-blanc-480.webp" width="480" height="196" alt="">
-    <p class="intro__phrase"><span class="intro__mot">Plus qu’un choix,</span> <span class="intro__mot"><em>un avenir.</em></span></p>
-  </div>
-  <canvas class="intro__vague"></canvas>
+  <img class="intro__temps intro__logo" src="assets/img/logo-blanc-480.webp" width="480" height="196" alt="">
+  <p class="intro__temps intro__phrase">L’orientation scolaire. Plus qu’un choix, <em>un avenir.</em></p>
 </div>
 
 <header class="entete" id="entete">
@@ -112,11 +110,9 @@
 
   <!-- ============ Hero ============ -->
   <section class="hero" id="accueil">
-    <!-- Le decor du hero : trois vagues neon floues, dessinees par main.js
-         sur le canevas, et la lumiere que les deux neons jettent sur le
-         fond. Purement decoratif. -->
+    <!-- Le decor du hero : la lueur posee sur le fond, bleue a droite et
+         verte a gauche. Purement decoratif. -->
     <div class="hero__decor" aria-hidden="true">
-      <canvas class="hero__vagues"></canvas>
       <span class="hero__lueur"></span>
     </div>
 
@@ -374,11 +370,12 @@
     <div class="enveloppe">
       <div class="section-entete">
         <h2>Nos formules</h2>
+        <p>Choisissez la classe de votre enfant&nbsp;: vous n’y verrez que les formules qui le concernent.</p>
       </div>
 
       <!-- Une carte par classe : le parent se reconnait dans une question,
-           le clic ouvre la formule du niveau. Sans script, le lien mene a
-           la formule, deja affichee. -->
+           le clic ouvre le panneau de son niveau. Sans script, le lien mene
+           a la formule, deja affichee plus bas. -->
       <ul class="classes-cartes">
         <li><a class="classe-carte" href="#formule-map-troisieme" data-niveau="troisieme">
           <div class="carte-tete"><span class="classe-carte__rond" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 10.5 12 5l9 5.5"/><path d="M5 10v8.5M19 10v8.5M9.5 18.5v-4.5h5v4.5M3.5 18.5h17"/><path d="M12 7.6v.01"/></svg></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
@@ -406,32 +403,18 @@
         </a></li>
       </ul>
 
-      <!-- Le selecteur de niveau remplace les six cartes deroulees : on
-           n'affiche que la formule de la classe choisie. Les onglets sont des
-           boutons dans un role=tablist, donc les fleches du clavier les
-           parcourent. Sans script, aucun panneau n'est masque et les sept
-           formules restent lisibles a la suite. -->
-      <div class="formules__onglets" id="formules-onglets" hidden role="tablist" aria-label="Choisir la classe de votre enfant">
-        <button class="onglet-niveau" type="button" role="tab" data-niveau="troisieme" aria-selected="false" tabindex="-1">
-          <span class="onglet-niveau__puce" aria-hidden="true"><span>3<sup>e</sup></span></span>
-          Troisième
-        </button>
-        <button class="onglet-niveau" type="button" role="tab" data-niveau="seconde" aria-selected="false" tabindex="-1">
-          <span class="onglet-niveau__puce" aria-hidden="true"><span>2<sup>de</sup></span></span>
-          Seconde
-        </button>
-        <button class="onglet-niveau" type="button" role="tab" data-niveau="premiere" aria-selected="false" tabindex="-1">
-          <span class="onglet-niveau__puce" aria-hidden="true"><span>1<sup>re</sup></span></span>
-          Première
-        </button>
-        <button class="onglet-niveau" type="button" role="tab" data-niveau="terminale" aria-selected="false" tabindex="-1">
-          <span class="onglet-niveau__puce" aria-hidden="true">T</span>
-          Terminale
-        </button>
-      </div>
+      <!-- Les sept fiches, a plat. Chacune dit a quelles classes elle
+           s'adresse (data-niveaux) : « premium » vaut pour la premiere et la
+           terminale, « a la map » pour tout le monde. main.js emporte cette
+           liste dans un panneau plein ecran et n'y montre que les fiches de
+           la classe choisie, l'intertitre avec. Le catalogue deroule faisait
+           defiler sept fiches a qui n'en attendait qu'une.
 
+           Sans script, tout reste ici, lisible a la suite : c'est aussi ce
+           que lisent les moteurs de recherche, et les liens profonds du
+           genre #formule-map-seconde continuent de tomber juste. -->
       <div class="formules" id="formules-liste">
-        <article class="formule" id="formule-map-troisieme" data-niveau="troisieme">
+        <article class="formule" id="formule-map-troisieme" data-niveaux="troisieme">
           <p class="formule__cible">Élèves de troisième</p>
           <h3>MAP TROISIÈME 1 AN</h3>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Aider votre enfant à choisir entre la voie générale et technologique et la voie professionnelle en seconde.</span></p>
@@ -449,7 +432,7 @@
             <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
-        <article class="formule" id="formule-map-seconde" data-niveau="seconde">
+        <article class="formule" id="formule-map-seconde" data-niveaux="seconde">
           <p class="formule__cible">Élèves de seconde</p>
           <h3>MAP SECONDE 1 AN</h3>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Préparer votre enfant à faire les bons choix de spécialités et l’initier aux orientations post-bac.</span></p>
@@ -468,7 +451,7 @@
             <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
-        <article class="formule" id="formule-map-premiere" data-niveau="premiere">
+        <article class="formule" id="formule-map-premiere" data-niveaux="premiere">
           <p class="formule__cible">Élèves de première</p>
           <h3>MAP PREMIÈRE 1 AN</h3>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Se préparer à aborder la dernière année de lycée avec des bases méthodologiques consolidées.</span></p>
@@ -487,7 +470,7 @@
             <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
-        <article class="formule" id="formule-map-terminale" data-niveau="terminale">
+        <article class="formule" id="formule-map-terminale" data-niveaux="terminale">
           <p class="formule__cible">Élèves de terminale</p>
           <h3>TERMINALE PARCOURSUP 1 AN</h3>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Élaborer la stratégie complète du parcours Parcoursup.</span></p>
@@ -505,22 +488,16 @@
             <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
-      </div>
 
-      <!-- Les formules qui ne se rangent pas dans une classe : « a la map »
-           est a la carte, « integrale » et « premium » courent sur plusieurs
-           annees. Elles sont mises a part plutot que rangees de force dans un
-           onglet ou repetees dans deux. -->
-      <!-- Les formules qui ne tiennent pas dans une classe. Les deux forfaits
-           pluriannuels forment une paire ; « a la map », qui est une seance a
-           l'unite, tient un bloc a part sous eux. -->
-      <div class="formules__hors">
-        <p class="formules__hors-surtitre">Sur plusieurs années</p>
-        <h3 class="formules__hors-titre">Les formules longue durée</h3>
-        <p class="formules__hors-note">Elles couvrent plusieurs classes d’un seul tenant&nbsp;: votre enfant ne repart pas de zéro à chaque rentrée.</p>
+        <!-- L'intertitre occupe toute la largeur de la grille : il annonce
+             les fiches qui le suivent, pas une colonne. -->
+        <div class="formules__plus" data-niveaux="troisieme seconde premiere terminale">
+          <p class="formules__hors-surtitre">Pour aller plus loin</p>
+          <h3 class="formules__hors-titre">Longue durée et séance à la carte</h3>
+          <p class="formules__hors-note">Les formules longue durée couvrent plusieurs classes d’un seul tenant&nbsp;: votre enfant ne repart pas de zéro à chaque rentrée. La séance à la carte, elle, répond à un besoin précis, sans engagement.</p>
+        </div>
 
-        <div class="formules formules--duo">
-        <article class="formule" id="formule-map-integrale">
+        <article class="formule" id="formule-map-integrale" data-niveaux="seconde">
           <p class="formule__cible">Élèves de seconde, sur les trois années de lycée</p>
           <h3>MAP INTÉGRALE 3 ANS</h3>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Accompagner votre enfant sur ses trois années au lycée.</span></p>
@@ -540,7 +517,7 @@
             <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
-        <article class="formule" id="formule-map-premium">
+        <article class="formule" id="formule-map-premium" data-niveaux="premiere terminale">
           <p class="formule__cible">Élèves de première et de terminale</p>
           <h3>MAP PREMIUM 2 ANS</h3>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Établir une stratégie personnalisée d’orientation jusqu’à l’étape Parcoursup.</span></p>
@@ -560,11 +537,7 @@
             <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
-        </div>
-
-        <div class="formules__unite">
-          <p class="formules__unite-intro">Besoin d’un coup de main sur un point précis, sans engagement&nbsp;?</p>
-        <article class="formule formule--unite" id="formule-a-la-map">
+        <article class="formule formule--unite" id="formule-a-la-map" data-niveaux="troisieme seconde premiere terminale">
           <p class="formule__cible">Tous niveaux, à la carte</p>
           <h4>À LA MAP</h4>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Accompagner les enfants sur des problématiques précises.</span></p>
@@ -584,10 +557,35 @@
             <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
-        </div>
       </div>
     </div>
   </section>
+
+
+  <!-- Le panneau des formules. Il arrive vide : main.js y deplace la liste
+       des sept fiches au chargement, puis n'y montre que celles de la classe
+       demandee. Sans script il reste vide et sans declencheur, la liste ne
+       bouge pas de la section. <dialog> natif pour le piege de tabulation,
+       Echap et le retour du focus sur la carte cliquee. -->
+  <dialog class="modale-formules" id="modale-formules" aria-labelledby="modale-formules-titre">
+    <div class="modale-formules__entete">
+      <div>
+        <p class="modale-formules__surtitre">Nos formules</p>
+        <h2 class="modale-formules__titre" id="modale-formules-titre"></h2>
+        <p class="modale-formules__quoi" id="modale-formules-quoi"></p>
+      </div>
+      <button class="modale-classe__fermer modale-formules__fermer" type="button" id="fermer-formules">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg>
+        <span class="visuellement-cache">Fermer</span>
+      </button>
+    </div>
+
+    <div class="modale-formules__corps" id="modale-formules-corps"></div>
+
+    <div class="modale-formules__pied">
+      <button class="bouton bouton--contour" type="button" data-fermer-formules>Voir une autre classe</button>
+    </div>
+  </dialog>
 
 
   <!-- ============ Fondatrices ============ -->
@@ -1079,7 +1077,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20261018-2308" defer></script>
+<script src="assets/js/main.js?v=20261021-1400" defer></script>
 
 <script type="application/ld+json">
 {
