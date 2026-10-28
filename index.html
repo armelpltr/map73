@@ -38,7 +38,7 @@
     setTimeout(function () { racine.removeAttribute("data-intro"); }, 6500);
   })();
 </script>
-<link rel="stylesheet" href="assets/css/style.css?v=20261021-1400">
+<link rel="stylesheet" href="assets/css/style.css?v=20261028-2138">
 </head>
 
 <body>
@@ -48,14 +48,14 @@
      phrase arrive, puis le voile se dissout sur la page. Tout est en CSS,
      pour que ca joue des le premier affichage. -->
 <div class="intro" id="intro" aria-hidden="true">
-  <img class="intro__temps intro__logo" src="assets/img/logo-blanc-480.webp" width="480" height="196" alt="">
+  <img class="intro__temps intro__logo" src="assets/img/logo-blanc-480.webp" width="480" height="207" alt="">
   <p class="intro__temps intro__phrase">L’orientation scolaire. Plus qu’un choix, <em>un avenir.</em></p>
 </div>
 
 <header class="entete" id="entete">
   <div class="enveloppe entete__barre">
     <a class="entete__logo" href="index.html" aria-label="MAP73, accueil">
-      <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="156px" width="240" height="98" alt="MAP Orientation" fetchpriority="high">
+      <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="148px" width="240" height="104" alt="MAP Orientation" fetchpriority="high">
     </a>
 
     <a class="bouton bouton--plein bouton--compact entete__appel" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">
@@ -326,41 +326,55 @@
 
 
   <!-- ============ Concept ============ -->
+  <!-- Quatre etapes qui s'empilent : chaque carte se colle sous l'en-tete et
+       la suivante vient la recouvrir en montant, decalee de quelques pixels,
+       de sorte qu'on voit le parcours s'accumuler. Sans position: sticky,
+       ce n'est qu'une liste de cartes a la suite. -->
   <section class="section" id="concept">
     <div class="enveloppe">
       <div class="section-entete">
         <h2>Le concept MAP Orientation</h2>
-        <p>Trois étapes indispensables pour réussir l’orientation de votre enfant&nbsp;: apprendre à se connaître, explorer les différentes voies et faire les bons choix.</p>
+        <p>Quatre étapes pour réussir l’orientation de votre enfant&nbsp;: échanger, apprendre à se connaître, explorer les différentes voies et faire les bons choix.</p>
       </div>
 
-      <div class="piliers">
-        <article class="pilier">
-          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-          <span class="pilier__rang" aria-hidden="true">1</span>
-          <span class="pilier__role">Se connaître</span>
-          <h3>Comprendre qui tu es</h3>
-          <p>En connaissant ton fonctionnement, tes valeurs, tes besoins et ta personnalité, tu pourras te créer une vie à ton image.</p>
-          <a class="carte-bouton" href="#formules">En savoir +</a>
-        </article>
-
-        <article class="pilier">
-          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-          <span class="pilier__rang" aria-hidden="true">2</span>
-          <span class="pilier__role">Explorer</span>
-          <h3>Construire ta stratégie d’orientation</h3>
-          <p>Pour faire les bons choix, il faut disposer des bonnes informations. Quoi de mieux que l’expertise d’une enseignante pour choisir la filière qui te plaît.</p>
-          <a class="carte-bouton" href="#formules">En savoir +</a>
-        </article>
-
-        <article class="pilier">
-          <div class="carte-tete"><span class="avatars" aria-hidden="true"><img src="assets/img/portrait-camille.webp" width="200" height="200" loading="lazy" decoding="async" alt=""><img src="assets/img/portrait-julie.webp" width="200" height="200" loading="lazy" decoding="async" alt=""></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-          <span class="pilier__rang" aria-hidden="true">3</span>
-          <span class="pilier__role">Choisir</span>
-          <h3>Connaître le milieu professionnel</h3>
-          <p>Perdu face au monde du travail : entretien, candidature, stage, état du marché ? La vision d’une responsable RH t’aidera à y voir plus clair.</p>
-          <a class="carte-bouton" href="#formules">En savoir +</a>
-        </article>
-      </div>
+      <ol class="etapes">
+        <li class="etape" style="--rang: 1">
+          <div class="etape__media"><img src="assets/img/etape-communiquer-640.webp" srcset="assets/img/etape-communiquer-640.webp 640w, assets/img/etape-communiquer-1100.webp 1100w" sizes="(min-width: 900px) 560px, 100vw" width="640" height="480" loading="lazy" decoding="async" alt="Camille et Julie en rendez-vous avec une adolescente au cabinet"></div>
+          <div class="etape__texte">
+            <span class="etape__rang" aria-hidden="true">I</span>
+            <p class="etape__role">Communiquer</p>
+            <h3>Échanger pour comprendre ton besoin</h3>
+            <p>Nous prenons le temps d’échanger avec les parents et les adolescents pour comprendre leur situation. Ce premier rendez-vous est l’occasion de vous présenter notre approche et de définir ensemble un accompagnement adapté à chaque jeune.</p>
+          </div>
+        </li>
+        <li class="etape" style="--rang: 2">
+          <div class="etape__media"><img src="assets/img/etape-se-connaitre-640.webp" srcset="assets/img/etape-se-connaitre-640.webp 640w, assets/img/etape-se-connaitre-1100.webp 1100w" sizes="(min-width: 900px) 560px, 100vw" width="640" height="474" loading="lazy" decoding="async" alt="Un adolescent remplit des tests de personnalité, RIASEC, MBTI et ennéagramme"></div>
+          <div class="etape__texte">
+            <span class="etape__rang" aria-hidden="true">II</span>
+            <p class="etape__role">Se connaître</p>
+            <h3>Comprendre qui tu es</h3>
+            <p>En connaissant ton fonctionnement, tes valeurs, tes besoins et ta personnalité, tu pourras te créer une vie à ton image.</p>
+          </div>
+        </li>
+        <li class="etape" style="--rang: 3">
+          <div class="etape__media"><img src="assets/img/etape-explorer-640.webp" srcset="assets/img/etape-explorer-640.webp 640w, assets/img/etape-explorer-1100.webp 1100w" sizes="(min-width: 900px) 560px, 100vw" width="640" height="349" loading="lazy" decoding="async" alt="Une élève avance dans un labyrinthe de panneaux de filières et de métiers"></div>
+          <div class="etape__texte">
+            <span class="etape__rang" aria-hidden="true">III</span>
+            <p class="etape__role">Explorer</p>
+            <h3>Construire ta stratégie d’orientation</h3>
+            <p>Pour faire les bons choix, il faut disposer des bonnes informations. Quoi de mieux que l’expertise d’une enseignante pour choisir la filière qui te plaît.</p>
+          </div>
+        </li>
+        <li class="etape" style="--rang: 4">
+          <div class="etape__media"><span class="etape__attente" aria-hidden="true"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7M3 12.5h18M10.5 12.5v1.5h3v-1.5"/></svg></span></div>
+          <div class="etape__texte">
+            <span class="etape__rang" aria-hidden="true">IV</span>
+            <p class="etape__role">Choisir</p>
+            <h3>Connaître le milieu professionnel</h3>
+            <p>Perdu face au monde du travail : entretien, candidature, stage, état du marché ? La vision d’une responsable RH t’aidera à y voir plus clair.</p>
+          </div>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -403,17 +417,24 @@
         </a></li>
       </ul>
 
-      <!-- Les sept fiches, a plat. Chacune dit a quelles classes elle
-           s'adresse (data-niveaux) : « premium » vaut pour la premiere et la
-           terminale, « a la map » pour tout le monde. main.js emporte cette
-           liste dans un panneau plein ecran et n'y montre que les fiches de
-           la classe choisie, l'intertitre avec. Le catalogue deroule faisait
-           defiler sept fiches a qui n'en attendait qu'une.
+      <!-- Les six fiches, a plat. Chacune dit a quelles classes elle
+           s'adresse (data-niveaux) : une ou deux formules par classe, puis
+           « a la map » pour tout le monde. main.js emporte cette liste dans
+           un panneau plein ecran et n'y montre que les fiches de la classe
+           choisie, l'intertitre avec. Le catalogue deroule faisait defiler
+           toutes les fiches a qui n'en attendait qu'une.
 
            Sans script, tout reste ici, lisible a la suite : c'est aussi ce
            que lisent les moteurs de recherche, et les liens profonds du
            genre #formule-map-seconde continuent de tomber juste. -->
       <div class="formules" id="formules-liste">
+        <!-- L'intertitre ouvre chaque classe et occupe toute la largeur de
+             la grille : il annonce les fiches qui le suivent. -->
+        <div class="formules__plus" data-niveaux="troisieme seconde premiere terminale">
+          <h3 class="formules__hors-titre">Longue durée ou séance à la carte</h3>
+          <p class="formules__hors-note">Les formules longue durée couvrent plusieurs séances d’accompagnement. La séance à la carte, elle, répond à un besoin précis, sans engagement.</p>
+        </div>
+
         <article class="formule" id="formule-map-troisieme" data-niveaux="troisieme">
           <p class="formule__cible">Élèves de troisième</p>
           <h3>MAP TROISIÈME 1 AN</h3>
@@ -427,8 +448,8 @@
             </ul>
           </details>
           <div class="formule__pied">
-            <span class="formule__prix">à partir de 40 €</span>
-            <span class="formule__prix-note">par mois</span>
+            <span class="formule__prix">55 €</span>
+            <span class="formule__prix-note">par mois, sur un engagement de 10 mois</span>
             <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
@@ -446,7 +467,7 @@
             </ul>
           </details>
           <div class="formule__pied">
-            <span class="formule__prix">à partir de 40 €</span>
+            <span class="formule__prix">59 €</span>
             <span class="formule__prix-note">par mois</span>
             <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
@@ -455,7 +476,7 @@
           <p class="formule__cible">Élèves de première</p>
           <h3>MAP PREMIÈRE 1 AN</h3>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Se préparer à aborder la dernière année de lycée avec des bases méthodologiques consolidées.</span></p>
-          <p class="formule__contenu"><span class="formule__intitule">Contenu</span> <span>4 séances individuelles ou sous forme d’atelier méthodologique.</span></p>
+          <p class="formule__contenu"><span class="formule__intitule">Contenu</span> <span>5 séances individuelles.</span></p>
           <details class="formule__details">
             <summary>Le programme</summary>
             <ul>
@@ -465,16 +486,16 @@
             </ul>
           </details>
           <div class="formule__pied">
-            <span class="formule__prix">à partir de 35 €</span>
+            <span class="formule__prix">59 €</span>
             <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
         <article class="formule" id="formule-map-terminale" data-niveaux="terminale">
           <p class="formule__cible">Élèves de terminale</p>
-          <h3>TERMINALE PARCOURSUP 1 AN</h3>
+          <h3>TERMINALE PARCOURSUP ++</h3>
           <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Élaborer la stratégie complète du parcours Parcoursup.</span></p>
-          <p class="formule__contenu"><span class="formule__intitule">Contenu</span> <span>7 séances.</span></p>
+          <p class="formule__contenu"><span class="formule__intitule">Contenu</span> <span>8 séances.</span></p>
           <details class="formule__details">
             <summary>Le programme</summary>
             <ul>
@@ -485,56 +506,24 @@
           <div class="formule__pied">
             <span class="formule__prix">89 €</span>
             <span class="formule__prix-note">par mois</span>
+            <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
+          </div>
+        </article>
+        <article class="formule" id="formule-terminale-parcoursup" data-niveaux="terminale">
+          <p class="formule__cible">Élèves de terminale</p>
+          <h3>TERMINALE PARCOURSUP</h3>
+          <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Construire sa stratégie individuelle d’orientation post-bac.</span></p>
+          <p class="formule__contenu"><span class="formule__intitule">Contenu</span> <span>5 séances.</span></p>
+          <details class="formule__details">
+            <summary>Le programme</summary>
+            <ul>
+              <li>Exploration des différentes orientations post-bac</li>
+            </ul>
+          </details>
+          <div class="formule__pied">
+            <span class="formule__prix">59 €</span>
+            <span class="formule__prix-note">par mois</span>
             <a class="bouton bouton--clair" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
-          </div>
-        </article>
-
-        <!-- L'intertitre occupe toute la largeur de la grille : il annonce
-             les fiches qui le suivent, pas une colonne. -->
-        <div class="formules__plus" data-niveaux="troisieme seconde premiere terminale">
-          <p class="formules__hors-surtitre">Pour aller plus loin</p>
-          <h3 class="formules__hors-titre">Longue durée et séance à la carte</h3>
-          <p class="formules__hors-note">Les formules longue durée couvrent plusieurs classes d’un seul tenant&nbsp;: votre enfant ne repart pas de zéro à chaque rentrée. La séance à la carte, elle, répond à un besoin précis, sans engagement.</p>
-        </div>
-
-        <article class="formule" id="formule-map-integrale" data-niveaux="seconde">
-          <p class="formule__cible">Élèves de seconde, sur les trois années de lycée</p>
-          <h3>MAP INTÉGRALE 3 ANS</h3>
-          <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Accompagner votre enfant sur ses trois années au lycée.</span></p>
-          <p class="formule__contenu"><span class="formule__intitule">Contenu</span> <span>15 séances sur 3 ans.</span></p>
-          <details class="formule__details">
-            <summary>Le programme</summary>
-            <ul>
-              <li>Méthodologie de travail</li>
-              <li>Préparation aux oraux</li>
-              <li>Élaboration d’une stratégie d’orientation scolaire</li>
-              <li>Stratégie Parcoursup</li>
-            </ul>
-          </details>
-          <div class="formule__pied">
-            <span class="formule__prix">45 €</span>
-            <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
-          </div>
-        </article>
-        <article class="formule" id="formule-map-premium" data-niveaux="premiere terminale">
-          <p class="formule__cible">Élèves de première et de terminale</p>
-          <h3>MAP PREMIUM 2 ANS</h3>
-          <p class="formule__objectif"><span class="formule__intitule">Objectif</span> <span>Établir une stratégie personnalisée d’orientation jusqu’à l’étape Parcoursup.</span></p>
-          <p class="formule__contenu"><span class="formule__intitule">Contenu</span> <span>5 séances en première et 7 séances en terminale.</span></p>
-          <details class="formule__details">
-            <summary>Le programme</summary>
-            <ul>
-              <li>Bilan d’orientation scolaire</li>
-              <li>Préparation aux oraux et test de personnalité</li>
-              <li>Coaching</li>
-              <li>Stratégie d’orientation post-bac et gestion des étapes Parcoursup</li>
-            </ul>
-          </details>
-          <div class="formule__pied">
-            <span class="formule__prix">50 €</span>
-            <span class="formule__prix-note">par mois</span>
-            <a class="bouton bouton--plein" href="https://calendly.com/map73/formation" target="_blank" rel="noopener">Prendre rendez-vous</a>
           </div>
         </article>
         <article class="formule formule--unite" id="formule-a-la-map" data-niveaux="troisieme seconde premiere terminale">
@@ -563,14 +552,14 @@
 
 
   <!-- Le panneau des formules. Il arrive vide : main.js y deplace la liste
-       des sept fiches au chargement, puis n'y montre que celles de la classe
+       des six fiches au chargement, puis n'y montre que celles de la classe
        demandee. Sans script il reste vide et sans declencheur, la liste ne
        bouge pas de la section. <dialog> natif pour le piege de tabulation,
        Echap et le retour du focus sur la carte cliquee. -->
   <dialog class="modale-formules" id="modale-formules" aria-labelledby="modale-formules-titre">
     <div class="modale-formules__entete">
       <div>
-        <p class="modale-formules__surtitre">Nos formules</p>
+        <p class="modale-formules__surtitre">Nos formules en présentiel ou en distanciel</p>
         <h2 class="modale-formules__titre" id="modale-formules-titre"></h2>
         <p class="modale-formules__quoi" id="modale-formules-quoi"></p>
       </div>
@@ -611,7 +600,7 @@
 
           <div class="fondatrice__chiffres">
             <div class="fondatrice__chiffre">
-              <span class="fondatrice__valeur">10 ans</span>
+              <span class="fondatrice__valeur">11 ans</span>
               <span class="fondatrice__mesure">d’enseignement</span>
             </div>
             <div class="fondatrice__chiffre">
@@ -646,17 +635,17 @@
             <img class="fondatrice__portrait"
                  src="assets/img/portrait-julie.webp"
                  width="240" height="240" loading="lazy" decoding="async"
-                 alt="Julie Mazetk, cofondatrice de MAP73, responsable ressources humaines">
+                 alt="Julie Mazet, cofondatrice de MAP73, responsable ressources humaines">
             <div>
-              <h3>Julie Mazetk</h3>
+              <h3>Julie Mazet</h3>
               <p class="fondatrice__role">Ressources humaines</p>
             </div>
           </div>
 
           <div class="fondatrice__chiffres">
             <div class="fondatrice__chiffre">
-              <span class="fondatrice__valeur">15 ans</span>
-              <span class="fondatrice__mesure">en entreprise, côté RH</span>
+              <span class="fondatrice__valeur">18 ans</span>
+              <span class="fondatrice__mesure">en entreprise, RRH</span>
             </div>
             <div class="fondatrice__chiffre">
               <span class="fondatrice__valeur">1</span>
@@ -1030,7 +1019,7 @@
   <div class="enveloppe">
     <div class="pied__grille">
       <div class="pied__logo">
-        <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="160px" width="240" height="98" loading="lazy" decoding="async" alt="MAP Orientation">
+        <img src="assets/img/logo-blanc-240.webp" srcset="assets/img/logo-blanc-240.webp 240w, assets/img/logo-blanc-480.webp 480w" sizes="150px" width="240" height="104" loading="lazy" decoding="async" alt="MAP Orientation">
         <p>Conseil et accompagnement en orientation scolaire, à Chambéry et en visio.</p>
       </div>
 
@@ -1043,14 +1032,6 @@
           <li><a href="#news">MAP news</a></li>
           <li><a href="blog/">Blog</a></li>
           <li><a href="#contact">Contact</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h3>À télécharger</h3>
-        <ul>
-          <li><a href="assets/docs/map73-fiche-contact-avant-rdv.pdf" download>Fiche contact avant rendez-vous (PDF)</a></li>
-          <li><a href="assets/docs/map73-flyer-des-services.pdf" download>Flyer des services (PDF)</a></li>
         </ul>
       </div>
 
@@ -1077,7 +1058,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20261021-1400" defer></script>
+<script src="assets/js/main.js?v=20261028-2138" defer></script>
 
 <script type="application/ld+json">
 {
@@ -1126,7 +1107,7 @@
         "https://www.linkedin.com/company/map73/"
       ],
       "founder": [
-        { "@type": "Person", "name": "Julie Mazetk", "jobTitle": "Consultante en orientation, responsable RH" },
+        { "@type": "Person", "name": "Julie Mazet", "jobTitle": "Consultante en orientation, responsable RH" },
         { "@type": "Person", "name": "Camille Dorel", "jobTitle": "Consultante en orientation, enseignante certifiée" }
       ],
       "hasOfferCatalog": {
@@ -1143,43 +1124,36 @@
           {
             "@type": "Offer",
             "name": "MAP TROISIÈME 1 AN",
-            "description": "Choisir entre la voie générale et technologique et la voie professionnelle, 5 séances individuelles.",
-            "price": "40",
+            "description": "Choisir entre la voie générale et technologique et la voie professionnelle, 5 séances individuelles, sur un engagement de 10 mois.",
+            "price": "55",
             "priceCurrency": "EUR"
           },
           {
             "@type": "Offer",
             "name": "MAP SECONDE 1 AN",
             "description": "Choix des spécialités et découverte des orientations post-bac, 5 séances individuelles.",
-            "price": "40",
-            "priceCurrency": "EUR"
-          },
-          {
-            "@type": "Offer",
-            "name": "MAP INTÉGRALE 3 ANS",
-            "description": "Accompagnement sur les trois années de lycée, 15 séances.",
-            "price": "45",
+            "price": "59",
             "priceCurrency": "EUR"
           },
           {
             "@type": "Offer",
             "name": "MAP PREMIÈRE 1 AN",
-            "description": "Méthodologie, oraux du bac français et cartographie des talents, 4 séances.",
-            "price": "35",
+            "description": "Méthodologie, oraux du bac français et cartographie des talents, 5 séances individuelles.",
+            "price": "59",
             "priceCurrency": "EUR"
           },
           {
             "@type": "Offer",
-            "name": "MAP PREMIUM 2 ANS",
-            "description": "Stratégie d'orientation de la première à Parcoursup, 12 séances sur deux ans.",
-            "price": "50",
-            "priceCurrency": "EUR"
-          },
-          {
-            "@type": "Offer",
-            "name": "TERMINALE PARCOURSUP 1 AN",
-            "description": "Stratégie complète du parcours Parcoursup, 7 séances.",
+            "name": "TERMINALE PARCOURSUP ++",
+            "description": "Stratégie complète du parcours Parcoursup, 8 séances.",
             "price": "89",
+            "priceCurrency": "EUR"
+          },
+          {
+            "@type": "Offer",
+            "name": "TERMINALE PARCOURSUP",
+            "description": "Stratégie individuelle d'orientation post-bac, 5 séances.",
+            "price": "59",
             "priceCurrency": "EUR"
           }
         ]

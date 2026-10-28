@@ -392,20 +392,19 @@
   }
 
   /* ---- Formules : un panneau par classe ----
-     Les sept fiches etaient deroulees a la suite sous les quatre cartes de
+     Les fiches etaient deroulees a la suite sous les quatre cartes de
      classe : qui venait pour la seconde traversait six fiches qui ne le
      concernaient pas, et l'ensemble se lisait comme un catalogue. Desormais
      la section ne montre que les quatre cartes, et un clic ouvre un panneau
      plein ecran qui ne contient que les fiches du niveau — la fiche de la
-     classe, et celles qui l'englobent (« integrale » pour la seconde,
-     « premium » pour la premiere et la terminale, « a la map » partout).
+     classe, l'intertitre et « a la map », qui vaut pour toutes.
 
      Le panneau n'est pas un double de la liste : la liste y est deplacee,
      une fois, au chargement. Deux copies auraient voulu deux jeux d'« id »,
      et les liens profonds n'auraient plus su auquel des deux aller.
 
      Sans script, rien de tout cela : la liste reste dans la section, les
-     sept fiches sont lisibles a la suite et les cartes de classe sont de
+     fiches sont lisibles a la suite et les cartes de classe sont de
      simples liens vers l'ancre de leur fiche. */
   const NOM_DU_NIVEAU = {
     troisieme: "Troisième",
@@ -426,16 +425,21 @@
     const fiches = listeFormules.querySelectorAll("[data-niveaux]");
     const cartes = document.querySelectorAll(".classe-carte[data-niveau]");
 
-    /* L'intitule du panneau est repris de la carte cliquee, mot pour mot :
-       le visiteur retrouve en tete du panneau la phrase sur laquelle il
-       vient de cliquer. En innerHTML pour garder l'exposant de « 3e », et
+    /* Le titre du panneau nomme la formule de la classe, « Formule 3e »,
+       comme la plaquette ; la phrase dessous est reprise de la carte
+       cliquee, mot pour mot. En innerHTML pour garder les exposants, et
        sans risque : la source est notre propre page. */
+    const FORMULE_DU_NIVEAU = {
+      troisieme: "Formule 3<sup>e</sup>",
+      seconde: "Formule 2<sup>de</sup>",
+      premiere: "Formule 1<sup>re</sup>",
+      terminale: "Formule terminale"
+    };
     const intitules = {};
     cartes.forEach((carte) => {
-      const nom = carte.querySelector("h3");
       const quoi = carte.querySelector("p");
       intitules[carte.dataset.niveau] = {
-        nom: nom ? nom.innerHTML : NOM_DU_NIVEAU[carte.dataset.niveau] || "",
+        nom: FORMULE_DU_NIVEAU[carte.dataset.niveau] || NOM_DU_NIVEAU[carte.dataset.niveau] || "",
         quoi: quoi ? quoi.innerHTML : ""
       };
     });
@@ -502,7 +506,7 @@
 
     /* ---- Le dialogue « en quelle classe est votre enfant ? » ----
        Le declencheur est un lien vers les formules : sans script, le clic y
-       mene et les sept fiches sont la. Avec script, il ouvre le choix des
+       mene et toutes les fiches sont la. Avec script, il ouvre le choix des
        quatre classes, qui enchaine sur le panneau du niveau retenu. */
     const modaleClasse = document.getElementById("modale-classe");
     const ouvrirClasses = document.getElementById("ouvrir-classes");

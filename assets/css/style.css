@@ -16,7 +16,7 @@
      site ; le bleu, lui, ne colore plus que le panneau du selecteur de
      classe, sans halo. */
   --neon-bleu: #2f8cff;
-  --neon-vert: #6cc24a;
+  --neon-vert: #08fc3c;
   --neon-vert-coeur: #e2ffd6;
 
   /* Couleurs */
@@ -30,11 +30,11 @@
      panneau doit pouvoir revenir ici. */
   --ink-soft-page: #bac9de;
   --ink-soft: var(--ink-soft-page);
-  /* Le vert pomme, #6CC24A, choisi sur la maquette des verts a la place du
-     vert du logo (#94C412) : moins jaune, plus franc. C'est le seul vert du
-     site. Sur le marine il porte aussi du texte. */
-  --vert: #6cc24a;
-  --vert-texte-page: #6cc24a;
+  /* Le vert fluo du logo, #08FC3C. Le #6CC24A d'avant faisait terne a cote
+     du nouveau logo : la cliente a demande le vert du logo partout. C'est le
+     seul vert du site. Sur le marine il porte aussi du texte. */
+  --vert: #08fc3c;
+  --vert-texte-page: #08fc3c;
   --vert-texte: var(--vert-texte-page);
   /* Ce qui s'ecrit SUR un aplat de vert : ni le blanc ni le voile clair n'y
      tiennent, l'encre bleu nuit si (7,5). */
@@ -54,7 +54,7 @@
   --sur-panneau-doux: #b9c3d4;
 
   /* Pas de halo vert : un halo est un vert qui s'estompe, et le site n'en
-     porte qu'un, #6cc24a, pur. La trame passe au trait, sans vert. Les
+     porte qu'un, #08fc3c, pur. La trame passe au trait, sans vert. Les
      jetons restent, a zero, pour les regles qui les lisent. */
   --lueur: 0 0 0 rgba(0, 0, 0, 0);
   --lueur-forte: 0 0 0 rgba(0, 0, 0, 0);
@@ -306,7 +306,7 @@ p:last-child { margin-bottom: 0; }
   right: 0;
   bottom: -1px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, #2f8cff 25%, #e2ffd6 50%, #6cc24a 75%, transparent);
+  background: linear-gradient(90deg, transparent, #2f8cff 25%, #e2ffd6 50%, #08fc3c 75%, transparent);
   box-shadow: 0 0 8px #2f8cff, 0 0 18px rgba(47, 140, 255, 0.4);
   pointer-events: none;
 }
@@ -334,15 +334,15 @@ p:last-child { margin-bottom: 0; }
 .entete__logo { flex: none; line-height: 0; }
 /* Version blanche du logo : sur le bandeau, le bleu passe entre les
    lettres. Le pied de page, lui, garde le logo encre sur son papier.
-   Le dessin fait 2,45 de rapport, d'ou ces mesures : la hauteur reste le
+   Le dessin fait 2,31 de rapport, d'ou ces mesures : la hauteur reste le
    reperage, la largeur suit. */
 .entete__logo img {
-  width: 156px;
+  width: 148px;
   height: 64px;
   object-fit: contain;
   transition: width 0.25s ease, height 0.25s ease;
 }
-.entete[data-defile="oui"] .entete__logo img { width: 122px; height: 50px; }
+.entete[data-defile="oui"] .entete__logo img { width: 116px; height: 50px; }
 
 /* ---------- La navigation, toujours en menu deroulant ----------
    Les huit intitules ne sont plus poses sur la barre, a aucune largeur :
@@ -858,6 +858,89 @@ p:last-child { margin-bottom: 0; }
   margin-bottom: 0.4rem;
 }
 .pilier p { color: var(--ink-soft); font-size: var(--fs-small); }
+
+/* ---------- Concept : les etapes qui s'empilent ---------- */
+/* Chaque etape se colle sous l'en-tete, un cran plus bas que la precedente
+   (--rang) : la suivante monte et la recouvre, et les bords des cartes deja
+   passees restent visibles au-dessus, comme une pile. La marge sous chaque
+   carte donne la longueur de defilement pendant laquelle elle tient. */
+.etapes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(2.5rem, 8vh, 5rem);
+}
+.etape {
+  --c: var(--vert);
+  position: sticky;
+  top: calc(5.25rem + (var(--rang) - 1) * 1.1rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  min-height: min(30rem, 72vh);
+  overflow: hidden;
+  border: 1.5px solid var(--c);
+  border-radius: 22px;
+  background: #0f1f35;
+  box-shadow: 0 -18px 40px rgba(4, 10, 20, 0.55);
+}
+.etape:nth-child(2) { --c: var(--neon-bleu); }
+.etape:nth-child(3) { --c: var(--lac); }
+.etape:nth-child(4) { --c: var(--ambre); }
+.etape__media { position: relative; background: var(--panneau); }
+.etape__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* En attendant la photo de l'etape IV : un aplat et un pictogramme. */
+.etape__attente {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--c);
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--c) 16%, transparent), transparent 65%);
+}
+.etape__texte {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+}
+.etape__rang {
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--c);
+  margin-bottom: 0.75rem;
+}
+.etape__role {
+  font-family: var(--display);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c);
+  margin: 0 0 0.5rem;
+}
+.etape h3 { font-size: clamp(1.35rem, 2.4vw, 1.75rem); color: var(--blanc); margin-bottom: 0.85rem; }
+.etape p:last-child { color: var(--sur-panneau-doux); }
+
+@media (max-width: 899px) {
+  .etapes { gap: 3rem; }
+  .etape {
+    top: calc(4.75rem + (var(--rang) - 1) * 0.75rem);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: clamp(150px, 26vh, 240px) auto;
+    min-height: 0;
+  }
+  .etape__texte { justify-content: start; padding: 1.4rem 1.4rem 1.6rem; }
+  .etape__rang { font-size: 2.25rem; margin-bottom: 0.5rem; }
+  .etape p:last-child { font-size: var(--fs-small); }
+}
+/* Ecran trop bas pour qu'une carte y tienne entiere : plus de pile, la
+   carte suivante masquerait le texte de la precedente avant sa lecture. */
+@media (max-height: 560px) {
+  .etape { position: relative; top: auto; }
+}
 
 /* ---------- Formules ---------- */
 .formules {
@@ -1428,7 +1511,7 @@ p:last-child { margin-bottom: 0; }
 .pied li { padding: 0.2rem 0; }
 .pied a { color: var(--ink); text-decoration: none; }
 .pied a:hover { text-decoration: underline; }
-.pied__logo img { width: 160px; height: 65px; object-fit: contain; margin-bottom: 0.85rem; }
+.pied__logo img { width: 150px; height: 65px; object-fit: contain; margin-bottom: 0.85rem; }
 .pied__bas {
   border-top: 1px solid var(--trait);
   padding-top: 1.25rem;
@@ -1710,8 +1793,8 @@ p:last-child { margin-bottom: 0; }
   body { padding-top: 4.75rem; }
   .entete__barre { min-height: 4.75rem; }
   .entete[data-defile="oui"] .entete__barre { min-height: 4rem; }
-  .entete__logo img { width: 130px; height: 53px; }
-  .entete[data-defile="oui"] .entete__logo img { width: 105px; height: 43px; }
+  .entete__logo img { width: 122px; height: 53px; }
+  .entete[data-defile="oui"] .entete__logo img { width: 99px; height: 43px; }
 }
 
 /* Sous 560 px, l'appel a l'action ne garde que le combine : trois elements
@@ -1832,7 +1915,7 @@ p:last-child { margin-bottom: 0; }
   isolation: isolate;
   overflow: hidden;
   --neon-bleu: #2f8cff;
-  --neon-vert: #6cc24a;
+  --neon-vert: #08fc3c;
   --neon-vert-coeur: #e2ffd6;
 }
 
@@ -2365,6 +2448,10 @@ p:last-child { margin-bottom: 0; }
   color: var(--ink);
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
 }
+/* Le display: flex ci-dessus ecrase le display: none que le navigateur donne
+   au dialogue ferme : le panneau restait affiche, en position absolue, par-
+   dessus la presentation de Camille et Julie. Ferme, il disparait. */
+.modale-formules:not([open]) { display: none; }
 .modale-formules::backdrop {
   background: color-mix(in srgb, #0b1a2e 72%, transparent);
   backdrop-filter: blur(7px);
@@ -2443,15 +2530,11 @@ p:last-child { margin-bottom: 0; }
 .formule[hidden],
 .formules__plus[hidden] { display: none; }
 
-/* L'intertitre des fiches qui depassent la classe. Il occupe toute la
-   largeur de la grille : il annonce ce qui le suit, pas une colonne. Un
-   filet le separe de la fiche du niveau, qui est la vraie reponse a la
-   question posee par la carte. */
+/* L'intertitre ouvre la liste de chaque classe. Il occupe toute la largeur
+   de la grille : il annonce ce qui le suit, pas une colonne. */
 .formules__plus {
   grid-column: 1 / -1;
-  margin-top: clamp(0.75rem, 2vw, 1.5rem);
-  padding-top: clamp(1.25rem, 2.5vw, 1.75rem);
-  border-top: 1px solid var(--trait);
+  margin-bottom: clamp(0.25rem, 1vw, 0.5rem);
 }
 .formules__hors-surtitre {
   display: flex;
@@ -2593,41 +2676,6 @@ p:last-child { margin-bottom: 0; }
 }
 .avatars img + img { margin-left: -12px; }
 
-/* Le concept : trois cartes cerclees, vert, bleu, lac. */
-#concept .piliers { background: none; border: 0; gap: clamp(1rem, 2vw, 1.5rem); }
-#concept .pilier {
-  --c: var(--vert);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-height: 340px;
-  padding: 1.5rem 1.5rem 1.4rem;
-  border: 1.5px solid var(--c);
-  border-radius: 22px;
-  background: #0f1f35;
-  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.35s ease;
-}
-#concept .pilier:nth-child(2) { --c: var(--neon-bleu); }
-#concept .pilier:nth-child(3) { --c: var(--lac); }
-#concept .pilier:hover { transform: translateY(-6px); box-shadow: 0 0 0 1px var(--c), 0 0 28px color-mix(in srgb, var(--c) 40%, transparent); }
-#concept .pilier:hover .carte-tete svg { transform: translate(3px, -3px); }
-#concept .pilier .pilier__rang { display: none; }
-#concept .pilier__role { color: var(--c); }
-#concept .pilier h3 { font-size: clamp(1.35rem, 2.2vw, 1.6rem); }
-.carte-bouton {
-  margin-top: auto;
-  align-self: flex-start;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: var(--sur-panneau);
-  color: var(--paper);
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-.carte-bouton:hover { background: var(--c, var(--vert)); color: var(--paper); }
-@media (max-width: 560px) { #concept .pilier { min-height: 0; } }
 
 /* Les formules : une carte par classe, au-dessus des onglets. */
 .classes-cartes {
@@ -2896,7 +2944,7 @@ html[data-intro="oui"] .intro {
   pointer-events: none;
   background:
     radial-gradient(560px 380px at 74% 34%, rgba(47, 140, 255, 0.16), transparent 70%),
-    radial-gradient(520px 300px at 26% 62%, rgba(108, 194, 74, 0.1), transparent 70%),
+    radial-gradient(520px 300px at 26% 62%, rgba(8, 252, 60, 0.1), transparent 70%),
     var(--paper);
   animation: intro-sortie 0.8s ease 4.6s both;
 }
