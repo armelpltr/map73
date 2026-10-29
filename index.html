@@ -38,7 +38,7 @@
     setTimeout(function () { racine.removeAttribute("data-intro"); }, 6500);
   })();
 </script>
-<link rel="stylesheet" href="assets/css/style.css?v=20261028-2300">
+<link rel="stylesheet" href="assets/css/style.css?v=20261030-1200">
 </head>
 
 <body>
@@ -49,7 +49,7 @@
      pour que ca joue des le premier affichage. -->
 <div class="intro" id="intro" aria-hidden="true">
   <img class="intro__temps intro__logo" src="assets/img/logo-blanc-480.webp" width="480" height="207" alt="">
-  <p class="intro__temps intro__phrase">L’orientation scolaire. Plus qu’un choix, <em>un avenir.</em></p>
+  <p class="intro__temps intro__phrase">L’orientation scolaire. Plus qu’un choix, <em>un projet.</em></p>
 </div>
 
 <header class="entete" id="entete">
@@ -119,7 +119,7 @@
     <div class="enveloppe hero__contenu hero__grille">
       <div class="hero__discours">
         <span class="hero__filet" aria-hidden="true"></span>
-        <h1 id="hero-titre">L’orientation scolaire. Plus qu’un choix, <span class="hero__accent">un avenir.</span></h1>
+        <h1 id="hero-titre">L’orientation scolaire. Plus qu’un choix, <span class="hero__accent">un projet.</span></h1>
         <p class="hero__chapo" id="hero-chapo"><strong>Vous êtes inquiet pour l’orientation scolaire de votre enfant ?</strong> MAP Orientation l’accompagne de la troisième à la terminale et lui donne toutes les cartes en main pour Maîtriser son Avenir et son Parcours.</p>
 
         <div class="hero__actions">
@@ -127,7 +127,6 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M6.4 3.5h3.1l1.6 4-2 1.3a11.5 11.5 0 0 0 6.1 6.1l1.3-2 4 1.6v3.1a1.9 1.9 0 0 1-2.1 1.9A16.8 16.8 0 0 1 4.5 5.6a1.9 1.9 0 0 1 1.9-2.1Z"/></svg>
             Appel découverte offert
           </a>
-          <a class="bouton bouton--contour" href="#formules">Voir les formules</a>
         </div>
       </div>
 
@@ -236,8 +235,9 @@
     <div class="enveloppe">
       <div class="accompagnement__grille">
         <div>
-          <p class="accompagnement__surtitre">Notre accompagnement</p>
-          <h2 class="accompagnement__titre" id="accompagnement-titre">L’accompagnement scolaire avec <em>MAP Orientation</em></h2>
+          <div class="section-entete">
+            <h2 id="accompagnement-titre">L’accompagnement scolaire avec MAP Orientation</h2>
+          </div>
 
         </div>
 
@@ -277,7 +277,7 @@
   <section class="section section--serre adn adn--arc" id="adn" aria-labelledby="adn-titre">
     <div class="enveloppe">
       <div class="section-entete">
-        <h2 id="adn-titre">L’ADN de MAP <em>Orientation.</em></h2>
+        <h2 id="adn-titre">L’ADN de MAP Orientation</h2>
         <p class="adn__sous-titre">Une approche humaine, experte et sur-mesure.</p>
         <p class="adn__chapo">Depuis toujours, nous croyons en une orientation qui a du sens&nbsp;: celle qui prend en compte chaque jeune, ses envies, ses talents et son rythme. Voici ce qui fait notre différence.</p>
       </div>
@@ -827,7 +827,9 @@
        dans le panel fait disparaitre la section entiere. -->
   <section class="section section--serre news" id="news" aria-labelledby="news-titre">
     <div class="enveloppe">
-      <h2 class="news__titre" id="news-titre">MAP news</h2>
+      <div class="section-entete">
+        <h2 id="news-titre">MAP news</h2>
+      </div>
       <ul class="news__liste" id="news-liste">
         <li class="news__carte">
           <p class="news__date">Rentrée 2026</p>

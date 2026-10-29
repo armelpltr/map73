@@ -658,13 +658,6 @@ p:last-child { margin-bottom: 0; }
    cartes que la legende juste au-dessus, pour que les deux bandes se lisent
    comme un seul haut de page, avec une date en vert en guise de vignette
    plutot qu’un glyphe. */
-.news__titre {
-  font-family: var(--display);
-  font-size: var(--fs-small);
-  font-weight: 600;
-  color: var(--ink-soft);
-  margin: 0 0 1.5rem;
-}
 .news__liste {
   list-style: none;
   margin: 0;
@@ -2181,28 +2174,6 @@ p:last-child { margin-bottom: 0; }
   .accompagnement__grille { grid-template-columns: 1.05fr 1fr; }
 }
 
-.accompagnement__surtitre {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-family: var(--display);
-  font-size: var(--fs-micro);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-bottom: 1rem;
-}
-.accompagnement__surtitre::before {
-  content: "";
-  width: 34px;
-  height: 2px;
-  background: var(--vert);
-}
-
-.accompagnement__titre { font-size: var(--fs-h2); margin-bottom: 1.25rem; }
-.accompagnement__titre em { font-style: normal; color: var(--vert-texte); }
-
 .accompagnement__faits { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; }
 .accompagnement__fait { border-left: 2px solid var(--trait); padding-left: 1rem; }
 .accompagnement__fait strong { display: block; font-family: var(--display); font-size: 1.05rem; }
@@ -2259,7 +2230,6 @@ p:last-child { margin-bottom: 0; }
 /* ---------- Troisieme page : l'ADN sur l'arc ---------- */
 .adn--arc { position: relative; overflow: hidden; }
 .adn--arc .section-entete { max-width: none; text-align: center; margin-inline: auto; }
-.adn--arc .section-entete h2 em { font-style: normal; color: var(--vert-texte); display: block; }
 /* .section-entete .adn__chapo et non .adn__chapo seul : le chapo est borne
    a 62ch, et sans les marges automatiques son bloc se calait a gauche de
    l'enveloppe — le texte s'y centrait bien, mais 283 px plus a gauche que
