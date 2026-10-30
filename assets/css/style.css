@@ -190,7 +190,11 @@ p:last-child { margin-bottom: 0; }
 }
 .surtitre::before { content: ""; flex: none; width: 34px; height: 2px; background: var(--vert); }
 .section-entete .surtitre { font-size: var(--fs-micro); margin: 0 0 1rem; }
-.section-entete h2 em { font-style: normal; color: var(--vert-texte); }
+/* La regle vaut aussi pour les titres de page (blog, articles, mentions)
+   et pour celui du panneau des formules : chaque titre a sa partie verte. */
+.section-entete h2 em,
+h1 em,
+.modale-formules__titre em { font-style: normal; color: var(--vert-texte); }
 
 /* ---------- Boutons ---------- */
 .bouton {

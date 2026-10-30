@@ -430,10 +430,10 @@
        cliquee, mot pour mot. En innerHTML pour garder les exposants, et
        sans risque : la source est notre propre page. */
     const FORMULE_DU_NIVEAU = {
-      troisieme: "Formule 3<sup>e</sup>",
-      seconde: "Formule 2<sup>de</sup>",
-      premiere: "Formule 1<sup>re</sup>",
-      terminale: "Formule terminale"
+      troisieme: "Formule <em>3<sup>e</sup></em>",
+      seconde: "Formule <em>2<sup>de</sup></em>",
+      premiere: "Formule <em>1<sup>re</sup></em>",
+      terminale: "Formule <em>terminale</em>"
     };
     const intitules = {};
     cartes.forEach((carte) => {
